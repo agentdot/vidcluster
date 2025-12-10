@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* VidCluster Design System - Dark SaaS Theme */
+
+@layer base {
+  :root {
+    --background: 222 47% 7%;
+    --foreground: 0 0% 100%;
+
+    --card: 220 33% 12%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 220 33% 12%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 330 100% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 33% 15%;
+    --secondary-foreground: 220 15% 65%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 15% 55%;
+
+    --accent: 262 100% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 25% 18%;
+    --input: 220 25% 18%;
+    --ring: 330 100% 65%;
+
+    --radius: 0.75rem;
+
+    /* VidCluster Brand Colors */
+    --pink: 340 100% 65%;
+    --purple: 262 100% 65%;
+    --aqua: 165 100% 48%;
+    --data-blue: 200 100% 52%;
+    --signal-gold: 40 100% 64%;
+
+    /* Gradient */
+    --gradient-primary: linear-gradient(135deg, hsl(340 100% 65%) 0%, hsl(262 100% 65%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(262 100% 65% / 0.15) 0%, transparent 70%);
+    
+    /* Shadows */
+    --shadow-glow: 0 0 60px hsl(330 100% 65% / 0.3);
+    --shadow-card: 0 4px 24px hsl(222 47% 4% / 0.5);
+
+    --sidebar-background: 220 33% 10%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 330 100% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 33% 15%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 330 100% 65%;
+  }
+
+  .dark {
+    --background: 222 47% 7%;
+    --foreground: 0 0% 100%;
+    --card: 220 33% 12%;
+    --card-foreground: 0 0% 100%;
+    --popover: 220 33% 12%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 330 100% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 33% 15%;
+    --secondary-foreground: 220 15% 65%;
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 15% 55%;
+    --accent: 262 100% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 25% 18%;
+    --input: 220 25% 18%;
+    --ring: 330 100% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  .gradient-border {
+    position: relative;
+    background: hsl(var(--card));
+    border-radius: var(--radius);
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: var(--gradient-primary);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  .glass {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50;
+  }
+
+  .glow {
+    box-shadow: var(--shadow-glow);
+  }
+}
