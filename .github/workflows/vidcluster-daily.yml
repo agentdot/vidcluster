@@ -24,6 +24,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Debug env (safe)
+        run: |
+          python -c "import os; v=os.getenv('DRIVE_FOLDER_ID',''); print('DRIVE_FOLDER_ID length =', len(v))"
+
       - name: Run VidCluster Daily
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -32,6 +36,3 @@ jobs:
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
         run: |
           python -m src.run_daily
-     - name: Debug env (safe)
-       run: |
-           python -c "import os; v=os.getenv('DRIVE_FOLDER_ID',''); print('DRIVE_FOLDER_ID length =', len(v))"
