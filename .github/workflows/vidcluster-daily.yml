@@ -13,6 +13,7 @@ jobs:
   run-daily:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -30,9 +31,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Debug env + version (safe)
+      # IMPORTANT: This step imports src.run_daily, which imports src.config,
+      # so we MUST provide the required env vars here too.
+      - name: Debug env + version (no secret values printed)
         env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
         run: |
           echo "GITHUB_SHA=$GITHUB_SHA"
           python -V
