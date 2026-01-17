@@ -1,33 +1,28 @@
 name: VidCluster Daily
-
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 6 * * *"   # daily at 06:00 UTC
-
+    - cron: "0 6 * * *" # daily at 06:00 UTC
 jobs:
   run-daily:
     runs-on: ubuntu-latest
     timeout-minutes: 45
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
       - name: Debug env (safe)
+        env:
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}  # Add this!
         run: |
           python -c "import os; v=os.getenv('DRIVE_FOLDER_ID',''); print('DRIVE_FOLDER_ID length =', len(v))"
-
       - name: Run VidCluster Daily
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
