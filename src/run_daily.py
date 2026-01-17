@@ -3,6 +3,7 @@ import sys, os, json
 import pandas as pd
 from datetime import datetime, timezone
 
+from src.feed_embeddings import feed_embeddings_daily
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 
@@ -141,6 +142,13 @@ def main():
         centroids.to_parquet(CENTROIDS_PATH, index=False)
         upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_CENTROIDS, CENTROIDS_PATH)
         print("✅ Centroids fit & uploaded:", len(centroids))
+
+    try:
+        fed = feed_embeddings_daily()
+        print("FEEDER: new rows staged =", fed)
+    except Exception as e:
+        print("⚠️ FEEDER skipped due to error:", e)
+
 
     # --- Read Embeddings_V2_UNIQUE from sheet ---
     df_embtab = ws_to_df(ws_emb)
