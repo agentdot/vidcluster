@@ -5,7 +5,7 @@ DRIVE_FOLDER_ID = os.environ["DRIVE_FOLDER_ID"]
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 
 TAB_DATA = "Data"
-TAB_EMB = "Embedding_V2_UNIQUE"
+TAB_EMB = "Embeddings_V2_UNIQUE"
 TAB_ASSIGN = "ClusterAssignment_V2"
 TAB_SCORECARD = "Scorecard"
 
