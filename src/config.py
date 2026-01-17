@@ -1,0 +1,16 @@
+import os
+
+SHEET_ID = os.environ["SHEET_ID"]
+DRIVE_FOLDER_ID = os.environ["DRIVE_FOLDER_ID"]
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+
+TAB_DATA = "Data"
+TAB_EMB = "Embedding_V2_UNIQUE"
+TAB_ASSIGN = "ClusterAssignment_V2"
+TAB_SCORECARD = "Scorecard"
+
+EMBED_MODEL = "text-embedding-3-small"
+KMEANS_K = 80
+
+DRIVE_EMB_STORE = "embeddings_store.parquet"
+DRIVE_CENTROIDS = "kmeans_centroids.parquet"
