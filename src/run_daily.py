@@ -1,6 +1,8 @@
 import time
 import pandas as pd
 from datetime import datetime, timezone
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from src.config import (
     SHEET_ID, DRIVE_FOLDER_ID, OPENAI_API_KEY,
