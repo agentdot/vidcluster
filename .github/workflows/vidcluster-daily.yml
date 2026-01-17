@@ -1,13 +1,14 @@
 name: VidCluster Daily
 
 on:
-  workflow_dispatch:   # manual run
+  workflow_dispatch:
   schedule:
     - cron: "0 6 * * *"   # daily at 06:00 UTC
 
 jobs:
   run-daily:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repo
@@ -20,6 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run VidCluster Daily
@@ -29,4 +31,4 @@ jobs:
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
         run: |
-          python src.run_daily.py
+          python -m src.run_daily
