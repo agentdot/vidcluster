@@ -214,10 +214,19 @@ def main():
         print("✅ Updated Embeddings_V2_UNIQUE rows to DONE:", len(new_rows))
 
         # Fit centroids if missing
+        # Fit centroids if missing (only when we have enough embeddings)
         if centroids is None:
             if len(df_store) < KMEANS_K:
-                raise RuntimeError(f"Need >= {KMEANS_K} embeddings to fit centroids, have {len(df_store)}")
-            centroids = fit_centroids(df_store, k=KMEANS_K)
+                print(f"🟡 Not enough embeddings to fit centroids yet. Need >= {KMEANS_K}, have {len(df_store)}.")
+                print("🟡 Skipping centroid fit + cluster assignment for now.")
+                # Still allow the run to finish successfully
+                centroids = None
+            else:
+                centroids = fit_centroids(df_store, k=KMEANS_K)
+                centroids.to_parquet(CENTROIDS_PATH, index=False)
+                upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_CENTROIDS, CENTROIDS_PATH)
+                print("✅ Centroids fit & uploaded.")
+
             centroids.to_parquet(CENTROIDS_PATH, index=False)
             upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_CENTROIDS, CENTROIDS_PATH)
             print("✅ Centroids fit & uploaded.")
