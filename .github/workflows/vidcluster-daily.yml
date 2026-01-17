@@ -32,6 +32,6 @@ jobs:
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
         run: |
           python -m src.run_daily
-    - name: Debug env (safe)
-      run: |
-        python -c "import os; v=os.getenv('DRIVE_FOLDER_ID',''); print('DRIVE_FOLDER_ID length =', len(v))"
+     - name: Debug env (safe)
+       run: |
+           python -c "import os; v=os.getenv('DRIVE_FOLDER_ID',''); print('DRIVE_FOLDER_ID length =', len(v))"
