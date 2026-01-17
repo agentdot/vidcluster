@@ -126,7 +126,11 @@ def main():
 
     df_score.to_parquet(SCORE_SNAP_PATH, index=False)
     snap_name = f"scorecard_RUN_{datetime.now(timezone.utc).date().isoformat()}.parquet"
-    upload_or_update(drive, DRIVE_FOLDER_ID, snap_name, SCORE_SNAP_PATH)
+    try:
+        upload_or_update(drive, DRIVE_FOLDER_ID, snap_name, SCORE_SNAP_PATH)
+    except Exception as e:
+        print("⚠️ Drive upload skipped:", e)
+
     print("✅ Scorecard snapshot uploaded:", snap_name, "| rows:", len(df_score))
 
 if __name__ == "__main__":
