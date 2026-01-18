@@ -19,31 +19,17 @@ TAB_VIDEOLOOKUP = os.environ.get("TAB_VIDEOLOOKUP", "VideoLookup")
 DRIVE_ASSIGNMENTS = os.environ.get("DRIVE_ASSIGNMENTS", "cluster_assignments.parquet")
 DRIVE_VIDEO_META = os.environ.get("DRIVE_VIDEO_META", "video_meta.parquet")
 
+DRIVE_CLUSTER_STATS = os.environ.get("DRIVE_CLUSTER_STATS", "cluster_stats.parquet")
+
 ASSIGN_PATH = "/tmp/cluster_assignments.parquet"
 META_PATH = "/tmp/video_meta.parquet"
+CLUSTER_STATS_PATH = "/tmp/cluster_stats.parquet"
 
 VIDEOLOOKUP_MAX_ROWS = int(os.environ.get("VIDEOLOOKUP_MAX_ROWS", "2000"))  # keep Sheets small
 TITLE_FETCH_LIMIT = int(os.environ.get("TITLE_FETCH_LIMIT", "300"))         # per run API guard
 
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY", "").strip()
 
-DRIVE_CLUSTER_STATS = os.environ.get("DRIVE_CLUSTER_STATS", "cluster_stats.parquet")
-CLUSTER_STATS_PATH = "/tmp/cluster_stats.parquet"
-
-
-df_stats = load_parquet_from_drive(drive, DRIVE_FOLDER_ID, DRIVE_CLUSTER_STATS, CLUSTER_STATS_PATH)
-
-if not df_stats.empty:
-    df_vl = df_vl.merge(
-        df_stats[["semantic_clusterID", "V8_State", "OpportunityScore", "Momentum_Label", "ConfidenceBand"]],
-        on="semantic_clusterID",
-        how="left"
-    )
-else:
-    df_vl["V8_State"] = ""
-    df_vl["OpportunityScore"] = ""
-    df_vl["Momentum_Label"] = ""
-    df_vl["ConfidenceBand"] = ""
 
 def utc_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -83,20 +69,16 @@ def write_df_to_sheet(ws, df: pd.DataFrame):
     Keeps sheet small and avoids append-based growth.
     """
     if df is None or df.empty:
-        # Write just headers to keep the tab valid
         ws.clear()
         ws.update("A1", [["video_key"]], value_input_option="RAW")
         return
 
-    # Convert to strings to avoid gspread typing weirdness
-    out_df = df.copy()
-    out_df = out_df.fillna("")
+    out_df = df.copy().fillna("")
     values = [out_df.columns.tolist()] + out_df.astype(str).values.tolist()
 
     # Resize sheet grid exactly
     resize_worksheet(ws, rows=len(values) + 5, cols=len(out_df.columns) + 2)
 
-    # Clear + write in one go (fits within limits because we cap rows)
     ws.clear()
     ws.update("A1", values, value_input_option="RAW")
 
@@ -162,13 +144,14 @@ def main():
             df_assign[c] = ""
 
     df_assign["video_key"] = df_assign["video_key"].astype(str).str.strip()
+    df_assign["semantic_clusterID"] = df_assign["semantic_clusterID"].astype(str).str.strip()
     df_assign["created_at"] = df_assign["created_at"].astype(str)
 
     # Keep latest assignment per video_key (safety)
     df_assign = df_assign.sort_values("created_at")
     df_assign = df_assign.drop_duplicates(subset=["video_key"], keep="last")
 
-    # 2) Load / update video_meta cache (optional but recommended)
+    # 2) Load / update video_meta cache
     df_meta = load_parquet_from_drive(drive, DRIVE_FOLDER_ID, DRIVE_VIDEO_META, META_PATH)
     if df_meta.empty:
         df_meta = pd.DataFrame(columns=["video_key", "video_title", "fetched_at"])
@@ -189,13 +172,10 @@ def main():
     if missing:
         titles = youtube_titles(missing)
         if titles:
-            add_rows = []
             ts = utc_iso()
-            for k, t in titles.items():
-                add_rows.append({"video_key": k, "video_title": t, "fetched_at": ts})
+            add_rows = [{"video_key": k, "video_title": t, "fetched_at": ts} for k, t in titles.items()]
             df_meta = pd.concat([df_meta, pd.DataFrame(add_rows)], ignore_index=True)
 
-            # Keep latest meta row per key
             df_meta["fetched_at"] = df_meta["fetched_at"].astype(str)
             df_meta = df_meta.sort_values("fetched_at")
             df_meta = df_meta.drop_duplicates(subset=["video_key"], keep="last")
@@ -212,35 +192,43 @@ def main():
         how="left"
     )
 
-    # 3) Build VideoLookup (UI table)
-    # These are placeholders until Scorecard/Recency/Confidence are materialized into a proper output model.
+    # 3) Build base VideoLookup (no placeholders)
     df_vl = pd.DataFrame({
         "video_key": df_join["video_key"],
         "video_title": df_join.get("video_title", ""),
         "semantic_clusterID": df_join["semantic_clusterID"],
-        "semantic_cluster_label": df_join["semantic_cluster_label"],  # currently AUTO:SCxxx
+        "semantic_cluster_label": df_join["semantic_cluster_label"],
         "embedding_run_id": df_join["embedding_run_id"],
         "kmeans_k": df_join["kmeans_k"],
         "created_at": df_join["created_at"],
     })
 
-    df_vl = df_vl.merge(
-        df_stats[[
-            "semantic_clusterID",
-            "V8_State",
-            "OpportunityScore",
-            "Momentum_Label",
-            "ConfidenceBand"
-        ]],
-        on="semantic_clusterID",
-        how="left"
-    )
+    # 4) Load cluster stats and merge intelligence fields
+    df_stats = load_parquet_from_drive(drive, DRIVE_FOLDER_ID, DRIVE_CLUSTER_STATS, CLUSTER_STATS_PATH)
 
+    if df_stats.empty:
+        print("🟡 cluster_stats.parquet not found (or empty). Writing VideoLookup without intelligence fields.")
+        df_vl["V8_State"] = ""
+        df_vl["OpportunityScore"] = ""
+        df_vl["Momentum_Label"] = ""
+        df_vl["ConfidenceBand"] = ""
+    else:
+        needed = ["semantic_clusterID", "V8_State", "OpportunityScore", "Momentum_Label", "ConfidenceBand"]
+        for c in needed:
+            if c not in df_stats.columns:
+                df_stats[c] = ""
+        df_stats["semantic_clusterID"] = df_stats["semantic_clusterID"].astype(str).str.strip()
 
-    # Sort recent first and cap rows to keep Sheets small
+        df_vl = df_vl.merge(
+            df_stats[needed],
+            on="semantic_clusterID",
+            how="left"
+        )
+
+    # Sort recent first and cap rows
     df_vl = df_vl.sort_values("created_at", ascending=False).head(VIDEOLOOKUP_MAX_ROWS).copy()
 
-    # 4) Write to sheet (overwrite)
+    # 5) Write to sheet (overwrite)
     write_df_to_sheet(ws_vl, df_vl)
     print(f"✅ VideoLookup written to Sheets ({TAB_VIDEOLOOKUP}) rows={len(df_vl)} cols={len(df_vl.columns)}")
 
