@@ -39,6 +39,7 @@ jobs:
           SHEET_ID: ${{ secrets.SHEET_ID }}
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
           echo "GITHUB_SHA=$GITHUB_SHA"
           python -V
@@ -51,5 +52,6 @@ jobs:
           SHEET_ID: ${{ secrets.SHEET_ID }}
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
           python -m src.run_daily
