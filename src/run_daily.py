@@ -255,3 +255,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+from src.materialize_videolookup import main as materialize_videolookup
+
+materialize_videolookup()
+
