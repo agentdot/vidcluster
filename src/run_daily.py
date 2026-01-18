@@ -11,7 +11,7 @@ from googleapiclient.errors import HttpError
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from src.config import (
-    SHEET_ID, DRIVE_FOLDER_ID, OPENAI_API_KEY,
+    SHEET_ID, DRIVE_FOLDER_ID, OPENAI_API_KEY, DRIVE_SNAPSHOTS_FOLDER_ID
     TAB_EMB, TAB_ASSIGN, TAB_SCORECARD,
     EMBED_MODEL, KMEANS_K,
     DRIVE_EMB_STORE, DRIVE_CENTROIDS
@@ -278,7 +278,7 @@ def main():
 
     snap_name = f"scorecard_RUN_{datetime.now(timezone.utc).date().isoformat()}.parquet"
     try:
-        upload_or_update(drive, DRIVE_FOLDER_ID, snap_name, SCORE_SNAP_PATH)
+        upload_or_update(drive, DRIVE_SNAPSHOTS_FOLDER_ID, snap_name, SCORE_SNAP_PATH)
         print("✅ Scorecard snapshot uploaded:", snap_name, "| rows:", len(df_score))
     except Exception as e:
         print("⚠️ Scorecard drive upload skipped:", e)
