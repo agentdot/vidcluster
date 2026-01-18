@@ -2,6 +2,7 @@ import os
 
 SHEET_ID = os.environ["SHEET_ID"]
 DRIVE_FOLDER_ID = os.environ["DRIVE_FOLDER_ID"]
+DRIVE_SNAPSHOTS_FOLDER_ID = os.environ.get("DRIVE_SNAPSHOTS_FOLDER_ID")
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 
 TAB_DATA = "Data"
