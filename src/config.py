@@ -14,4 +14,5 @@ EMBED_MODEL = "text-embedding-3-small"
 KMEANS_K = 80
 
 DRIVE_EMB_STORE = "embeddings_store.parquet"
+DRIVE_DISCOVERY_QUEUE = "discovery_queue.parquet"
 DRIVE_CENTROIDS = "kmeans_centroids.parquet"
