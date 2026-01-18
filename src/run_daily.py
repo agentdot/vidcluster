@@ -11,7 +11,7 @@ from googleapiclient.errors import HttpError
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from src.config import (
-    SHEET_ID, DRIVE_FOLDER_ID, OPENAI_API_KEY, DRIVE_SNAPSHOTS_FOLDER_ID
+    SHEET_ID, DRIVE_FOLDER_ID, OPENAI_API_KEY, DRIVE_SNAPSHOTS_FOLDER_ID,
     TAB_EMB, TAB_ASSIGN, TAB_SCORECARD,
     EMBED_MODEL, KMEANS_K,
     DRIVE_EMB_STORE, DRIVE_CENTROIDS
