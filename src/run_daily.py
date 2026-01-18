@@ -251,15 +251,16 @@ def main():
           f"queue_remaining={len(df_queue) if 'df_queue' in locals() else 'NA'}",
           f"store_total={len(df_store)}",
           f"centroids={'YES' if centroids is not None else 'NO'}")
-
+    
+    from src.compute_cluster_stats import main as compute_cluster_stats
+    from src.materialize_videolookup import main as materialize_videolookup
+    
+    compute_cluster_stats()
+    materialize_videolookup()
 
 if __name__ == "__main__":
     main()
 
-from src.compute_cluster_stats import main as compute_cluster_stats
-from src.materialize_videolookup import main as materialize_videolookup
 
-compute_cluster_stats()
-materialize_videolookup()
 
 
