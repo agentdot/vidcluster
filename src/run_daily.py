@@ -7,6 +7,8 @@ from src.feed_embeddings import feed_embeddings_daily
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 
+QUEUE_PATH = "/tmp/discovery_queue.parquet"
+
 # Make sure src imports work when running as module
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
