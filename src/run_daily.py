@@ -48,20 +48,21 @@ def main():
     drive = get_drive_service()
 
     # Debug: list folder contents (keep until stable)
-    print("DEBUG: DRIVE_FOLDER_ID =", DRIVE_FOLDER_ID)
+    print("DEBUG: DRIVE_SNAPSHOTS_FOLDER_ID =", DRIVE_SNAPSHOTS_FOLDER_ID)
     try:
-        resp = drive.files().list(
-            q=f"'{DRIVE_FOLDER_ID}' in parents and trashed=false",
+        resp2 = drive.files().list(
+            q=f"'{DRIVE_SNAPSHOTS_FOLDER_ID}' in parents and trashed=false",
             supportsAllDrives=True,
             includeItemsFromAllDrives=True,
-            fields="files(id,name,size,modifiedTime)"
+            fields="files(id,name,modifiedTime)"
         ).execute()
-        files = resp.get("files", [])
-        print(f"DEBUG: files in automation-data ({len(files)}):")
-        for f in files[:50]:
+        files2 = resp2.get("files", [])
+        print(f"DEBUG: files in snapshots ({len(files2)}):")
+        for f in files2[:50]:
             print(" -", f.get("name"), "|", f.get("id"))
     except Exception as e:
-        print("DEBUG: folder list failed:", e)
+        print("DEBUG: snapshots list failed:", e)
+
 
     # --- Load embeddings_store (Drive Parquet) ---
     emb_file_id = find_file_in_folder(drive, DRIVE_FOLDER_ID, DRIVE_EMB_STORE)
