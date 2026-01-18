@@ -3,8 +3,6 @@ import sys, os
 import pandas as pd
 from datetime import datetime, timezone
 
-from googleapiclient.http import MediaFileUpload
-
 # Make sure src imports work when running as module
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -12,12 +10,11 @@ from src.config import (
     SHEET_ID, DRIVE_FOLDER_ID, DRIVE_SNAPSHOTS_FOLDER_ID, OPENAI_API_KEY,
     TAB_ASSIGN, TAB_SCORECARD,
     EMBED_MODEL, KMEANS_K,
-    DRIVE_EMB_STORE, DRIVE_CENTROIDS,
-    DRIVE_DISCOVERY_QUEUE
+    DRIVE_EMB_STORE, DRIVE_CENTROIDS
 )
 
 from src.google_clients import get_gspread_client, get_drive_service
-from src.drive_store import find_file_in_folder, download_file
+from src.drive_store import find_file_in_folder, download_file, upload_or_update
 from src.sheets_io import ws_to_df, append_rows_chunked
 from src.embeddings import embed_texts
 from src.clustering import fit_centroids, assign_to_centroids
@@ -36,39 +33,6 @@ def now_run_id():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
 
 
-def upload_or_update(drive_service, folder_id, file_name, local_path):
-    """
-    Shared-Drive-safe upload/update into a folder.
-    """
-    query = f"name='{file_name}' and '{folder_id}' in parents and trashed=false"
-    response = drive_service.files().list(
-        q=query,
-        supportsAllDrives=True,
-        includeItemsFromAllDrives=True,
-        fields="files(id, name)"
-    ).execute()
-
-    media = MediaFileUpload(local_path, resumable=True)
-
-    if response.get("files"):
-        file_id = response["files"][0]["id"]
-        updated = drive_service.files().update(
-            fileId=file_id,
-            media_body=media,
-            supportsAllDrives=True
-        ).execute()
-        return updated.get("id")
-    else:
-        metadata = {"name": file_name, "parents": [folder_id]}
-        created = drive_service.files().create(
-            body=metadata,
-            media_body=media,
-            supportsAllDrives=True,
-            fields="id"
-        ).execute()
-        return created.get("id")
-
-
 def main():
     RUN_ID = now_run_id()
     print("RUN_ID:", RUN_ID)
@@ -83,6 +47,7 @@ def main():
 
     drive = get_drive_service()
 
+    # Debug: list folder contents (keep until stable)
     print("DEBUG: DRIVE_FOLDER_ID =", DRIVE_FOLDER_ID)
     try:
         resp = drive.files().list(
@@ -97,7 +62,6 @@ def main():
             print(" -", f.get("name"), "|", f.get("id"))
     except Exception as e:
         print("DEBUG: folder list failed:", e)
-
 
     # --- Load embeddings_store (Drive Parquet) ---
     emb_file_id = find_file_in_folder(drive, DRIVE_FOLDER_ID, DRIVE_EMB_STORE)
@@ -124,6 +88,7 @@ def main():
         print("🟡 No centroids found yet.")
 
     # --- Stage discovery queue from QueryBank (Sheets) -> discovery_queue.parquet (Drive) ---
+    staged = 0
     try:
         staged = stage_discovery_queue_daily(
             drive=drive,
@@ -135,6 +100,13 @@ def main():
     except Exception as e:
         print("⚠️ FEEDER skipped due to error:", e)
 
+    # Read-after-write debug (proves correctness)
+    try:
+        df_queue_dbg = load_queue_from_drive(drive, DRIVE_FOLDER_ID)
+        print("DEBUG: queue rows right after staging =", len(df_queue_dbg))
+    except Exception as e:
+        print("DEBUG: queue reload failed:", e)
+
     # --- Load queue (Drive Parquet) and embed from it ---
     df_queue = load_queue_from_drive(drive, DRIVE_FOLDER_ID)
     if df_queue.empty:
@@ -142,7 +114,6 @@ def main():
         embedded_today = 0
         newly_embedded_rows = []
     else:
-        # Normalize + dedupe queue against store (safety)
         df_queue["video_key"] = df_queue["video_key"].astype(str).str.strip()
         df_queue = df_queue[~df_queue["video_key"].isin(store_keys)].copy()
 
@@ -177,7 +148,6 @@ def main():
                 print(f"✅ Embedded batch {i//BATCH+1} ({len(k_block)})")
                 time.sleep(0.3)
 
-            # Append into embeddings_store
             df_store = pd.concat([df_store, pd.DataFrame(newly_embedded_rows)], ignore_index=True)
             df_store.to_parquet(EMB_STORE_PATH, index=False)
             upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_EMB_STORE, EMB_STORE_PATH)
@@ -185,13 +155,11 @@ def main():
 
             embedded_today = len(newly_embedded_rows)
 
-            # Remove processed from queue and save back
             processed_keys = set([r["video_key"] for r in newly_embedded_rows])
             df_queue = df_queue[~df_queue["video_key"].isin(processed_keys)].copy()
             save_queue_to_drive(drive, DRIVE_FOLDER_ID, upload_or_update, df_queue)
             print(f"✅ Queue updated (removed {len(processed_keys)} processed). Remaining:", len(df_queue))
 
-            # update store_keys
             store_keys.update(processed_keys)
 
     # --- Fit centroids if missing and enough embeddings ---
@@ -215,7 +183,6 @@ def main():
             sc_ids = [f"SC{int(i):03d}" for i in idx]
             created_at = datetime.now(timezone.utc).isoformat()
 
-            # Schema: video_key | semantic_clusterID | semantic_cluster_label | embedding_run_id | kmeans_k | created_at
             rows = [[k, sc, "", RUN_ID, str(KMEANS_K), created_at] for k, sc in zip(keys_new, sc_ids)]
 
             print("DEBUG: About to append to ClusterAssignment_V2 rows =", len(rows))
@@ -237,9 +204,8 @@ def main():
     except Exception as e:
         print("⚠️ Scorecard drive upload skipped:", e)
 
-    # --- End-of-run summary (tiny but high value) ---
     print("SUMMARY:",
-          f"staged_today={locals().get('staged', 0)}",
+          f"staged_today={staged}",
           f"embedded_today={embedded_today}",
           f"queue_remaining={len(df_queue) if 'df_queue' in locals() else 'NA'}",
           f"store_total={len(df_store)}",
