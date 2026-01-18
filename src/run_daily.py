@@ -10,7 +10,8 @@ from src.config import (
     SHEET_ID, DRIVE_FOLDER_ID, DRIVE_SNAPSHOTS_FOLDER_ID, OPENAI_API_KEY,
     TAB_ASSIGN, TAB_SCORECARD,
     EMBED_MODEL, KMEANS_K,
-    DRIVE_EMB_STORE, DRIVE_CENTROIDS
+    DRIVE_EMB_STORE, DRIVE_CENTROIDS,
+    DRIVE_EMB_STORE, DRIVE_CENTROIDS, DRIVE_ASSIGNMENTS,
 )
 
 from src.google_clients import get_gspread_client, get_drive_service
@@ -185,10 +186,51 @@ def main():
             created_at = datetime.now(timezone.utc).isoformat()
 
             rows = [[k, sc, "", RUN_ID, str(KMEANS_K), created_at] for k, sc in zip(keys_new, sc_ids)]
+            # --------------------------------new cell ----------------------------------------------
 
-            print("DEBUG: About to append to ClusterAssignment_V2 rows =", len(rows))
-            append_rows_chunked(ws_assign, rows, chunk=120, sleep_s=3.0)
-            print("✅ Appended ClusterAssignment_V2:", len(rows))
+            print("DEBUG: About to persist cluster assignments rows =", len(rows))
+
+            # --- Load existing cluster_assignments.parquet (if exists) ---
+            assign_file_id = find_file_in_folder(drive, DRIVE_FOLDER_ID, DRIVE_ASSIGNMENTS)
+            if assign_file_id:
+                download_file(drive, assign_file_id, ASSIGN_PATH)
+                df_assign = pd.read_parquet(ASSIGN_PATH)
+                print("✅ Loaded cluster_assignments:", len(df_assign))
+            else:
+                df_assign = pd.DataFrame(columns=[
+                    "video_key",
+                    "semantic_clusterID",
+                    "semantic_cluster_label",
+                    "embedding_run_id",
+                    "kmeans_k",
+                    "created_at"
+                ])
+                print("🟡 No cluster_assignments found. Starting new.")
+
+            # Convert new rows -> dataframe
+            df_new = pd.DataFrame(rows, columns=[
+                "video_key",
+                "semantic_clusterID",
+                "semantic_cluster_label",
+                "embedding_run_id",
+                "kmeans_k",
+                "created_at"
+            ])
+
+            # Idempotency / dedupe:
+            # keep the most recent assignment per video_key (safe default)
+            df_assign = pd.concat([df_assign, df_new], ignore_index=True)
+            df_assign["created_at"] = df_assign["created_at"].astype(str)
+            df_assign = df_assign.sort_values("created_at")
+            df_assign = df_assign.drop_duplicates(subset=["video_key"], keep="last")
+
+            # Save + upload
+            df_assign.to_parquet(ASSIGN_PATH, index=False)
+            upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_ASSIGNMENTS, ASSIGN_PATH)
+            print("✅ cluster_assignments uploaded:", len(df_assign))
+
+            
+            # -----------------------------------new cell end -------------------------------------------
     else:
         print("🟢 No embeddings created today, skipping assignment step.")
 
