@@ -11,12 +11,12 @@ from src.config import (
     TAB_ASSIGN, TAB_SCORECARD,
     EMBED_MODEL, KMEANS_K,
     DRIVE_EMB_STORE, DRIVE_CENTROIDS,
-    DRIVE_EMB_STORE, DRIVE_CENTROIDS, DRIVE_ASSIGNMENTS,
+    DRIVE_ASSIGNMENTS
 )
 
 from src.google_clients import get_gspread_client, get_drive_service
 from src.drive_store import find_file_in_folder, download_file, upload_or_update
-from src.sheets_io import ws_to_df, append_rows_chunked
+from src.sheets_io import ws_to_df  # no more append_rows_chunked for assignments
 from src.embeddings import embed_texts
 from src.clustering import fit_centroids, assign_to_centroids
 
@@ -25,6 +25,7 @@ from src.feed_embeddings import stage_discovery_queue_daily, load_queue_from_dri
 
 EMB_STORE_PATH = "/tmp/embeddings_store.parquet"
 CENTROIDS_PATH = "/tmp/kmeans_centroids.parquet"
+ASSIGN_PATH = "/tmp/cluster_assignments.parquet"
 SCORE_SNAP_PATH = "/tmp/scorecard_snapshot.parquet"
 
 EMBED_DAILY_LIMIT = int(os.getenv("EMBED_DAILY_LIMIT", "50"))
@@ -43,27 +44,26 @@ def main():
     gc = get_gspread_client()
     sh = gc.open_by_key(SHEET_ID)
 
-    ws_assign = sh.worksheet(TAB_ASSIGN)
+    # Keep worksheet handles only for Scorecard (and TAB_ASSIGN remains UI-only now)
     ws_score = sh.worksheet(TAB_SCORECARD)
 
     drive = get_drive_service()
 
-    # Debug: list folder contents (keep until stable)
-    print("DEBUG: DRIVE_SNAPSHOTS_FOLDER_ID =", DRIVE_SNAPSHOTS_FOLDER_ID)
+    # Debug: list automation-data folder contents (keep until fully stable)
+    print("DEBUG: DRIVE_FOLDER_ID =", DRIVE_FOLDER_ID)
     try:
-        resp2 = drive.files().list(
-            q=f"'{DRIVE_SNAPSHOTS_FOLDER_ID}' in parents and trashed=false",
+        resp = drive.files().list(
+            q=f"'{DRIVE_FOLDER_ID}' in parents and trashed=false",
             supportsAllDrives=True,
             includeItemsFromAllDrives=True,
-            fields="files(id,name,modifiedTime)"
+            fields="files(id,name,size,modifiedTime)"
         ).execute()
-        files2 = resp2.get("files", [])
-        print(f"DEBUG: files in snapshots ({len(files2)}):")
-        for f in files2[:50]:
+        files = resp.get("files", [])
+        print(f"DEBUG: files in automation-data ({len(files)}):")
+        for f in files[:50]:
             print(" -", f.get("name"), "|", f.get("id"))
     except Exception as e:
-        print("DEBUG: snapshots list failed:", e)
-
+        print("DEBUG: folder list failed:", e)
 
     # --- Load embeddings_store (Drive Parquet) ---
     emb_file_id = find_file_in_folder(drive, DRIVE_FOLDER_ID, DRIVE_EMB_STORE)
@@ -172,7 +172,8 @@ def main():
         upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_CENTROIDS, CENTROIDS_PATH)
         print("✅ Centroids fit & uploaded:", len(centroids))
 
-    # --- Cluster assignment for newly embedded rows (only if centroids exist) ---
+    # --- Cluster assignment for newly embedded rows (write to Parquet) ---
+    assignments_appended = 0
     if embedded_today > 0:
         if centroids is None:
             print(f"🟡 Not enough embeddings to fit centroids yet. Need >= {KMEANS_K}, have {len(df_store)}.")
@@ -185,13 +186,12 @@ def main():
             sc_ids = [f"SC{int(i):03d}" for i in idx]
             created_at = datetime.now(timezone.utc).isoformat()
 
+            # Fill semantic_cluster_label with deterministic placeholder for now
             rows = [[k, sc, f"AUTO:{sc}", RUN_ID, str(KMEANS_K), created_at] for k, sc in zip(keys_new, sc_ids)]
-
-            # --------------------------------new cell ----------------------------------------------
+            assignments_appended = len(rows)
 
             print("DEBUG: About to persist cluster assignments rows =", len(rows))
 
-            # --- Load existing cluster_assignments.parquet (if exists) ---
             assign_file_id = find_file_in_folder(drive, DRIVE_FOLDER_ID, DRIVE_ASSIGNMENTS)
             if assign_file_id:
                 download_file(drive, assign_file_id, ASSIGN_PATH)
@@ -208,7 +208,6 @@ def main():
                 ])
                 print("🟡 No cluster_assignments found. Starting new.")
 
-            # Convert new rows -> dataframe
             df_new = pd.DataFrame(rows, columns=[
                 "video_key",
                 "semantic_clusterID",
@@ -218,20 +217,17 @@ def main():
                 "created_at"
             ])
 
-            # Idempotency / dedupe:
-            # keep the most recent assignment per video_key (safe default)
+            # Idempotency: keep latest assignment per video_key
             df_assign = pd.concat([df_assign, df_new], ignore_index=True)
+            df_assign["video_key"] = df_assign["video_key"].astype(str).str.strip()
             df_assign["created_at"] = df_assign["created_at"].astype(str)
+
             df_assign = df_assign.sort_values("created_at")
             df_assign = df_assign.drop_duplicates(subset=["video_key"], keep="last")
 
-            # Save + upload
             df_assign.to_parquet(ASSIGN_PATH, index=False)
             upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_ASSIGNMENTS, ASSIGN_PATH)
             print("✅ cluster_assignments uploaded:", len(df_assign))
-
-            
-            # -----------------------------------new cell end -------------------------------------------
     else:
         print("🟢 No embeddings created today, skipping assignment step.")
 
@@ -251,6 +247,7 @@ def main():
     print("SUMMARY:",
           f"staged_today={staged}",
           f"embedded_today={embedded_today}",
+          f"assignments_appended={assignments_appended}",
           f"queue_remaining={len(df_queue) if 'df_queue' in locals() else 'NA'}",
           f"store_total={len(df_store)}",
           f"centroids={'YES' if centroids is not None else 'NO'}")
