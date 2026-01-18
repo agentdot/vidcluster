@@ -1,32 +1,35 @@
 import time
-import sys, os, json
+import sys, os
 import pandas as pd
 from datetime import datetime, timezone
 
-from src.feed_embeddings import feed_embeddings_daily
 from googleapiclient.http import MediaFileUpload
-from googleapiclient.errors import HttpError
-
-QUEUE_PATH = "/tmp/discovery_queue.parquet"
 
 # Make sure src imports work when running as module
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from src.config import (
-    SHEET_ID, DRIVE_FOLDER_ID, OPENAI_API_KEY, DRIVE_SNAPSHOTS_FOLDER_ID,
-    TAB_EMB, TAB_ASSIGN, TAB_SCORECARD,
+    SHEET_ID, DRIVE_FOLDER_ID, DRIVE_SNAPSHOTS_FOLDER_ID, OPENAI_API_KEY,
+    TAB_ASSIGN, TAB_SCORECARD,
     EMBED_MODEL, KMEANS_K,
-    DRIVE_EMB_STORE, DRIVE_CENTROIDS
+    DRIVE_EMB_STORE, DRIVE_CENTROIDS,
+    DRIVE_DISCOVERY_QUEUE
 )
+
 from src.google_clients import get_gspread_client, get_drive_service
 from src.drive_store import find_file_in_folder, download_file
 from src.sheets_io import ws_to_df, append_rows_chunked
 from src.embeddings import embed_texts
 from src.clustering import fit_centroids, assign_to_centroids
 
+from src.feed_embeddings import stage_discovery_queue_daily, load_queue_from_drive, save_queue_to_drive
+
+
 EMB_STORE_PATH = "/tmp/embeddings_store.parquet"
 CENTROIDS_PATH = "/tmp/kmeans_centroids.parquet"
 SCORE_SNAP_PATH = "/tmp/scorecard_snapshot.parquet"
+
+EMBED_DAILY_LIMIT = int(os.getenv("EMBED_DAILY_LIMIT", "50"))
 
 
 def now_run_id():
@@ -66,38 +69,6 @@ def upload_or_update(drive_service, folder_id, file_name, local_path):
         return created.get("id")
 
 
-def set_cells_by_header(ws, header_row, row_idx_1based, updates: dict):
-    """
-    updates: { "col_name": value }
-    row_idx_1based includes header row as 1. (data row 2+)
-    """
-    col_map = {h.strip(): (i + 1) for i, h in enumerate(header_row) if h and str(h).strip()}
-
-    cells = []
-    for k, v in updates.items():
-        if k in col_map:
-            cells.append((row_idx_1based, col_map[k], v))
-
-    if not cells:
-        return
-
-    min_r = min(r for r, c, v in cells)
-    max_r = max(r for r, c, v in cells)
-    min_c = min(c for r, c, v in cells)
-    max_c = max(c for r, c, v in cells)
-
-    cell_list = ws.range(min_r, min_c, max_r, max_c)
-
-    # Fill only matching cells
-    lookup = {(r, c): v for r, c, v in cells}
-    for cell in cell_list:
-        key = (cell.row, cell.col)
-        if key in lookup:
-            cell.value = lookup[key]
-
-    ws.update_cells(cell_list, value_input_option="RAW")
-
-
 def main():
     RUN_ID = now_run_id()
     print("RUN_ID:", RUN_ID)
@@ -107,13 +78,12 @@ def main():
     gc = get_gspread_client()
     sh = gc.open_by_key(SHEET_ID)
 
-    ws_emb = sh.worksheet(TAB_EMB)
     ws_assign = sh.worksheet(TAB_ASSIGN)
     ws_score = sh.worksheet(TAB_SCORECARD)
 
     drive = get_drive_service()
 
-    # --- Load embedding store (parquet) ---
+    # --- Load embeddings_store (Drive Parquet) ---
     emb_file_id = find_file_in_folder(drive, DRIVE_FOLDER_ID, DRIVE_EMB_STORE)
     if emb_file_id:
         download_file(drive, emb_file_id, EMB_STORE_PATH)
@@ -123,11 +93,11 @@ def main():
         df_store = pd.DataFrame(columns=["video_key", "vector", "embedding_model", "created_at"])
         print("🟡 No embeddings_store found. Starting new.")
 
-    # Normalize df_store keys for dedupe safety
     if not df_store.empty and "video_key" in df_store.columns:
         df_store["video_key"] = df_store["video_key"].astype(str).str.strip()
+    store_keys = set(df_store["video_key"].astype(str)) if not df_store.empty else set()
 
-    # --- Load centroids (parquet) ---
+    # --- Load centroids (Drive Parquet) ---
     cent_file_id = find_file_in_folder(drive, DRIVE_FOLDER_ID, DRIVE_CENTROIDS)
     if cent_file_id:
         download_file(drive, cent_file_id, CENTROIDS_PATH)
@@ -137,7 +107,78 @@ def main():
         centroids = None
         print("🟡 No centroids found yet.")
 
-    # --- Pre-check: fit centroids if we already have enough embeddings but no centroids ---
+    # --- Stage discovery queue from QueryBank (Sheets) -> discovery_queue.parquet (Drive) ---
+    try:
+        staged = stage_discovery_queue_daily(
+            drive=drive,
+            folder_id=DRIVE_FOLDER_ID,
+            upload_or_update_fn=upload_or_update,
+            existing_store_keys=store_keys
+        )
+        print("FEEDER: new items staged into discovery_queue =", staged)
+    except Exception as e:
+        print("⚠️ FEEDER skipped due to error:", e)
+
+    # --- Load queue (Drive Parquet) and embed from it ---
+    df_queue = load_queue_from_drive(drive, DRIVE_FOLDER_ID)
+    if df_queue.empty:
+        print("🟢 Queue empty. Nothing to embed today.")
+        embedded_today = 0
+        newly_embedded_rows = []
+    else:
+        # Normalize + dedupe queue against store (safety)
+        df_queue["video_key"] = df_queue["video_key"].astype(str).str.strip()
+        df_queue = df_queue[~df_queue["video_key"].isin(store_keys)].copy()
+
+        take_n = min(EMBED_DAILY_LIMIT, len(df_queue))
+        work = df_queue.head(take_n).copy()
+
+        keys = work["video_key"].tolist()
+        texts = work["video_title"].fillna("").astype(str).tolist()
+
+        if take_n == 0:
+            print("🟢 Queue has only already-embedded keys. Nothing to embed.")
+            embedded_today = 0
+            newly_embedded_rows = []
+        else:
+            BATCH = 64
+            newly_embedded_rows = []
+            for i in range(0, len(keys), BATCH):
+                k_block = keys[i:i+BATCH]
+                t_block = texts[i:i+BATCH]
+
+                vecs = embed_texts(OPENAI_API_KEY, EMBED_MODEL, t_block)
+                ts = datetime.now(timezone.utc).isoformat()
+
+                for k, v in zip(k_block, vecs):
+                    newly_embedded_rows.append({
+                        "video_key": k,
+                        "vector": v,
+                        "embedding_model": EMBED_MODEL,
+                        "created_at": ts
+                    })
+
+                print(f"✅ Embedded batch {i//BATCH+1} ({len(k_block)})")
+                time.sleep(0.3)
+
+            # Append into embeddings_store
+            df_store = pd.concat([df_store, pd.DataFrame(newly_embedded_rows)], ignore_index=True)
+            df_store.to_parquet(EMB_STORE_PATH, index=False)
+            upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_EMB_STORE, EMB_STORE_PATH)
+            print("✅ embeddings_store uploaded:", len(df_store))
+
+            embedded_today = len(newly_embedded_rows)
+
+            # Remove processed from queue and save back
+            processed_keys = set([r["video_key"] for r in newly_embedded_rows])
+            df_queue = df_queue[~df_queue["video_key"].isin(processed_keys)].copy()
+            save_queue_to_drive(drive, DRIVE_FOLDER_ID, upload_or_update, df_queue)
+            print(f"✅ Queue updated (removed {len(processed_keys)} processed). Remaining:", len(df_queue))
+
+            # update store_keys
+            store_keys.update(processed_keys)
+
+    # --- Fit centroids if missing and enough embeddings ---
     if centroids is None and len(df_store) >= KMEANS_K:
         print(f"🟢 Enough embeddings available ({len(df_store)}) to fit centroids (k={KMEANS_K}).")
         centroids = fit_centroids(df_store, k=KMEANS_K)
@@ -145,134 +186,29 @@ def main():
         upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_CENTROIDS, CENTROIDS_PATH)
         print("✅ Centroids fit & uploaded:", len(centroids))
 
-    try:
-        fed = feed_embeddings_daily()
-        print("FEEDER: new rows staged =", fed)
-    except Exception as e:
-        print("⚠️ FEEDER skipped due to error:", e)
-
-
-    # --- Read Embeddings_V2_UNIQUE from sheet ---
-    df_embtab = ws_to_df(ws_emb)
-    if df_embtab.empty:
-        print("❌ Embeddings_V2_UNIQUE is empty.")
-        return
-
-    # Ensure required columns exist (safety)
-    required_cols = ["video_key", "video title", "status", "embedding_model", "embedding_run_id", "kmeans_k", "created_at"]
-    for col in required_cols:
-        if col not in df_embtab.columns:
-            df_embtab[col] = ""
-
-    df_embtab["video_key"] = df_embtab["video_key"].astype(str).str.strip()
-    df_embtab["status"] = df_embtab["status"].fillna("").astype(str).str.strip()
-
-    # ✅ PENDING RULE:
-    # pending = (status is blank OR status == PENDING) AND video_key not blank
-    pending = df_embtab[
-        (df_embtab["video_key"] != "") &
-        ((df_embtab["status"] == "") | (df_embtab["status"].str.upper() == "PENDING"))
-    ].copy()
-
-    # Skip ones already in store
-    existing_keys = set(df_store["video_key"].astype(str)) if not df_store.empty else set()
-    pending = pending[~pending["video_key"].isin(existing_keys)].copy()
-
-    print("Pending rows to embed (by blank/PENDING status AND not already embedded):", len(pending))
-
-    new_rows = []
-
-    if not pending.empty:
-        keys = pending["video_key"].tolist()
-        texts = pending["video title"].fillna("").astype(str).tolist()
-
-        BATCH = 64
-        for i in range(0, len(keys), BATCH):
-            k_block = keys[i:i + BATCH]
-            t_block = texts[i:i + BATCH]
-
-            vecs = embed_texts(OPENAI_API_KEY, EMBED_MODEL, t_block)
-            ts = datetime.now(timezone.utc).isoformat()
-
-            for k, v in zip(k_block, vecs):
-                new_rows.append({
-                    "video_key": k,
-                    "vector": v,
-                    "embedding_model": EMBED_MODEL,
-                    "created_at": ts
-                })
-
-            print(f"✅ Embedded batch {i // BATCH + 1} ({len(k_block)})")
-            time.sleep(0.3)
-
-        # Update local store
-        df_store = pd.concat([df_store, pd.DataFrame(new_rows)], ignore_index=True)
-        df_store.to_parquet(EMB_STORE_PATH, index=False)
-
-        # Upload store to Drive
-        upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_EMB_STORE, EMB_STORE_PATH)
-        print("✅ embeddings_store uploaded:", len(df_store))
-
-        # Write back to sheet: mark DONE + metadata
-        header = ws_emb.row_values(1)
-
-        # Map video_key -> row number in sheet (row 2 corresponds to df index 0)
-        key_to_row = {}
-        for i, vk in enumerate(df_embtab["video_key"].tolist(), start=2):
-            if vk and vk not in key_to_row:
-                key_to_row[vk] = i
-
-        now_iso = datetime.now(timezone.utc).isoformat()
-        updated_count = 0
-        for vk in [r["video_key"] for r in new_rows]:
-            rnum = key_to_row.get(vk)
-            if not rnum:
-                continue
-            set_cells_by_header(ws_emb, header, rnum, {
-                "embedding_model": EMBED_MODEL,
-                "embedding_run_id": RUN_ID,
-                "kmeans_k": str(KMEANS_K),
-                "created_at": now_iso,
-                "status": "DONE"
-            })
-            updated_count += 1
-
-        print("✅ Updated Embeddings_V2_UNIQUE rows to DONE:", updated_count)
-
-        # Fit centroids if still missing AND enough embeddings
+    # --- Cluster assignment for newly embedded rows (only if centroids exist) ---
+    if embedded_today > 0:
         if centroids is None:
-            if len(df_store) < KMEANS_K:
-                print(f"🟡 Not enough embeddings to fit centroids yet. Need >= {KMEANS_K}, have {len(df_store)}.")
-                print("🟡 Skipping centroid fit + cluster assignment for now.")
-            else:
-                centroids = fit_centroids(df_store, k=KMEANS_K)
-                centroids.to_parquet(CENTROIDS_PATH, index=False)
-                upload_or_update(drive, DRIVE_FOLDER_ID, DRIVE_CENTROIDS, CENTROIDS_PATH)
-                print("✅ Centroids fit & uploaded:", len(centroids))
-
-        # Assign clusters ONLY if centroids exist
-        if centroids is None:
-            print("🟡 Skipping cluster assignment because centroids are not available yet.")
+            print(f"🟡 Not enough embeddings to fit centroids yet. Need >= {KMEANS_K}, have {len(df_store)}.")
+            print("🟡 Skipping cluster assignment for now.")
         else:
-            vectors = [r["vector"] for r in new_rows]
-            keys_new = [r["video_key"] for r in new_rows]
+            vectors = [r["vector"] for r in newly_embedded_rows]
+            keys_new = [r["video_key"] for r in newly_embedded_rows]
 
             idx = assign_to_centroids(vectors, centroids)
             sc_ids = [f"SC{int(i):03d}" for i in idx]
             created_at = datetime.now(timezone.utc).isoformat()
 
-            # Adjust to match ClusterAssignment_V2 schema:
-            # video_key | semantic_clusterID | semantic_cluster_label | embedding_run_id | kmeans_k | created_at
+            # Schema: video_key | semantic_clusterID | semantic_cluster_label | embedding_run_id | kmeans_k | created_at
             rows = [[k, sc, "", RUN_ID, str(KMEANS_K), created_at] for k, sc in zip(keys_new, sc_ids)]
 
             print("DEBUG: About to append to ClusterAssignment_V2 rows =", len(rows))
             append_rows_chunked(ws_assign, rows, chunk=120, sleep_s=3.0)
             print("✅ Appended ClusterAssignment_V2:", len(rows))
-
     else:
-        print("🟢 Nothing to embed today (no blank/PENDING rows not already embedded).")
+        print("🟢 No embeddings created today, skipping assignment step.")
 
-    # --- Scorecard snapshot always ---
+    # --- Scorecard snapshot always (to snapshots folder) ---
     df_score = ws_to_df(ws_score)
     df_score["run_id"] = RUN_ID
     df_score["run_date"] = datetime.now(timezone.utc).date().isoformat()
@@ -284,6 +220,14 @@ def main():
         print("✅ Scorecard snapshot uploaded:", snap_name, "| rows:", len(df_score))
     except Exception as e:
         print("⚠️ Scorecard drive upload skipped:", e)
+
+    # --- End-of-run summary (tiny but high value) ---
+    print("SUMMARY:",
+          f"staged_today={locals().get('staged', 0)}",
+          f"embedded_today={embedded_today}",
+          f"queue_remaining={len(df_queue) if 'df_queue' in locals() else 'NA'}",
+          f"store_total={len(df_store)}",
+          f"centroids={'YES' if centroids is not None else 'NO'}")
 
 
 if __name__ == "__main__":
