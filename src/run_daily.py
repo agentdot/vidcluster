@@ -185,7 +185,8 @@ def main():
             sc_ids = [f"SC{int(i):03d}" for i in idx]
             created_at = datetime.now(timezone.utc).isoformat()
 
-            rows = [[k, sc, "", RUN_ID, str(KMEANS_K), created_at] for k, sc in zip(keys_new, sc_ids)]
+            rows = [[k, sc, f"AUTO:{sc}", RUN_ID, str(KMEANS_K), created_at] for k, sc in zip(keys_new, sc_ids)]
+
             # --------------------------------new cell ----------------------------------------------
 
             print("DEBUG: About to persist cluster assignments rows =", len(rows))
