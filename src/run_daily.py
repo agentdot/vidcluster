@@ -256,7 +256,10 @@ def main():
 if __name__ == "__main__":
     main()
 
+from src.compute_cluster_stats import main as compute_cluster_stats
 from src.materialize_videolookup import main as materialize_videolookup
 
+compute_cluster_stats()
 materialize_videolookup()
+
 
