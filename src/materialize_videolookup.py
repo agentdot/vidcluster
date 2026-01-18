@@ -27,6 +27,23 @@ TITLE_FETCH_LIMIT = int(os.environ.get("TITLE_FETCH_LIMIT", "300"))         # pe
 
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY", "").strip()
 
+DRIVE_CLUSTER_STATS = os.environ.get("DRIVE_CLUSTER_STATS", "cluster_stats.parquet")
+CLUSTER_STATS_PATH = "/tmp/cluster_stats.parquet"
+
+
+df_stats = load_parquet_from_drive(drive, DRIVE_FOLDER_ID, DRIVE_CLUSTER_STATS, CLUSTER_STATS_PATH)
+
+if not df_stats.empty:
+    df_vl = df_vl.merge(
+        df_stats[["semantic_clusterID", "V8_State", "OpportunityScore", "Momentum_Label", "ConfidenceBand"]],
+        on="semantic_clusterID",
+        how="left"
+    )
+else:
+    df_vl["V8_State"] = ""
+    df_vl["OpportunityScore"] = ""
+    df_vl["Momentum_Label"] = ""
+    df_vl["ConfidenceBand"] = ""
 
 def utc_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -202,14 +219,23 @@ def main():
         "video_title": df_join.get("video_title", ""),
         "semantic_clusterID": df_join["semantic_clusterID"],
         "semantic_cluster_label": df_join["semantic_cluster_label"],  # currently AUTO:SCxxx
-        "V8_State": "",               # placeholder (ESTABLISHED/EMERGING/WATCHLIST later)
-        "OpportunityScore": "",       # placeholder (later)
-        "Momentum_Label": "",         # placeholder (later)
-        "ConfidenceBand": "",         # placeholder (later)
         "embedding_run_id": df_join["embedding_run_id"],
         "kmeans_k": df_join["kmeans_k"],
         "created_at": df_join["created_at"],
     })
+
+    df_vl = df_vl.merge(
+        df_stats[[
+            "semantic_clusterID",
+            "V8_State",
+            "OpportunityScore",
+            "Momentum_Label",
+            "ConfidenceBand"
+        ]],
+        on="semantic_clusterID",
+        how="left"
+    )
+
 
     # Sort recent first and cap rows to keep Sheets small
     df_vl = df_vl.sort_values("created_at", ascending=False).head(VIDEOLOOKUP_MAX_ROWS).copy()
