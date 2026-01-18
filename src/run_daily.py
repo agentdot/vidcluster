@@ -83,6 +83,22 @@ def main():
 
     drive = get_drive_service()
 
+    print("DEBUG: DRIVE_FOLDER_ID =", DRIVE_FOLDER_ID)
+    try:
+        resp = drive.files().list(
+            q=f"'{DRIVE_FOLDER_ID}' in parents and trashed=false",
+            supportsAllDrives=True,
+            includeItemsFromAllDrives=True,
+            fields="files(id,name,size,modifiedTime)"
+        ).execute()
+        files = resp.get("files", [])
+        print(f"DEBUG: files in automation-data ({len(files)}):")
+        for f in files[:50]:
+            print(" -", f.get("name"), "|", f.get("id"))
+    except Exception as e:
+        print("DEBUG: folder list failed:", e)
+
+
     # --- Load embeddings_store (Drive Parquet) ---
     emb_file_id = find_file_in_folder(drive, DRIVE_FOLDER_ID, DRIVE_EMB_STORE)
     if emb_file_id:
