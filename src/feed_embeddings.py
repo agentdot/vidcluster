@@ -4,23 +4,27 @@ from typing import List, Dict
 
 import pandas as pd
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 from src.config import SHEET_ID, TAB_QUERYBANK, DRIVE_DISCOVERY_QUEUE
 from src.google_clients import get_gspread_client
 from src.sheets_io import ws_to_df
 from src.drive_store import find_file_in_folder, download_file
-from googleapiclient.errors import HttpError
 
 
+# -----------------------------
 # Guardrails
+# -----------------------------
 FEED_DAILY_LIMIT = int(os.getenv("FEED_DAILY_LIMIT", "50"))
 PER_QUERY_LIMIT = int(os.getenv("PER_QUERY_LIMIT", "15"))
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "").strip()
 
 QUEUE_PATH = "/tmp/discovery_queue.parquet"
 
+
 class QuotaExceeded(Exception):
     pass
+
 
 def _utc_now():
     return datetime.now(timezone.utc)
@@ -65,6 +69,17 @@ def _normalize_safe_search(s: str) -> str:
     return "none"
 
 
+def _priority_to_num(p: str) -> int:
+    v = str(p or "").strip().upper()
+    if v == "HIGH":
+        return 3
+    if v == "MEDIUM":
+        return 2
+    if v == "LOW":
+        return 1
+    return _parse_int(p, 0)
+
+
 def _youtube_client(api_key: str):
     return build("youtube", "v3", developerKey=api_key, cache_discovery=False)
 
@@ -101,14 +116,13 @@ def _search_video_ids(
     try:
         resp = req.execute()
     except HttpError as e:
-        # Quota exceeded -> stop feeder for this run (let embeddings still run)
         if e.resp is not None and getattr(e.resp, "status", None) == 403:
             msg = str(e).lower()
             if "quotaexceeded" in msg or "exceeded your" in msg:
                 raise QuotaExceeded("YouTube API quota exceeded")
         raise
 
-    out = []
+    out: List[str] = []
     seen = set()
     for item in resp.get("items", []):
         vid = (((item.get("id") or {}).get("videoId")) or "").strip()
@@ -127,11 +141,18 @@ def _fetch_titles(yt, video_ids: List[str]) -> Dict[str, str]:
         return out
 
     for i in range(0, len(video_ids), 50):
-        batch = video_ids[i:i+50]
-        resp = yt.videos().list(
-            part="snippet",
-            id=",".join(batch)
-        ).execute()
+        batch = video_ids[i:i + 50]
+        try:
+            resp = yt.videos().list(
+                part="snippet",
+                id=",".join(batch)
+            ).execute()
+        except HttpError as e:
+            if e.resp is not None and getattr(e.resp, "status", None) == 403:
+                msg = str(e).lower()
+                if "quotaexceeded" in msg or "exceeded your" in msg:
+                    raise QuotaExceeded("YouTube API quota exceeded")
+            raise
 
         for item in resp.get("items", []):
             vid = (item.get("id") or "").strip()
@@ -190,8 +211,10 @@ def stage_discovery_queue_daily(
         return 0
 
     # Ensure expected columns exist
-    needed_cols = ["query_id", "query_text", "region", "language", "published_after_days",
-                   "max_results", "order", "safe_search", "active", "priority"]
+    needed_cols = [
+        "query_id", "query_text", "region", "language", "published_after_days",
+        "max_results", "order", "safe_search", "active", "priority"
+    ]
     for c in needed_cols:
         if c not in df_qb.columns:
             df_qb[c] = ""
@@ -202,21 +225,11 @@ def stage_discovery_queue_daily(
         print("🟡 Feeder: No ACTIVE queries.")
         return 0
 
-    # Priority sort
-    def _priority_to_num(p: str) -> int:
-        v = str(p or "").strip().upper()
-        if v == "HIGH":
-            return 3
-        if v == "MEDIUM":
-            return 2
-        if v == "LOW":
-            return 1
-        return _parse_int(p, 0)
-
+    # Priority sort (HIGH/MEDIUM/LOW supported)
     active["priority_num"] = active["priority"].apply(_priority_to_num)
     active = active.sort_values(["priority_num"], ascending=False)
 
-
+    # Load existing queue + dedupe set
     df_queue = load_queue_from_drive(drive, folder_id)
     queue_keys = set(df_queue["video_key"].fillna("").astype(str).str.strip())
 
@@ -241,7 +254,6 @@ def stage_discovery_queue_daily(
         published_after_days = _parse_int(r.get("published_after_days"), 365)
         max_results_cfg = _parse_int(r.get("max_results"), PER_QUERY_LIMIT)
         per_query = min(PER_QUERY_LIMIT, max_results_cfg, FEED_DAILY_LIMIT - staged_count)
-        
         if per_query <= 0:
             continue
 
@@ -265,11 +277,19 @@ def stage_discovery_queue_daily(
             break
 
         # Dedupe
-        video_ids = [vid for vid in video_ids if vid not in existing_store_keys and vid not in queue_keys]
+        video_ids = [
+            vid for vid in video_ids
+            if vid not in existing_store_keys and vid not in queue_keys
+        ]
         if not video_ids:
             continue
 
-        titles = _fetch_titles(yt, video_ids)
+        # Titles
+        try:
+            titles = _fetch_titles(yt, video_ids)
+        except QuotaExceeded as qe:
+            print(f"🟡 Feeder stopped during title fetch: {qe}")
+            break
 
         for vid in video_ids:
             title = titles.get(vid, "").strip()
@@ -290,9 +310,12 @@ def stage_discovery_queue_daily(
 
     if staged_count == 0:
         print("🟢 Feeder: 0 new videos staged (deduped or no results).")
+        print(f"FEEDER SUMMARY: staged={staged_count} remaining_daily={FEED_DAILY_LIMIT - staged_count}")
         return 0
 
     df_queue = pd.concat([df_queue, pd.DataFrame(staged_rows)], ignore_index=True)
     save_queue_to_drive(drive, folder_id, upload_or_update_fn, df_queue)
+
     print(f"✅ Feeder staged {staged_count} new items into {DRIVE_DISCOVERY_QUEUE} (Drive).")
+    print(f"FEEDER SUMMARY: staged={staged_count} remaining_daily={FEED_DAILY_LIMIT - staged_count}")
     return staged_count
