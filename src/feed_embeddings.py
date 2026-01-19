@@ -104,7 +104,7 @@ def _search_video_ids(
         # Quota exceeded -> stop feeder for this run (let embeddings still run)
         if e.resp is not None and getattr(e.resp, "status", None) == 403:
             msg = str(e).lower()
-            if "quota" in msg:
+            if "quotaexceeded" in msg or "exceeded your" in msg:
                 raise QuotaExceeded("YouTube API quota exceeded")
         raise
 
@@ -203,9 +203,19 @@ def stage_discovery_queue_daily(
         return 0
 
     # Priority sort
-    if "priority" in active.columns:
-        active["priority_num"] = active["priority"].apply(lambda x: _parse_int(x, 0))
-        active = active.sort_values(["priority_num"], ascending=False)
+    def _priority_to_num(p: str) -> int:
+        v = str(p or "").strip().upper()
+        if v == "HIGH":
+            return 3
+        if v == "MEDIUM":
+            return 2
+        if v == "LOW":
+            return 1
+        return _parse_int(p, 0)
+
+    active["priority_num"] = active["priority"].apply(_priority_to_num)
+    active = active.sort_values(["priority_num"], ascending=False)
+
 
     df_queue = load_queue_from_drive(drive, folder_id)
     queue_keys = set(df_queue["video_key"].fillna("").astype(str).str.strip())
@@ -216,7 +226,7 @@ def stage_discovery_queue_daily(
     staged_count = 0
 
     for _, r in active.iterrows():
-        if staged_count >= FEED_DAILY_LIMIT:
+        if FEED_DAILY_LIMIT - staged_count <= 0:
             break
 
         query_id = str(r.get("query_id") or "").strip()
@@ -231,6 +241,7 @@ def stage_discovery_queue_daily(
         published_after_days = _parse_int(r.get("published_after_days"), 365)
         max_results_cfg = _parse_int(r.get("max_results"), PER_QUERY_LIMIT)
         per_query = min(PER_QUERY_LIMIT, max_results_cfg, FEED_DAILY_LIMIT - staged_count)
+        
         if per_query <= 0:
             continue
 
