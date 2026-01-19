@@ -9,6 +9,7 @@ from src.config import SHEET_ID, TAB_QUERYBANK, DRIVE_DISCOVERY_QUEUE
 from src.google_clients import get_gspread_client
 from src.sheets_io import ws_to_df
 from src.drive_store import find_file_in_folder, download_file
+from googleapiclient.errors import HttpError
 
 
 # Guardrails
@@ -18,6 +19,8 @@ YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "").strip()
 
 QUEUE_PATH = "/tmp/discovery_queue.parquet"
 
+class QuotaExceeded(Exception):
+    pass
 
 def _utc_now():
     return datetime.now(timezone.utc)
@@ -89,13 +92,21 @@ def _search_video_ids(
         publishedAfter=published_after,
     )
 
-    # Optional filters (YouTube Data API uses query params)
+    # Optional filters (must be set BEFORE execute)
     if region_code:
         req.uri += f"&regionCode={region_code}"
     if relevance_language:
         req.uri += f"&relevanceLanguage={relevance_language}"
 
-    resp = req.execute()
+    try:
+        resp = req.execute()
+    except HttpError as e:
+        # Quota exceeded -> stop feeder for this run (let embeddings still run)
+        if e.resp is not None and getattr(e.resp, "status", None) == 403:
+            msg = str(e).lower()
+            if "quota" in msg:
+                raise QuotaExceeded("YouTube API quota exceeded")
+        raise
 
     out = []
     seen = set()
