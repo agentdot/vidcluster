@@ -258,8 +258,8 @@ def main():
     
     compute_cluster_stats()
     materialize_videolookup()
-    materialize_videolookup()
-
+    materialize_clusterlookup()
+    
 if __name__ == "__main__":
     main()
 
