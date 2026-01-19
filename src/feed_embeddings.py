@@ -238,16 +238,20 @@ def stage_discovery_queue_daily(
         safe_search = _normalize_safe_search(r.get("safe_search"))
 
         # Discover
-        video_ids = _search_video_ids(
-            yt=yt,
-            q=query_text,
-            region_code=region_code,
-            relevance_language=relevance_language,
-            published_after_days=published_after_days,
-            order=order,
-            safe_search=safe_search,
-            max_needed=per_query
-        )
+        try:
+            video_ids = _search_video_ids(
+                yt=yt,
+                q=query_text,
+                region_code=region_code,
+                relevance_language=relevance_language,
+                published_after_days=published_after_days,
+                order=order,
+                safe_search=safe_search,
+                max_needed=per_query
+            )
+        except QuotaExceeded as qe:
+            print(f"🟡 Feeder stopped: {qe}")
+            break
 
         # Dedupe
         video_ids = [vid for vid in video_ids if vid not in existing_store_keys and vid not in queue_keys]
