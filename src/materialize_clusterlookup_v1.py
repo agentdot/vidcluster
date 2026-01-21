@@ -1,6 +1,5 @@
 import os
 import re
-import math
 import sys
 import pandas as pd
 from datetime import datetime, timezone
@@ -33,15 +32,11 @@ CLUSTERLOOKUP_MAX_ROWS = int(os.environ.get("CLUSTERLOOKUP_MAX_ROWS", "5000"))
 REP_TITLES_N = int(os.environ.get("REP_TITLES_N", "5"))
 TITLE_POOL_N = int(os.environ.get("TITLE_POOL_N", "50"))
 
-TAB_CLUSTERLOOKUP = "ClusterLookup"
-DRIVE_CLUSTER_LOOKUP = "cluster_lookup.parquet"
-
-
 # Simple stopwords for deterministic title extraction
 STOPWORDS = {
-    "the","a","an","and","or","to","of","in","on","for","with","at","by","from","is","are","was","were",
-    "how","what","why","when","where","who","this","that","these","those","you","your","i","my","we","our",
-    "it","its","as","be","can","will","just","vs","new","best","top","2024","2025","2026"
+    "the", "a", "an", "and", "or", "to", "of", "in", "on", "for", "with", "at", "by", "from", "is", "are", "was", "were",
+    "how", "what", "why", "when", "where", "who", "this", "that", "these", "those", "you", "your", "i", "my", "we", "our",
+    "it", "its", "as", "be", "can", "will", "just", "vs", "new", "best", "top", "2024", "2025", "2026"
 }
 
 TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
@@ -112,8 +107,8 @@ def _top_phrases(titles: List[str]) -> Tuple[str, str]:
     - count unigrams and bigrams across titles
     - return (best_bigram, best_unigram)
     """
-    unigram = {}
-    bigram = {}
+    unigram: Dict[str, int] = {}
+    bigram: Dict[str, int] = {}
 
     for title in titles:
         toks = _tokenize(title)
@@ -134,14 +129,14 @@ def _top_phrases(titles: List[str]) -> Tuple[str, str]:
     return best_bigram.strip(), best_unigram.strip()
 
 
-def _make_cluster_title(rep_titles: List[str]) -> str:
+def _make_cluster_title(rep_titles: List[str], fallback_scid: str) -> str:
     """
     Build a short, human-ish title from representative titles.
     No LLM, no hallucinations.
     """
     rep_titles = [t.strip() for t in rep_titles if str(t or "").strip()]
     if not rep_titles:
-        return ""
+        return fallback_scid  # stable fallback like "SC012"
 
     b, u = _top_phrases(rep_titles)
     if b and u and u not in b:
@@ -151,12 +146,9 @@ def _make_cluster_title(rep_titles: List[str]) -> str:
     elif u:
         title = u
     else:
-        # fallback: first title trimmed
         title = rep_titles[0]
 
-    title = title.strip()
-    # small cleanup
-    title = re.sub(r"\s+", " ", title)
+    title = re.sub(r"\s+", " ", title.strip())
     return title[:80]
 
 
@@ -165,7 +157,6 @@ def _action_and_why(v8_state: str, momentum: str, conf: str, n7: int, n30: int, 
     momentum = (momentum or "").strip().upper()
     conf = (conf or "").strip().upper()
 
-    # Action
     if v8_state == "ESTABLISHED" and conf == "HIGH":
         action = "Scale production"
     elif v8_state == "ESTABLISHED":
@@ -177,7 +168,6 @@ def _action_and_why(v8_state: str, momentum: str, conf: str, n7: int, n30: int, 
     else:
         action = "Ignore for now"
 
-    # Why (short)
     why = f"{momentum} momentum; {conf} confidence; 7d={n7} 30d={n30}; score={round(float(score or 0.0), 1)}"
     return action, why
 
@@ -191,7 +181,6 @@ def main():
     sh = gc.open_by_key(SHEET_ID)
     ws = get_or_create_worksheet(sh, TAB_CLUSTERLOOKUP)
 
-    # Load required parquet artifacts
     df_stats = load_parquet_from_drive(drive, DRIVE_FOLDER_ID, DRIVE_CLUSTER_STATS, STATS_PATH)
     df_assign = load_parquet_from_drive(drive, DRIVE_FOLDER_ID, DRIVE_ASSIGNMENTS, ASSIGN_PATH)
     df_meta = load_parquet_from_drive(drive, DRIVE_FOLDER_ID, DRIVE_VIDEO_META, META_PATH)
@@ -202,30 +191,30 @@ def main():
         return
 
     # Normalize stats schema
-    for c in [
+    needed_stats = [
         "semantic_clusterID", "n_total", "n_7d", "n_30d", "last_seen",
         "momentum_ratio", "Momentum_Label", "ConfidenceBand",
         "OpportunityScore", "V8_State", "run_ts"
-    ]:
+    ]
+    for c in needed_stats:
         if c not in df_stats.columns:
             df_stats[c] = ""
 
     df_stats["semantic_clusterID"] = df_stats["semantic_clusterID"].astype(str).str.strip()
 
-    # Prepare assignment -> titles mapping
-    # (Assignments may be empty early; handle gracefully)
+    # Build representative titles map
     rep_titles_map: Dict[str, List[str]] = {}
 
     if not df_assign.empty:
         for c in ["semantic_clusterID", "video_key", "created_at"]:
             if c not in df_assign.columns:
                 df_assign[c] = ""
+
         df_assign["semantic_clusterID"] = df_assign["semantic_clusterID"].astype(str).str.strip()
         df_assign["video_key"] = df_assign["video_key"].astype(str).str.strip()
         df_assign["created_at_ts"] = parse_ts(df_assign["created_at"])
         df_assign = df_assign.dropna(subset=["created_at_ts"]).copy()
 
-        # Join titles from meta if available
         if df_meta.empty:
             df_assign["video_title"] = ""
         else:
@@ -234,13 +223,13 @@ def main():
                     df_meta[c] = ""
             df_meta["video_key"] = df_meta["video_key"].astype(str).str.strip()
             df_meta["video_title"] = df_meta["video_title"].astype(str)
+
             df_assign = df_assign.merge(
                 df_meta[["video_key", "video_title"]],
                 on="video_key",
                 how="left"
             )
 
-        # For each cluster: take recent TITLE_POOL_N titles, then select REP_TITLES_N distinct
         df_assign = df_assign.sort_values("created_at_ts", ascending=False)
 
         for scid, sub in df_assign.groupby("semantic_clusterID"):
@@ -248,7 +237,6 @@ def main():
             titles = [t.strip() for t in titles if t.strip()]
             titles = titles[:TITLE_POOL_N]
 
-            # distinct-preserving
             seen = set()
             rep = []
             for t in titles:
@@ -258,11 +246,12 @@ def main():
                 rep.append(t)
                 if len(rep) >= REP_TITLES_N:
                     break
+
             rep_titles_map[scid] = rep
 
-    # Build ClusterLookup rows
+    # Build output rows
     rows = []
-    run_id = os.getenv("GITHUB_SHA", "")[:8]  # short trace (optional)
+    run_id = os.getenv("GITHUB_SHA", "")[:8]
     run_date = datetime.now(timezone.utc).date().isoformat()
 
     for _, r in df_stats.iterrows():
@@ -273,9 +262,9 @@ def main():
         rep_titles = rep_titles_map.get(scid, [])
         rep_join = " | ".join(rep_titles) if rep_titles else ""
 
-        cluster_title = _make_cluster_title(rep_titles) if rep_titles else ""
-        topic_human = ""  # placeholder for future manual override layer
-        title_source = "AUTO_TITLES"
+        cluster_title = _make_cluster_title(rep_titles, fallback_scid=scid)
+        topic_human = ""  # future manual override layer
+        title_source = "AUTO_TITLES" if rep_titles else "FALLBACK_SCID"
 
         n_total = int(r.get("n_total") or 0)
         n7 = int(r.get("n_7d") or 0)
@@ -297,23 +286,17 @@ def main():
             "Topic_Human": topic_human,
             "Title_Source": title_source,
             "Representative_Titles": rep_join,
-
             "n_total": n_total,
             "n_7d": n7,
             "n_30d": n30,
             "last_seen": last_seen,
-
             "momentum_ratio": momentum_ratio,
             "Momentum_Label": momentum_label,
             "ConfidenceBand": conf_band,
             "OpportunityScore": opp,
             "V8_State": v8,
-
-            # rank later
-            "Rank_Opportunity": None,
             "Action": action,
             "Why_Short": why,
-
             "run_id": run_id,
             "run_date": run_date,
             "run_ts": run_ts,
@@ -330,10 +313,10 @@ def main():
     df_out = df_out.sort_values("OpportunityScore", ascending=False).copy()
     df_out["Rank_Opportunity"] = df_out["OpportunityScore"].rank(method="dense", ascending=False).astype(int)
 
-    # Cap (keep Sheets small)
+    # Cap rows
     df_out = df_out.head(CLUSTERLOOKUP_MAX_ROWS).copy()
 
-    # Enforce canonical column order
+    # Column order
     col_order = [
         "semantic_clusterID",
         "Cluster_Title",
