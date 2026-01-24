@@ -18,7 +18,9 @@ const ClusterCard = () => {
       <div className="relative glass rounded-xl p-6 animate-float">
         <div className="flex items-center gap-2 mb-6">
           <div className="w-2 h-2 rounded-full bg-aqua animate-pulse" />
-          <span className="text-sm font-medium text-foreground">Cluster Viability Overview</span>
+          <span className="text-sm font-medium text-foreground">
+            Cluster Viability Overview
+          </span>
         </div>
 
         <div className="space-y-4">
@@ -30,8 +32,12 @@ const ClusterCard = () => {
             >
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">{cluster.name}</span>
-                  <span className="text-xs font-medium text-foreground">{cluster.score}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {cluster.name}
+                  </span>
+                  <span className="text-xs font-medium text-foreground">
+                    {cluster.score}
+                  </span>
                 </div>
                 <div className="h-2 bg-secondary rounded-full overflow-hidden">
                   <div
@@ -40,6 +46,7 @@ const ClusterCard = () => {
                   />
                 </div>
               </div>
+
               <span
                 className={`px-2 py-0.5 text-[10px] font-bold rounded ${
                   cluster.status === "SCALE"
@@ -97,7 +104,8 @@ const Hero = () => {
               className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0 animate-slide-up"
               style={{ animationDelay: "0.2s" }}
             >
-              VidCluster tracks YouTube topics that are quietly gaining momentum before they become crowded.
+              VidCluster tracks YouTube topics that are quietly gaining momentum
+              before they become crowded.
             </p>
 
             {/* CTAs */}
@@ -105,37 +113,35 @@ const Hero = () => {
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6 animate-slide-up relative z-10"
               style={{ animationDelay: "0.3s" }}
             >
-              <Button 
-                variant="gradient" 
-                size="lg" 
-                className="glow"
-                onClick={() => {
-                  // Optional: Add console.log('Button clicked') here for debugging
-                  window.open("https://forms.gle/XDLWLci5i9w8jmE29", "_blank", "noopener,noreferrer");
-                }}
+              {/* Waitlist form link */}
+              <a
+                href="https://forms.gle/XDLWLci5i9w8jmE29"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block"
               >
-                Join the waitlist
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+                <Button variant="gradient" size="lg" className="glow">
+                  Join the waitlist
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </a>
             </div>
-
-              {/* Optional second button example */}
-              {/* <Button variant="outline" size="lg">
-                Learn more
-              </Button> */}
-           
 
             {/* Trust Line */}
             <p
               className="text-xs text-muted-foreground animate-slide-up"
               style={{ animationDelay: "0.4s" }}
             >
-              We’re running a private experiment and sharing early signals publicly.
+              We’re running a private experiment and sharing early signals
+              publicly.
             </p>
           </div>
 
           {/* Right Column - Mock Dashboard */}
-          <div className="lg:pl-8 animate-slide-up" style={{ animationDelay: "0.5s" }}>
+          <div
+            className="lg:pl-8 animate-slide-up"
+            style={{ animationDelay: "0.5s" }}
+          >
             <ClusterCard />
           </div>
         </div>
