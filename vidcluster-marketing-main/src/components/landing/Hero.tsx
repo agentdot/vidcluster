@@ -110,7 +110,7 @@ const Hero = () => {
               className="text-xs text-muted-foreground animate-slide-up"
               style={{ animationDelay: "0.4s" }}
             >
-              We’re running a private experiment and publishing what we see publicly.
+              We’re running a private experiment and sharing early signals publicly.
             </p>
           </div>
           
