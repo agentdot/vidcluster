@@ -15,12 +15,12 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { href: "#how-it-works", label: "How it works" },
-    { href: "#features", label: "Features" },
-    { href: "#faq", label: "FAQ" },
-    { href: "/contact", label: "Contact" },
-  ];
+ // const navLinks = [
+ //   { href: "#how-it-works", label: "How it works" },
+ //   { href: "#features", label: "Features" },
+ //   { href: "#faq", label: "FAQ" },
+ //   { href: "/contact", label: "Contact" },
+ // ];
 
   return (
     <header
