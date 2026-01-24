@@ -74,7 +74,7 @@ const Hero = () => {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6 animate-slide-up">
               <Sparkles className="w-4 h-4 text-signal-gold" />
               <span className="text-xs font-medium text-muted-foreground">
-                Early topic signals
+                Tracking emerging YouTube topics
               </span>
             </div>
             
