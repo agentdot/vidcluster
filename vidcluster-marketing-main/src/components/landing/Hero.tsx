@@ -83,8 +83,8 @@ const Hero = () => {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-slide-up"
               style={{ animationDelay: "0.1s" }}
             >
-              Know what works{" "}
-              <span className="gradient-text">before you create it.</span>
+              Stop guessing{" "}
+              <span className="gradient-text">YouTube topics.</span>
             </h1>
             
             {/* Subheadline */}
@@ -92,8 +92,7 @@ const Hero = () => {
               className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0 animate-slide-up"
               style={{ animationDelay: "0.2s" }}
             >
-              VidCluster analyzes YouTube topic clusters and shows you which niches to scale, test, or avoid — before you publish your next video.
-            </p>
+              VidCluster tracks YouTube topics that are quietly gaining momentum before they become crowded. </p>
             
             {/* CTAs */}
             <div 
