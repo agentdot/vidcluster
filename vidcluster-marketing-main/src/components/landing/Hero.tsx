@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 
+// ── ClusterCard Component ────────────────────────────────────────────────
 const ClusterCard = () => {
   const clusters = [
     { name: "AI Faceless Finance", score: 87, status: "SCALE", color: "bg-aqua" },
@@ -13,13 +14,13 @@ const ClusterCard = () => {
     <div className="relative">
       {/* Glow effect */}
       <div className="absolute -inset-4 bg-gradient-to-r from-pink/20 to-purple/20 blur-3xl opacity-50" />
-      
+
       <div className="relative glass rounded-xl p-6 animate-float">
         <div className="flex items-center gap-2 mb-6">
           <div className="w-2 h-2 rounded-full bg-aqua animate-pulse" />
           <span className="text-sm font-medium text-foreground">Cluster Viability Overview</span>
         </div>
-        
+
         <div className="space-y-4">
           {clusters.map((cluster, index) => (
             <div
@@ -58,14 +59,18 @@ const ClusterCard = () => {
   );
 };
 
+// ── Hero Component ────────────────────────────────────────────────────────
 const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-purple/5" />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-pink/10 rounded-full blur-[120px] animate-pulse-glow" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple/10 rounded-full blur-[120px] animate-pulse-glow" style={{ animationDelay: "1.5s" }} />
-      
+      <div
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple/10 rounded-full blur-[120px] animate-pulse-glow"
+        style={{ animationDelay: "1.5s" }}
+      />
+
       <div className="relative max-w-6xl mx-auto px-4 py-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Column */}
@@ -77,31 +82,32 @@ const Hero = () => {
                 Tracking emerging YouTube topics
               </span>
             </div>
-            
+
             {/* Headline */}
-            <h1 
+            <h1
               className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-slide-up"
               style={{ animationDelay: "0.1s" }}
             >
               Stop guessing{" "}
               <span className="gradient-text">YouTube topics.</span>
             </h1>
-            
+
             {/* Subheadline */}
-            <p 
+            <p
               className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0 animate-slide-up"
               style={{ animationDelay: "0.2s" }}
             >
-              VidCluster tracks YouTube topics that are quietly gaining momentum before they become crowded. </p>
-            
-           {/* CTAs */}
-           <div
+              VidCluster tracks YouTube topics that are quietly gaining momentum before they become crowded.
+            </p>
+
+            {/* CTAs */}
+            <div
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6 animate-slide-up relative z-10"
               style={{ animationDelay: "0.3s" }}
             >
               <Button asChild variant="gradient" size="lg" className="glow">
                 <a
-                  href="https://forms.gle/XDLWLci5i9w8jmE29"
+                  href="https://forms.gle/XDLWLci5i9w8jmE29" // ← Replace this with your working form link!
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -109,23 +115,24 @@ const Hero = () => {
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </a>
               </Button>
+
+              {/* Optional second button example */}
+              {/* <Button variant="outline" size="lg">
+                Learn more
+              </Button> */}
             </div>
 
-
             {/* Trust Line */}
-            <p 
+            <p
               className="text-xs text-muted-foreground animate-slide-up"
               style={{ animationDelay: "0.4s" }}
             >
               We’re running a private experiment and sharing early signals publicly.
             </p>
           </div>
-          
+
           {/* Right Column - Mock Dashboard */}
-          <div 
-            className="lg:pl-8 animate-slide-up"
-            style={{ animationDelay: "0.5s" }}
-          >
+          <div className="lg:pl-8 animate-slide-up" style={{ animationDelay: "0.5s" }}>
             <ClusterCard />
           </div>
         </div>
