@@ -67,7 +67,7 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu 
         
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-border/50">
@@ -82,7 +82,7 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
-              
+              */}
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
                 <Button variant="gradient" size="sm">
                   Join Waitlist
