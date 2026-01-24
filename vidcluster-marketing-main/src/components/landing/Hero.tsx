@@ -99,11 +99,11 @@ const Hero = () => {
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6 animate-slide-up"
               style={{ animationDelay: "0.3s" }}
             >
-              <a
-                href="https://forms.gle/XDLWLci5i9w8jmE29"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+            <a
+              href="https://forms.gle/XDLWLci5i9w8jmE29"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button variant="gradient" size="lg" className="glow">
                 Join the waitlist
                 <ArrowRight className="w-4 h-4" />
