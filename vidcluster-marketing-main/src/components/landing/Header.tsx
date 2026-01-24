@@ -52,11 +52,8 @@ const Header = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm">
-              Sign in
-            </Button>
             <Button variant="gradient" size="sm">
-              Start free
+              Join waitlist
             </Button>
           </div>
 
