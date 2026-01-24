@@ -105,7 +105,7 @@ const Hero = () => {
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6 animate-slide-up relative z-10"
               style={{ animationDelay: "0.3s" }}
             >
-              <Button asChild variant="gradient" size="lg" className="glow">
+              <Button asChild variant="gradient" size="lg" className="glow" onClick={() => alert("clicked")}>
                 <a
                   href="https://forms.gle/XDLWLci5i9w8jmE29" // ← Replace this with your working form link!
                   target="_blank"
