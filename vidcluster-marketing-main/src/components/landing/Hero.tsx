@@ -115,6 +115,7 @@ const Hero = () => {
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </a>
               </Button>
+            </div>
 
               {/* Optional second button example */}
               {/* <Button variant="outline" size="lg">
