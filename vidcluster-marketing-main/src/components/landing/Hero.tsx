@@ -100,7 +100,7 @@ const Hero = () => {
               style={{ animationDelay: "0.3s" }}
             >
               <Button variant="gradient" size="lg" className="glow">
-                Join Early Access
+                Join the waitlist
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
