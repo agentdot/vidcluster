@@ -23,24 +23,6 @@ const CTASection = () => {
                 We’re validating a detection engine that spots emerging YouTube topics early.
                 Join the waitlist to get updates and early access.
               </p>
-
-              <div className="flex justify-center">
-                <a
-                  href={WAITLIST_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block"
-                >
-                  <Button variant="gradient" size="lg" className="glow">
-                    Join waitlist
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </a>
-              </div>
-
-              <p className="text-xs text-muted-foreground mt-4">
-                No spam. Just signals and updates.
-              </p>
             </div>
           </div>
         </div>
