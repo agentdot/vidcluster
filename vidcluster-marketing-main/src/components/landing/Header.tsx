@@ -37,7 +37,7 @@ const Header = () => {
             <span className="text-xl font-bold gradient-text">VidCluster</span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation 
           
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
@@ -49,7 +49,7 @@ const Header = () => {
                 {link.label}
               </a>
             ))}
-          </nav>
+          </nav> */}
           
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
