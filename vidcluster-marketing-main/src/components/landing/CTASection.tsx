@@ -27,6 +27,7 @@ const CTASection = () => {
                     href={WAITLIST_URL}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => console.log("Button clicked! Navigating to waitlist.")}
                   >
                     Join waitlist
                     <ArrowRight className="w-4 h-4 ml-2" />
