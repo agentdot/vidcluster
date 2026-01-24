@@ -52,19 +52,31 @@ const Header = () => {
           </nav> */}
           
           {/* Desktop CTA */}
+          <a
+            href="https://forms.gle/XDLWLci5i9w8jmE29"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
           <div className="hidden md:flex items-center gap-3">
             <Button variant="gradient" size="sm">
               Join waitlist
             </Button>
           </div>
+          </a>
 
           {/* Mobile Menu Button */}
+          <a
+            href="https://forms.gle/XDLWLci5i9w8jmE29"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
           <button
             className="md:hidden p-2 text-foreground"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
+         </a>
         </div>
 
         {/* Mobile Menu 
