@@ -9,7 +9,7 @@ const CTASection = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="relative">
           {/* Background Glow */}
-          <div className="absolute inset-0 bg-gradient-to-r from-pink/10 via-purple/10 to-pink/10 blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-pink/10 via-purple/10 to-pink/10 blur-3xl" />
 
           {/* Card with Gradient Border */}
           <div className="relative gradient-border rounded-2xl p-1">
