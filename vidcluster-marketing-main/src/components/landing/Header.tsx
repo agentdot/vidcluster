@@ -84,11 +84,8 @@ const Header = () => {
                 </a>
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
-                <Button variant="ghost" size="sm" className="justify-start">
-                  Sign in
-                </Button>
                 <Button variant="gradient" size="sm">
-                  Start free
+                  Join Waitlist
                 </Button>
               </div>
             </nav>
