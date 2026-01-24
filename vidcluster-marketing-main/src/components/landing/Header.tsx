@@ -38,6 +38,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
+          {/*
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
@@ -49,7 +50,7 @@ const Header = () => {
               </a>
             ))}
           </nav>
-
+          */}
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
             <Button variant="gradient" size="sm">
@@ -67,6 +68,7 @@ const Header = () => {
         </div>
 
         {/* Mobile Menu */}
+        {/*
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-border/50">
             <nav className="flex flex-col gap-4">
@@ -80,6 +82,7 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
+              */}
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
                 <Button variant="gradient" size="sm">
                   Join Waitlist
