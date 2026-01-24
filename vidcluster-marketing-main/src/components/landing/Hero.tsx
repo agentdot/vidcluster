@@ -103,9 +103,6 @@ const Hero = () => {
                 Join Early Access
                 <ArrowRight className="w-4 h-4" />
               </Button>
-              <Button variant="outline" size="lg">
-                See Sample Dashboard
-              </Button>
             </div>
             
             {/* Trust Line */}
@@ -113,7 +110,7 @@ const Hero = () => {
               className="text-xs text-muted-foreground animate-slide-up"
               style={{ animationDelay: "0.4s" }}
             >
-              Built with AI clustering + hedge-fund style statistical modelling.
+              We’re running a private experiment and publishing what we see publicly.
             </p>
           </div>
           
