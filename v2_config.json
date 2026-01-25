@@ -1,0 +1,12 @@
+{
+  "test_id": "v2.0",
+  "topic_source_csv": "test_v2_run/v2_candidate_pool_deduped.csv",
+  "topic_field": "candidate_topic_norm",
+  "vertical_field": "vertical",
+  "date_start": "2024-01-01T00:00:00Z",
+  "date_end": "2024-02-29T23:59:59Z",
+  "max_videos_per_topic": 200,
+  "language": "en",
+  "order": "date",
+  "metrics_top_n_vpd": 10
+}
