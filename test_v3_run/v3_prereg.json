@@ -3,7 +3,7 @@
   "version": "3.0",
   "preregistered_at_utc": "2026-01-26T19:03:00Z",
   "timezone": "UTC",
-  "commit_sha_prereg": "PENDING COMMIT",
+  "commit_sha_prereg": "5386483",
   "windows": {
     "signal_window": {
       "start_utc": "2024-01-01T00:00:00Z",
