@@ -1,1 +1,1 @@
-
+seed_date,cluster_id,centroid_id,n_videos_signal,video_ids_signal,n_channels_signal,cluster_label_text,signal_metrics_*,decision,stratum,created_at_utc,pipeline_run_id
