@@ -1,5 +1,6 @@
 {
   "study_id": "vidcluster_v8_test_v3",
+  "study_state": "DESIGN_LOCKED_WAITING_FOR_V2",
   "version": "3.0",
   "preregistered_at_utc": "2026-01-26T19:03:00Z",
   "timezone": "UTC",
@@ -25,7 +26,11 @@
     "target_per_seed": 30,
     "seeds": ["2024-02-29", "2024-03-01"],
     "strata": ["DEAD", "CROWDED", "AMBIGUOUS"],
-    "allocation_per_stratum": "LOCK_EXPLICIT_NUMBERS",
+    "allocation_per_stratum": {
+      "DEAD": 10,
+      "CROWDED": 10,
+      "AMBIGUOUS": 10
+  },
     "selection_rule": "deterministic_rank_then_rng_tiebreak",
     "rng_seed": 1337,
     "no_substitutions": true
