@@ -1,1 +1,1 @@
-
+seed_date,cluster_id,stratum,sampling_rank_within_stratum,sampling_rng_seed,selected (bool),frozen_at_T0_utc
