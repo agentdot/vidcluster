@@ -14,7 +14,7 @@
   },
   "data_universe": {
     "published_between_signal_window_only": true,
-    "include_shorts": "LOCK_TRUE_OR_FALSE",
+    "include_shorts": "FALSE",
     "exclude_private_deleted_unavailable": true,
     "language_filter": null,
     "country_filter": null,
