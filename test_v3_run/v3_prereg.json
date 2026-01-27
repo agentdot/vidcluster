@@ -1,7 +1,7 @@
 {
   "study_id": "vidcluster_v8_test_v3",
   "study_state": "RUNNING",
-  "prediction_freeze_T0_utc": "2026-01-27t14:47:00z",
+  "prediction_freeze_T0_utc": "2026-01-26T12:00:00Z",
   "outcomes": {
   "t_plus_60_days": "2026-03-27T12:00:00Z",
   "t_plus_90_days": "2026-04-26T12:00:00Z"
