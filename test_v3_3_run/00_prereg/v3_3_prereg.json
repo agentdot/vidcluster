@@ -12,7 +12,10 @@
   "baselines": [
     "upload_velocity",
     "views_only",
-    "random"
+    "random",
+    "prediction_freeze_T0_utc": "2026-02-05T21:40:00Z",
+    "snapshot_id": "2026-02-05T21:40:00Z",
+    "snapshot_manifest_file": "experiments/v3_3/snapshots/snapshot_manifest.json"
   ],
   "outcome_windows_days": [60, 90],
   "success_criteria": {
@@ -24,5 +27,5 @@
     "no_manual_overrides": true,
     "no_posthoc_changes": true,
     "snapshots_only": true
-  }
+  },
 }
