@@ -1,0 +1,28 @@
+{
+  "study_id": "vidcluster_v8_v3_3",
+  "study_state": "PREREGISTERED",
+  "hypothesis": "VidCluster can automatically discover and predict viable YouTube opportunities better than naive baselines using the V2 decision framework.",
+  "unit_of_analysis": "one cluster = one opportunity",
+  "gates": {
+    "coherence_gate": "V3.1",
+    "actionability_gate": "V3.2"
+  },
+  "prediction_labels": ["SCALE", "TEST", "AVOID"],
+  "ground_truth": "V2_thresholds_unmodified",
+  "baselines": [
+    "upload_velocity",
+    "views_only",
+    "random"
+  ],
+  "outcome_windows_days": [60, 90],
+  "success_criteria": {
+    "precision_at_scale": ">= V2 benchmark",
+    "baseline_delta_pp": ">= 20",
+    "max_crowded_scale_rate": "<= 15%"
+  },
+  "operating_rules": {
+    "no_manual_overrides": true,
+    "no_posthoc_changes": true,
+    "snapshots_only": true
+  }
+}
