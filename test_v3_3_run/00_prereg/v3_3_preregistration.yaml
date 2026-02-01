@@ -1,0 +1,67 @@
+experiment_id: V3.3
+repo_commit_hash: TBD
+start_timestamp_utc: TBD
+operator: Bilal Malik
+auditor: ChatGPT
+
+data_sources:
+  discovery_source: TBD            # e.g., youtube api / existing dataset
+  discovery_window_start_utc: TBD
+  discovery_window_end_utc: TBD
+  geography_scope: TBD
+  language_filter: TBD
+  video_types_included: TBD        # longform / shorts / both
+  min_videos_per_cluster: TBD
+
+unit_of_analysis:
+  one_row_definition: "one opportunity cluster representing one audience + one decision-shaped question"
+  embedding_model: TBD
+  clustering_method: TBD           # algorithm + params
+  kmeans_k_or_equivalent: TBD
+  cluster_freeze_rule: "clusters are immutable once gates begin (Phase B start)."
+
+human_gates:
+  coherence_gate_v3_1:
+    raters: TBD
+    gate_question: "Do these videos clearly belong to ONE topic intent?"
+    pass_rule: TBD                 # e.g., >= 0.8 agreement
+    blindness: TBD                 # yes/no
+  actionability_gate_v3_2:
+    raters: TBD
+    gate_question: "Is this ONE decision-shaped human question that could be ONE video?"
+    pass_rule: TBD
+    blindness: TBD
+
+prediction:
+  decision_logic_version: "V2 (locked)"
+  labels: ["SCALE", "TEST", "AVOID"]
+  overrides_allowed: false
+  freeze_timestamp_utc: TBD
+  freeze_commit_hash: TBD
+
+ground_truth:
+  definition_source: "V2 (locked thresholds reused)"
+  viable_thresholds: "V2-locked"
+  crowded_thresholds: "V2-locked"
+  nonviable_rule: "else"
+
+outcome_measurement:
+  windows: ["T+60", "T+90"]
+  outcomes_data_source: TBD
+  missing_data_policy: TBD         # drop / unknown / conservative fail
+
+baselines:
+  upload_velocity_baseline: TBD
+  views_only_baseline: TBD
+  random_baseline:
+    enabled: true
+    seed: 1337
+
+evaluation:
+  primary_metric: "precision@SCALE"
+  success_criteria:
+    precision_scale_threshold: TBD
+    baseline_outperformance_pp: 20
+    false_positive_cap: 0.15
+    stability_rule: TBD            # define numeric stability condition
+  pass_fail_rule: "FAIL if any success_criteria violated."
