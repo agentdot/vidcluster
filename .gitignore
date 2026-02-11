@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Data / outputs by default
+*.parquet
+*.log
+*.tmp
+*.csv
+
+# Keep V3.3 prereg + freeze artifacts (adjust to your actual paths)
+!automation-data/test_v3_3_eval/V3_3_METHODOLOGY.md
+!automation-data/test_v3_3_eval/V3_3_METHODOLOGY.sha256
+!automation-data/test_v3_3_eval/config_v3_3_freeze.json
+!automation-data/test_v3_3_eval/vidcluster_v3_3_freeze_*.parquet
+!automation-data/test_v3_3_eval/*.hash
+!automation-data/test_v3_3_eval/*.md
