@@ -1,0 +1,17 @@
+{
+  "eval_name": "V3.3 Outcome Validation vs Baselines",
+  "freeze_ts_utc": "2026-02-06T07:31:18.318467+00:00",
+  "source_file": "D:\\Download\\vidcluster\\automation-data\\test_v3_7_intel\\cluster_opportunities.parquet",
+  "cluster_k": 30,
+  "embedding_model": "hash_v1",
+  "intel_rule_version": "rules_v1_full_titles_verbs",
+  "opportunity_formula": {
+    "score": "(decision_conf*40)+(horizon_conf*25)+(scale*25)+(time_sensitive*10)",
+    "tier_bins": {
+      "COLD": "<40",
+      "WARM": "40-69.99",
+      "HOT": ">=70"
+    },
+    "monetizable_definition": "A: {EARN, BUY, INVEST} only; PREDICT not monetizable"
+  }
+}
