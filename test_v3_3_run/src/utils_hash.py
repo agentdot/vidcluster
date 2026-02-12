@@ -1,4 +1,0 @@
-"""
-VidCluster V3.3 — Phase <X>
-DO NOT MODIFY LOGIC WITHOUT NEW RUN + NEW PREREG
-"""

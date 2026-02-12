@@ -1,1 +1,0 @@
-seed_date,cluster_id,decision,decision_score (if exists),stratum,frozen_member_video_ids_signal,T0_utc,commit_sha_freeze
