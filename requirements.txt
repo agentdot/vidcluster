@@ -1,8 +1,0 @@
-pandas
-numpy
-pyarrow
-gspread
-google-auth
-google-api-python-client
-openai
-scikit-learn
