@@ -92,7 +92,7 @@ export default function HomepageV2() {
           </div>
 
           <h1 className="max-w-[640px] text-5xl font-semibold leading-[0.94] tracking-[-0.075em] text-white sm:text-6xl xl:text-[4.95rem]">
-            See which topics are growing before they become obvious.
+            Know which YouTube topics are gaining momentum before they become obvious.
           </h1>
 
           <p className="mt-6 max-w-[520px] text-[1rem] leading-8 text-white/58">
