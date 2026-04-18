@@ -127,17 +127,15 @@ export default function Research() {
             </div>
 
             {/* Card 4 (NEW — What this means) */}
-            <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
-            <div className="text-[11px] uppercase tracking-[0.22em] text-white/36">
+            <div className="rounded-[1.5rem] border border-emerald-400/20 bg-emerald-400/[0.04] p-5">
+            <div className="text-[11px] uppercase tracking-[0.22em] text-emerald-300/70">
                 Interpretation
             </div>
-            <div className="mt-3 text-xl font-medium text-white/92">
+            <div className="mt-3 text-xl font-medium text-white">
                 What this means
             </div>
-            <p className="mt-2 text-sm leading-6 text-white/56">
-                Not all early growth signals lead to sustained performance. This evaluation
-                shows that persistence-based signals aligned more closely with stronger
-                outcomes than short-term spikes.
+            <p className="mt-2 text-sm leading-6 text-white/70">
+                Not all early growth signals sustain. This evaluation shows that persistence-based signals aligned more closely with stronger outcomes than short-term spikes.
             </p>
             </div>
 
