@@ -96,7 +96,7 @@ export default function HomepageV2() {
           </h1>
 
           <p className="mt-6 max-w-[520px] text-[1rem] leading-8 text-white/58">
-            VidCluster tracks topic growth over time and tests signals against frozen evaluations.
+            VidCluster tracks how YouTube topics evolve over time — and identifies early signals before they show up in views.
           </p>
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
