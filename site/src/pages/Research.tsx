@@ -60,9 +60,7 @@ export default function Research() {
           </h1>
 
           <p className="mt-6 max-w-2xl text-lg leading-8 text-white/60">
-            The goal was not to reward whatever moved fastest first. The goal was to
-            see whether a persistence-led approach aligned better with stronger later
-            outcomes.
+            This evaluation tested whether persistence-based signals align better with real outcomes than early spikes.
           </p>
         </div>
 
@@ -121,6 +119,13 @@ export default function Research() {
             <p className="mt-2 text-sm leading-6 text-white/56">
               The system becomes more useful when it reduces excitement around weak
               spikes and pays more attention to continuation.
+            </p>
+            <div className="mt-3 text-xl font-medium text-white/92">
+              What this means
+            </div>
+            <p className="mt-2 text-sm leading-6 text-white/56">
+              Not all early growth signals lead to sustained performance.
+              This evaluation shows that persistence-based signals aligned more closely with stronger outcomes than short-term spikes.
             </p>
           </div>
         </div>
