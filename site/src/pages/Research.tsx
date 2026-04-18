@@ -120,6 +120,13 @@ export default function Research() {
               The system becomes more useful when it reduces excitement around weak
               spikes and pays more attention to continuation.
             </p>
+          <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
+            <div className="text-[11px] uppercase tracking-[0.22em] text-white/36">
+              Why it matters
+            </div>
+            <div className="mt-3 text-xl font-medium text-white/92">
+              What this means
+            </div>  
             <div className="mt-3 text-xl font-medium text-white/92">
               What this means
             </div>
@@ -127,6 +134,7 @@ export default function Research() {
               Not all early growth signals lead to sustained performance.
               This evaluation shows that persistence-based signals aligned more closely with stronger outcomes than short-term spikes.
             </p>
+           </div> 
           </div>
         </div>
       </section>
