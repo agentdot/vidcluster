@@ -91,7 +91,7 @@ export default function HomepageV2() {
             Evidence-first topic intelligence
           </div>
 
-          <h1 className="max-w-[640px] text-5xl font-semibold leading-[0.94] tracking-[-0.075em] text-white sm:text-6xl xl:text-[4.95rem]">
+          <h1 className="max-w-[640px] text-5xl font-semibold leading-[0.94] tracking-[-0.070em] text-white sm:text-6xl xl:text-[4.95rem]">
             Know which YouTube topics are gaining momentum before they become obvious.
           </h1>
 
