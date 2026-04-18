@@ -82,62 +82,67 @@ export default function Research() {
       </section>
 
       <section className="border-y border-white/8 bg-white/[0.018]">
-        <div className="mx-auto grid w-full max-w-[1304px] gap-6 px-6 py-6 lg:grid-cols-3">
-          <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
+        <div className="mx-auto grid w-full max-w-[1304px] gap-6 px-6 py-6 lg:grid-cols-4">
+            
+            {/* Card 1 */}
+            <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/36">
-              What was tested
+                What was tested
             </div>
             <div className="mt-3 text-xl font-medium text-white/92">
-              Competing ways of ranking topics
+                Competing ways of ranking topics
             </div>
             <p className="mt-2 text-sm leading-6 text-white/56">
-              The evaluation compared different ranking directions on the same tracked
-              topic universe and the same outcome window.
+                The evaluation compared different ranking directions on the same tracked
+                topic universe and the same outcome window.
             </p>
-          </div>
+            </div>
 
-          <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
+            {/* Card 2 */}
+            <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/36">
-              What improved
+                What improved
             </div>
             <div className="mt-3 text-xl font-medium text-white/92">
-              Better top-rank alignment
+                Better top-rank alignment
             </div>
             <p className="mt-2 text-sm leading-6 text-white/56">
-              VidCluster matched more of the strongest later outcomes in the top-ranked
-              positions than the baseline direction.
+                VidCluster matched more of the strongest later outcomes in the top-ranked
+                positions than the baseline direction.
             </p>
-          </div>
+            </div>
 
-          <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
+            {/* Card 3 */}
+            <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/36">
-              Why it matters
+                Why it matters
             </div>
             <div className="mt-3 text-xl font-medium text-white/92">
-              Fewer false positives
+                Fewer false positives
             </div>
             <p className="mt-2 text-sm leading-6 text-white/56">
-              The system becomes more useful when it reduces excitement around weak
-              spikes and pays more attention to continuation.
+                The system becomes more useful when it reduces excitement around weak
+                spikes and pays more attention to continuation.
             </p>
-          <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
+            </div>
+
+            {/* Card 4 (NEW — What this means) */}
+            <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/36">
-              Why it matters
+                Interpretation
             </div>
             <div className="mt-3 text-xl font-medium text-white/92">
-              What this means
-            </div>  
-            <div className="mt-3 text-xl font-medium text-white/92">
-              What this means
+                What this means
             </div>
             <p className="mt-2 text-sm leading-6 text-white/56">
-              Not all early growth signals lead to sustained performance.
-              This evaluation shows that persistence-based signals aligned more closely with stronger outcomes than short-term spikes.
+                Not all early growth signals lead to sustained performance. This evaluation
+                shows that persistence-based signals aligned more closely with stronger
+                outcomes than short-term spikes.
             </p>
-           </div> 
-          </div>
+            </div>
+
         </div>
-      </section>
+     </section>
 
       <section className="mx-auto w-full max-w-[1304px] px-6 py-20">
         <div className="max-w-3xl">
