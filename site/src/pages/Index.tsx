@@ -1,27 +1,5 @@
-import Header from "@/components/landing/Header";
-import Hero from "@/components/landing/Hero";
-import HowItWorks from "@/components/landing/HowItWorks";
-import Features from "@/components/landing/Features";
-import ClusterViability from "@/components/landing/ClusterViability";
-import CTASection from "@/components/landing/CTASection";
-import FAQ from "@/components/landing/FAQ";
-import Footer from "@/components/landing/Footer";
+import HomepageV2 from "./HomepageV2";
 
-const Index = () => {
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
-      <main>
-        <Hero />
-        <HowItWorks />
-        <Features />
-        <ClusterViability />
-        <CTASection />
-        <FAQ />
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
-export default Index;
+export default function Index() {
+  return <HomepageV2 />;
+}
