@@ -4,9 +4,9 @@ export default function HomepageV2() {
   const principles = [
     {
       fig: "FIG 0.1",
-      title: "Cluster topics",
+      title: "Follow topics, not one-off videos",
       description:
-        "Group videos into topic structures instead of treating each upload in isolation.",
+        "See the bigger topic behind multiple videos instead of judging each upload on its own.",
       graphic: (
         <svg viewBox="0 0 240 180" className="h-full w-full">
           <g fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.1">
@@ -23,9 +23,9 @@ export default function HomepageV2() {
     },
     {
       fig: "FIG 0.2",
-      title: "Track persistence",
+      title: "Watch what keeps building",
       description:
-        "Measure topic growth week by week to separate spikes from durable continuation.",
+        "Track a topic over time so you can tell lasting growth from a brief rush of attention.",
       graphic: (
         <svg viewBox="0 0 240 180" className="h-full w-full">
           <g fill="none" strokeWidth="1.1">
@@ -49,9 +49,9 @@ export default function HomepageV2() {
     },
     {
       fig: "FIG 0.3",
-      title: "Validate outcomes",
+      title: "Back decisions with proof",
       description:
-        "Test signals on frozen experiments so results can be reviewed instead of narrated.",
+        "Review past topic movement in a consistent way instead of relying on hot takes or hindsight.",
       graphic: (
         <svg viewBox="0 0 240 180" className="h-full w-full">
           <g fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.1">
@@ -69,10 +69,10 @@ export default function HomepageV2() {
   ];
 
   const comparison = [
-    ["Focus on videos", "Focus on topics"],
-    ["Detect spikes", "Detect persistence"],
-    ["Real-time trend chasing", "Time-validated growth"],
-    ["Guesswork-heavy", "Measured outcomes"],
+    ["Look at individual videos", "Look at whole topics"],
+    ["React to sudden spikes", "Follow growth over time"],
+    ["See what is already obvious", "See what is starting to build"],
+    ["Follow surface trends", "Track what keeps growing"],
   ];
 
   return (
@@ -84,11 +84,11 @@ export default function HomepageV2() {
       </div>
 
       
-      <section className="mx-auto grid w-full max-w-[1350px] gap-16 px-6 pb-20 pt-16 lg:grid-cols-[0.9fr_1.1fr] lg:pb-24 lg:pt-24">
+      <section className="mx-auto grid w-full max-w-[1350px] gap-16 px-0 pb-20 pt-16 lg:grid-cols-[0.9fr_1.1fr] lg:pb-24 lg:pt-24">
         <div className="vc-fade-up flex flex-col justify-center">
           <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-white/56">
             <span className="h-1.5 w-1.5 rounded-full bg-white/72" />
-            Evidence-first topic intelligence
+            Early YouTube topic momentum
           </div>
 
           <h1 className="max-w-[640px] text-5xl font-semibold leading-[0.94] tracking-[-0.070em] text-white sm:text-6xl xl:text-[4.95rem]">
@@ -96,15 +96,17 @@ export default function HomepageV2() {
           </h1>
 
           <p className="mt-6 max-w-[520px] text-[1rem] leading-8 text-white/58">
-            VidCluster tracks how YouTube topics evolve over time — and identifies early signals before they show up in views.
+            VidCluster helps you find YouTube topics that are starting to grow - by tracking how entire topics move, not just individual videos - so you can create before the opportunity becomes crowded.
           </p>
+
+          
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
             <a
               href="/research"
               className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3.5 text-sm font-medium text-black shadow-[0_10px_30px_rgba(255,255,255,0.08)] transition hover:bg-white/90"
             >
-              View Sample Results
+              View Research
             </a>
             <a
               href="#principles"
@@ -114,10 +116,8 @@ export default function HomepageV2() {
             </a>
           </div>
             
-          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/48">
-            <span>30 tracked clusters</span>
-            <span>T+60 evaluation window</span>
-            <span>Frozen comparisons</span>
+          <div className="mt-10 text-sm text-white/48">
+            Built for creators who want better timing, not more noise.
           </div>
         </div>
 
@@ -128,14 +128,14 @@ export default function HomepageV2() {
             <div className="flex items-center justify-between border-b border-white/8 pb-4">
               <div>
                 <div className="text-[11px] uppercase tracking-[0.24em] text-white/38">
-                  Signal view
+                  Topic view
                 </div>
                 <div className="mt-1 text-lg font-medium text-white/92">
-                  Spike vs persistent growth
+                  Short spike vs lasting momentum
                 </div>
               </div>
               <div className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-white/52">
-                Cluster timeline
+                Topic timeline
               </div>
             </div>
 
@@ -147,79 +147,231 @@ export default function HomepageV2() {
                 <span>Week 12</span>
               </div>
 
+              <div className="mt-4 text-[11px] uppercase tracking-[0.18em] text-white/34">
+                Each line = a YouTube topic cluster
+              </div>
+
               <div className="mt-5 h-72 rounded-[1.35rem] bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100%_20%,20%_100%] p-4">
                 <svg viewBox="0 0 100 100" className="h-full w-full overflow-visible">
                   <defs>
-                    <linearGradient
-                      id="persistentLineV3"
-                      x1="0"
-                      y1="0"
-                      x2="1"
-                      y2="0"
-                    >
-                      <stop offset="0%" stopColor="rgba(255,255,255,0.7)" />
-                      <stop
-                        offset="100%"
-                        stopColor="rgba(168,139,250,0.95)"
-                      />
+                    <linearGradient id="persistentLineV4" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="rgba(195,230,214,0.35)" />
+                      <stop offset="52%" stopColor="rgba(127,182,154,0.72)" />
+                      <stop offset="100%" stopColor="rgba(158,217,183,0.96)" />
                     </linearGradient>
-                    <linearGradient id="spikeLineV3" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="rgba(255,255,255,0.28)" />
-                      <stop
-                        offset="100%"
-                        stopColor="rgba(120,138,255,0.78)"
-                      />
+                    <linearGradient id="persistentGlowV4" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="rgba(158,217,183,0.02)" />
+                      <stop offset="100%" stopColor="rgba(158,217,183,0.34)" />
                     </linearGradient>
+                    <linearGradient id="spikeLineV4" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="rgba(178,186,214,0.16)" />
+                      <stop offset="100%" stopColor="rgba(129,137,173,0.66)" />
+                    </linearGradient>
+                    <filter id="softGlowV4" x="-30%" y="-30%" width="160%" height="160%">
+                      <feGaussianBlur stdDeviation="2.4" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                    <style>
+                      {`
+                        .vc-chart-line-strong {
+                          stroke-dasharray: 220;
+                          stroke-dashoffset: 220;
+                          animation: vcDrawStrong 8.6s ease-in-out infinite;
+                        }
+
+                        .vc-chart-line-strong-glow {
+                          stroke-dasharray: 220;
+                          stroke-dashoffset: 220;
+                          animation: vcDrawStrong 8.6s ease-in-out infinite;
+                        }
+
+                        .vc-chart-line-weak {
+                          stroke-dasharray: 176;
+                          stroke-dashoffset: 176;
+                          animation: vcDrawWeak 8.6s ease-in-out infinite;
+                        }
+
+                        .vc-chart-dot {
+                          animation: vcDotPulse 8.6s ease-in-out infinite;
+                          transform-origin: 82px 38px;
+                        }
+
+                        @keyframes vcDrawStrong {
+                          0% {
+                            stroke-dashoffset: 220;
+                            opacity: 0.2;
+                          }
+                          18% {
+                            stroke-dashoffset: 220;
+                            opacity: 0.2;
+                          }
+                          56% {
+                            stroke-dashoffset: 0;
+                            opacity: 1;
+                          }
+                          78% {
+                            stroke-dashoffset: 0;
+                            opacity: 1;
+                          }
+                          100% {
+                            stroke-dashoffset: -10;
+                            opacity: 0.82;
+                          }
+                        }
+
+                        @keyframes vcDrawWeak {
+                          0% {
+                            stroke-dashoffset: 176;
+                            opacity: 0.12;
+                          }
+                          8% {
+                            stroke-dashoffset: 176;
+                            opacity: 0.12;
+                          }
+                          38% {
+                            stroke-dashoffset: 0;
+                            opacity: 0.72;
+                          }
+                          68% {
+                            stroke-dashoffset: 0;
+                            opacity: 0.42;
+                          }
+                          100% {
+                            stroke-dashoffset: -8;
+                            opacity: 0.18;
+                          }
+                        }
+
+                        @keyframes vcDotPulse {
+                          0%,
+                          52%,
+                          100% {
+                            opacity: 0.82;
+                            transform: scale(1);
+                          }
+                          70% {
+                            opacity: 1;
+                            transform: scale(1.08);
+                          }
+                        }
+                      `}
+                    </style>
                   </defs>
 
                   <path
                     d="M2 80 C 14 80, 20 62, 28 40 S 48 18, 58 34 S 78 54, 98 58"
                     fill="none"
-                    stroke="url(#spikeLineV3)"
+                    stroke="rgba(255,255,255,0.06)"
                     strokeWidth="2.2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M2 80 C 14 80, 20 62, 28 40 S 48 18, 58 34 S 78 54, 98 58"
+                    fill="none"
+                    stroke="url(#spikeLineV4)"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    className="vc-chart-line-weak"
+                  />
+                  <path
+                    d="M2 88 C 18 86, 28 80, 42 70 S 68 52, 82 38 S 94 24, 98 18"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.06)"
+                    strokeWidth="2.7"
                     strokeLinecap="round"
                   />
                   <path
                     d="M2 88 C 18 86, 28 80, 42 70 S 68 52, 82 38 S 94 24, 98 18"
                     fill="none"
-                    stroke="url(#persistentLineV3)"
+                    stroke="url(#persistentGlowV4)"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    filter="url(#softGlowV4)"
+                    className="vc-chart-line-strong-glow"
+                  />
+                  <path
+                    d="M2 88 C 18 86, 28 80, 42 70 S 68 52, 82 38 S 94 24, 98 18"
+                    fill="none"
+                    stroke="url(#persistentLineV4)"
                     strokeWidth="2.7"
                     strokeLinecap="round"
+                    className="vc-chart-line-strong"
                   />
-                  <circle cx="98" cy="58" r="2.5" fill="rgba(120,138,255,0.86)" />
-                  <circle cx="98" cy="18" r="2.8" fill="rgba(168,139,250,0.96)" />
+                  <circle cx="98" cy="58" r="2.2" fill="rgba(129,137,173,0.62)" />
+                  <g className="vc-chart-dot">
+                    <circle
+                      cx="98"
+                      cy="18"
+                      r="6.6"
+                      fill="rgba(158,217,183,0.08)"
+                      filter="url(#softGlowV4)"
+                    />
+                    <circle cx="98" cy="18" r="2.8" fill="rgba(158,217,183,0.94)" />
+                  </g>
+
+                  <text
+                    x="71"
+                    y="62"
+                    fill="rgba(184,191,217,0.56)"
+                    fontSize="4.2"
+                    letterSpacing="0.08em"
+                  >
+                    Spike topic
+                  </text>
+                  <text
+                    x="64"
+                    y="12"
+                    fill="rgba(186,221,203,0.72)"
+                    fontSize="4.2"
+                    letterSpacing="0.08em"
+                  >
+                    Growing topic
+                  </text>
                 </svg>
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
                   <div className="text-[11px] uppercase tracking-[0.2em] text-white/38">
-                    Short-term spike
+                    Spike topic
                   </div>
                   <div className="mt-2 text-sm leading-6 text-white/54">
-                    Fast early velocity. Weak continuation.
+                    A YouTube topic cluster that jumps fast, then fades.
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
                   <div className="text-[11px] uppercase tracking-[0.2em] text-white/38">
-                    Persistent growth
+                    Growing topic
                   </div>
                   <div className="mt-2 text-sm leading-6 text-white/54">
-                    Slower start. Stronger evidence over time.
+                    A YouTube topic cluster that keeps building over time.
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="mt-5 rounded-[1.35rem] border border-white/8 bg-white/[0.02] p-5">
+            <div className="text-[11px] uppercase tracking-[0.2em] text-white/38">
+              What this shows
+            </div>
+            <p className="mt-3 max-w-[34rem] text-sm leading-7 text-white/54">
+              Some YouTube topics spike briefly. Others continue to grow.
+              VidCluster helps you focus on the ones that keep building.
+            </p>
           </div>
         </div>
       </section>
 
       <section className="vc-fade-up vc-fade-up-delay-2 border-y border-white/8 bg-white/[0.018]">
         <div className="mx-auto flex w-full max-w-[1350px] flex-col gap-4 px-6 py-5 text-sm text-white/48 lg:flex-row lg:items-center lg:justify-between">
-          <span>Built on frozen experiments</span>
-          <span>Evaluated over time</span>
-          <span>Reproducible by design</span>
+          <span>Built around topics, not isolated uploads</span>
+          <span>Tracks what keeps growing over time</span>
+          <span>Helps creators move before the crowd</span>
         </div>
       </section>
 
@@ -229,10 +381,10 @@ export default function HomepageV2() {
             Method
           </div>
           <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">
-            Three principles behind the system.
+            Three ideas behind how VidCluster works.
           </h2>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
-            Less dashboard noise. More structural signal.
+            Plain-English topic discovery for creators who want better timing.
           </p>
         </div>
 
@@ -274,8 +426,7 @@ export default function HomepageV2() {
               Not a keyword tool. Not a video optimizer.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
-              VidCluster is built to understand topic growth before it becomes
-              obvious.
+              VidCluster helps you see which YouTube topics are starting to build before they become crowded.
             </p>
           </div>
 
@@ -307,10 +458,10 @@ export default function HomepageV2() {
               Philosophy
             </div>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">
-              No hype. No promises. Just evidence.
+              Find better topics earlier. Ignore short-lived spikes.
             </h2>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-white/60">
-              Every signal should be reviewable. Every claim should face time.
+              The goal is simple: help creators spot topics with real momentum and avoid wasting time on short-lived spikes.
             </p>
           </div>
         </div>
@@ -323,11 +474,10 @@ export default function HomepageV2() {
               Next step
             </div>
             <h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-[-0.05em] sm:text-6xl sm:leading-[0.98]">
-              Explore how topic growth actually works.
+              See how VidCluster helps you find the right topics earlier.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
-              Review the method. See the model. Join early if it fits how you
-              think.
+              See the research, understand the approach, and join early if it fits how you choose what to make next.
             </p>
           </div>
 
@@ -350,3 +500,4 @@ export default function HomepageV2() {
     </main>
   );
 }
+
