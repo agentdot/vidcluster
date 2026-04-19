@@ -14,7 +14,7 @@ export default function Contact() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(0,0,0,0.35))]" />
       </div>
 
-      <section className="mx-auto w-full max-w-[1304px] px-6 pb-16 pt-16 lg:pb-20 lg:pt-24">
+      <section className="mx-auto w-full max-w-[1350px] px-6 pb-12 pt-12 lg:pb-16 lg:pt-16">
         <div className="max-w-3xl">
           <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
             Contact
