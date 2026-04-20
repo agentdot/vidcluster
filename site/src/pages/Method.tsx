@@ -1,4 +1,6 @@
 import SiteHeader from "../components/SiteHeader";
+import PageIntro from "../components/layout/PageIntro";
+import Section from "../components/layout/Section";
 
 const steps = [
   {
@@ -55,29 +57,20 @@ export default function Method() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(0,0,0,0.35))]" />
       </div>
 
-      <section className="mx-auto w-full max-w-[1350px] px-6 pb-12 pt-12 lg:pb-16 lg:pt-16">
-        <div className="max-w-4xl">
-          <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
-            Method
-          </div>
-
-          <h1 className="mt-4 max-w-4xl text-4xl font-semibold tracking-[-0.06em] sm:text-6xl sm:leading-[0.96]">
-            How VidCluster works
-          </h1>
-
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-white/60">
-            VidCluster helps you find YouTube topics that are starting to grow —
-            by tracking how topics move over time, not just individual videos.
-          </p>
-
-          <p className="mt-4 max-w-2xl text-[1rem] leading-8 text-white/46">
+      <Section spacing="intro">
+        <PageIntro
+          label="Method"
+          title="How VidCluster works"
+          description="VidCluster helps you find YouTube topics that are starting to grow - by tracking how topics move over time, not just individual videos."
+        >
+          <p className="max-w-2xl text-[1rem] leading-8 text-white/46">
             Built to focus on what keeps building, not what spikes briefly.
           </p>
-        </div>
-      </section>
+        </PageIntro>
+      </Section>
 
-      <section className="border-y border-white/8 bg-white/[0.018]">
-        <div className="mx-auto grid w-full max-w-[1350px] gap-6 px-6 py-6 lg:grid-cols-3">
+      <Section bleed spacing="none" className="border-y border-white/8 bg-white/[0.018]">
+        <div className="mx-auto grid w-full max-w-[1440px] gap-6 px-6 py-6 lg:grid-cols-3 lg:px-8">
           <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.02] p-5">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/36">
               The core idea
@@ -118,9 +111,9 @@ export default function Method() {
             </p>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="mx-auto w-full max-w-[1350px] px-6 py-20">
+      <Section spacing="large">
         <div className="max-w-3xl">
           <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
             The process
@@ -150,9 +143,9 @@ export default function Method() {
             </div>
           ))}
         </div>
-      </section>
+      </Section>
 
-      <section className="mx-auto w-full max-w-[1350px] px-6 py-4">
+      <Section spacing="standard">
         <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="rounded-[2.25rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.026),rgba(255,255,255,0.014))] p-8 lg:p-10">
             <div className="max-w-3xl">
@@ -164,7 +157,7 @@ export default function Method() {
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
                 VidCluster is designed to help you notice topics while they are
-                still developing — before they become saturated by competition.
+                still developing - before they become saturated by competition.
               </p>
             </div>
 
@@ -203,14 +196,14 @@ export default function Method() {
             </div>
 
             <p className="mt-8 leading-7 text-white/56">
-              VidCluster is built to help you choose better topics earlier —
+              VidCluster is built to help you choose better topics earlier -
               not to optimize a video after the topic is already chosen.
             </p>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="mx-auto w-full max-w-[1350px] px-6 py-20">
+      <Section spacing="large">
         <div className="rounded-[2.25rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.026),rgba(255,255,255,0.014))] p-8 lg:p-10">
           <div className="max-w-3xl">
             <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
@@ -226,10 +219,14 @@ export default function Method() {
             </p>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="border-t border-white/8 bg-white/[0.018]">
-        <div className="mx-auto flex w-full max-w-[1350px] flex-col items-start justify-between gap-8 px-6 py-16 lg:flex-row lg:items-end">
+      <Section
+        bleed
+        spacing="none"
+        className="border-t border-white/8 bg-white/[0.018]"
+      >
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col items-start justify-between gap-8 px-6 py-16 lg:flex-row lg:items-end lg:px-8">
           <div className="max-w-3xl">
             <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
               Next step
@@ -258,7 +255,7 @@ export default function Method() {
             </a>
           </div>
         </div>
-      </section>
+      </Section>
     </main>
   );
 }

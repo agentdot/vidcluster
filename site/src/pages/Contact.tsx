@@ -1,5 +1,7 @@
 import { useForm, ValidationError } from "@formspree/react";
 import SiteHeader from "../components/SiteHeader";
+import PageIntro from "../components/layout/PageIntro";
+import Section from "../components/layout/Section";
 
 export default function Contact() {
   const [state, handleSubmit] = useForm("mvzdrpzz");
@@ -14,28 +16,21 @@ export default function Contact() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(0,0,0,0.35))]" />
       </div>
 
-      <section className="mx-auto w-full max-w-[1350px] px-6 pb-12 pt-12 lg:pb-16 lg:pt-16">
-        <div className="max-w-3xl">
-          <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
-            Contact
-          </div>
+      <Section spacing="intro">
+        <PageIntro
+          label="Contact"
+          title="Join early access."
+          description="VidCluster is being developed carefully and released selectively. If the product fits how you think, register your interest below."
+          className="max-w-3xl"
+          titleClassName="tracking-[-0.05em]"
+        />
+      </Section>
 
-          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-6xl sm:leading-[0.96]">
-            Join early access.
-          </h1>
-
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-white/60">
-            VidCluster is being developed carefully and released selectively. If the
-            product fits how you think, register your interest below.
-          </p>
-        </div>
-      </section>
-
-      <section className="mx-auto w-full max-w-[1304px] px-6 pb-16 lg:pb-20">
+      <Section spacing="standard">
         <div className="max-w-[920px] rounded-[2rem] border border-white/10 bg-white/[0.02] p-6 sm:p-8">
           {state.succeeded && (
             <div className="mb-6 rounded-2xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-300">
-              Request received. We’ll review it and get back to you.
+              Request received. We'll review it and get back to you.
             </div>
           )}
 
@@ -180,9 +175,9 @@ export default function Contact() {
         </div>
 
         <div className="mt-4 max-w-[920px] text-sm text-white/42">
-          We review every request manually. Expect a response within 24–48 hours.
+          We review every request manually. Expect a response within 24-48 hours.
         </div>
-      </section>
+      </Section>
     </main>
   );
 }
