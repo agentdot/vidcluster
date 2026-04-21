@@ -24,6 +24,18 @@ const articles = [
       "Most creators rely on signals that appear after a trend has already started. Understand why trend discovery is usually late.",
     slug: "/insights/why-trends-are-late",
   },
+  {
+  title: "Why YouTube Trending Pages Are Useless for Finding New Topics",
+  description:
+    "Most creators rely on YouTube trending pages, but by the time something trends the opportunity is already gone. Here’s why.",
+  slug: "/insights/youtube-trending-is-useless",
+  },
+  {
+  title: "Topic vs Keyword: The Biggest Mistake in YouTube Research",
+  description:
+    "Many creators approach YouTube like a keyword problem. This article explains why topic-level thinking is often more useful.",
+  slug: "/insights/topic-vs-keyword",
+  },
 ];
 
 const featuredArticle = articles.find(
@@ -78,7 +90,7 @@ export default function InsightsPage() {
     </p>
   </div>
 
-  <div className="grid gap-6">
+  <div className="grid gap-6 md:grid-cols-2">
     {otherArticles.map((post) => (
       <Link
         key={post.slug}

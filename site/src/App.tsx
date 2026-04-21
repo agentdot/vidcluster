@@ -9,6 +9,8 @@ import FindTopicsPage from "./pages/insights/find-topics";
 import WhyTrendsLatePage from "./pages/insights/why-trends-are-late";
 import VidiqAlternativePage from "./pages/vidiq-alternative";
 import TubebuddyAlternativePage from "./pages/tubebuddy-alternative";
+import YoutubeTrendingIsUselessPage from "./pages/insights/youtube-trending-is-useless";
+import TopicVsKeywordPage from "./pages/insights/topic-vs-keyword";
 
 
 
@@ -24,6 +26,8 @@ export default function App() {
       <Route path="/insights/why-trends-are-late" element={<WhyTrendsLatePage />} />
       <Route path="/vidiq-alternative" element={<VidiqAlternativePage />} />
       <Route path="/tubebuddy-alternative" element={<TubebuddyAlternativePage />} />
+      <Route path="/insight/youtube-trending-is-useless" element={<YoutubeTrendingIsUselessPage />} />
+      <Route path="/insights/topic-vs-keyword" element={<TopicVsKeywordPage />} />
     </Routes>
   );
 }
