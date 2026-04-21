@@ -36,6 +36,42 @@ const articles = [
     "Many creators approach YouTube like a keyword problem. This article explains why topic-level thinking is often more useful.",
   slug: "/insights/topic-vs-keyword",
   },
+  {
+  title: "Viral Spike vs Sustained Growth: What Actually Matters on YouTube",
+  description:
+    "A viral video can bring attention, but sustained topic growth is what builds long-term opportunity.",
+  slug: "/insights/viral-spike-vs-sustained-growth",
+  },
+  {
+  title: "vidIQ vs TubeBuddy vs VidCluster: Which Tool Actually Finds Winning Topics?",
+  description:
+    "A neutral comparison of keyword optimization tools versus topic-level discovery.",
+  slug: "/insights/vidiq-vs-tubebuddy-vs-vidcluster",
+  },
+  {
+  title: "How to Validate a YouTube Topic Before You Make the Video",
+  description:
+    "A practical framework for deciding whether a YouTube topic has real potential before you invest time creating.",
+  slug: "/insights/validate-topic-before-video",
+  },
+  {
+  title: "How to Find YouTube Topics Before Big Creators Notice Them",
+  description:
+    "A practical guide to identifying YouTube topics before major channels move in and competition rises.",
+  slug: "/insights/find-topics-before-big-creators",
+  },
+  {
+  title: "Why Small Creators Often Spot Trends Earlier Than Big Channels",
+  description:
+    "Large channels get more attention, but smaller creators often reveal useful trend signals earlier.",
+  slug: "/insights/why-small-creators-spot-trends-earlier",
+  },
+  {
+  title: "How to Tell if a YouTube Topic Is Growing or Just Flashing",
+  description:
+    "Learn how to distinguish real topic momentum from short-lived spikes on YouTube.",
+  slug: "/insights/topic-growing-vs-flashing",
+  },
 ];
 
 const featuredArticle = articles.find(

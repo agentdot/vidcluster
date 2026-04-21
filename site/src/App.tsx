@@ -11,6 +11,13 @@ import VidiqAlternativePage from "./pages/vidiq-alternative";
 import TubebuddyAlternativePage from "./pages/tubebuddy-alternative";
 import YoutubeTrendingIsUselessPage from "./pages/insights/youtube-trending-is-useless";
 import TopicVsKeywordPage from "./pages/insights/topic-vs-keyword";
+import ViralSpikeVsSustainedGrowthPage from "./pages/insights/viral-spike-vs-sustained-growth";
+import VidiqVsTubebuddyVsVidclusterPage from "./pages/insights/vidiq-vs-tubebuddy-vs-vidcluster";
+import ValidateTopicBeforeVideoPage from "./pages/insights/validate-topic-before-video";
+import FindTopicsBeforeBigCreatorsPage from "./pages/insights/find-topics-before-big-creators";
+import WhySmallCreatorsSpotTrendsEarlierPage from "./pages/insights/why-small-creators-spot-trends-earlier";
+import TopicGrowingVsFlashingPage from "./pages/insights/topic-growing-vs-flashing";
+
 
 
 
@@ -28,6 +35,12 @@ export default function App() {
       <Route path="/tubebuddy-alternative" element={<TubebuddyAlternativePage />} />
       <Route path="/insight/youtube-trending-is-useless" element={<YoutubeTrendingIsUselessPage />} />
       <Route path="/insights/topic-vs-keyword" element={<TopicVsKeywordPage />} />
+      <Route path="/insights/viral-spike-vs-sustained-growth" element={<ViralSpikeVsSustainedGrowthPage />} />
+      <Route path="/insights/vidiq-vs-tubebuddy-vs-vidcluster" element={<VidiqVsTubebuddyVsVidclusterPage />} />
+      <Route path="/insights/validate-topic-before-video" element={<ValidateTopicBeforeVideoPage />} />
+      <Route path="/insights/find-topics-before-big-creators" element={<FindTopicsBeforeBigCreatorsPage />} />
+      <Route path="/insights/why-small-creators-spot-trends-earlier" element={<WhySmallCreatorsSpotTrendsEarlierPage />}/>
+      <Route path="/insights/topic-growing-vs-flashing" element={<TopicGrowingVsFlashingPage />}/>      
     </Routes>
   );
 }
