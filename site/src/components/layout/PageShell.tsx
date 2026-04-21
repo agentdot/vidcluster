@@ -1,49 +1,42 @@
 import type { ReactNode } from "react";
-import { cn } from "../../lib/utils";
 import SiteHeader from "../SiteHeader";
 import Container from "./Container";
+import Footer from "./Footer";
 
 type PageShellProps = {
   children: ReactNode;
   className?: string;
-  mainClassName?: string;
   containerClassName?: string;
-  backgroundLayers?: ReactNode;
   contained?: boolean;
+  backgroundLayers?: ReactNode;
 };
 
 export default function PageShell({
   children,
   className = "",
-  mainClassName = "",
   containerClassName = "",
-  backgroundLayers,
   contained = false,
+  backgroundLayers,
 }: PageShellProps) {
   return (
-    <div
-      className={cn(
-        "min-h-screen bg-[#060708] text-white selection:bg-white/20 selection:text-white",
-        className,
-      )}
-    >
+    <div className={`min-h-screen bg-background text-foreground ${className}`}>
+      <SiteHeader />
+
       {backgroundLayers ? (
-        <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
           {backgroundLayers}
         </div>
       ) : null}
 
-      <SiteHeader />
+      {contained ? (
+        <Container className={`relative z-10 pt-12 lg:pt-16 ${containerClassName}`}>
+          {children}
+        </Container>
+      ) : (
+        <main className="relative z-10">{children}</main>
+      )}
 
-      <main className={cn("pb-20", mainClassName)}>
-        {contained ? (
-          <Container className={cn("pt-12 lg:pt-16", containerClassName)}>
-            {children}
-          </Container>
-        ) : (
-          children
-        )}
-      </main>
+      <Footer />
     </div>
   );
 }
