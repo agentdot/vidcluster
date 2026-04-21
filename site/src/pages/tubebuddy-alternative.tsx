@@ -1,5 +1,12 @@
 import PageShell from "../components/layout/PageShell";
 import BlogSeo from "../components/blog/BlogSeo";
+import PageSeo from "../components/seo/PageSeo";
+
+<PageSeo
+  title="TubeBuddy Alternative | A Different Way to Find YouTube Opportunities"
+  description="Looking for a TubeBuddy alternative? Explore a different approach focused on early topic signals."
+  url="/tubebuddy-alternative"
+/>
 
 export default function TubebuddyAlternativePage() {
   return (

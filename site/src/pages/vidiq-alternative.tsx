@@ -1,5 +1,12 @@
 import PageShell from "../components/layout/PageShell";
 import BlogSeo from "../components/blog/BlogSeo";
+import PageSeo from "../components/seo/PageSeo";
+
+<PageSeo
+  title="vidIQ Alternative | A Different Way to Find YouTube Opportunities"
+  description="Looking for a vidIQ alternative? Discover a different approach focused on topic-level momentum."
+  url="/vidiq-alternative"
+/>
 
 export default function VidiqAlternativePage() {
   return (

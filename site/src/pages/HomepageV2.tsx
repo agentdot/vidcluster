@@ -1,6 +1,13 @@
 import Container from "../components/layout/Container";
 import PageShell from "../components/layout/PageShell";
 import Section from "../components/layout/Section";
+import PageSeo from "../components/seo/PageSeo";
+
+<PageSeo
+  title="VidCluster — Find YouTube Topics Before They Become Obvious"
+  description="VidCluster helps creators identify YouTube topics gaining momentum before they become crowded. Focus on topic-level growth, not just viral spikes."
+  url="/"
+/>
 
 const steps = [
   {

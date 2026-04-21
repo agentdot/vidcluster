@@ -1,6 +1,13 @@
 import PageShell from "../components/layout/PageShell";
 import PageIntro from "../components/layout/PageIntro";
 import Section from "../components/layout/Section";
+import PageSeo from "../components/seo/PageSeo";
+
+<PageSeo
+  title="How VidCluster Works | Topic-Level YouTube Discovery"
+  description="Learn how VidCluster tracks topic-level momentum across groups of videos to identify early YouTube opportunities."
+  url="/method"
+/>
 
 const steps = [
   {
