@@ -17,6 +17,8 @@ import ValidateTopicBeforeVideoPage from "./pages/insights/validate-topic-before
 import FindTopicsBeforeBigCreatorsPage from "./pages/insights/find-topics-before-big-creators";
 import WhySmallCreatorsSpotTrendsEarlierPage from "./pages/insights/why-small-creators-spot-trends-earlier";
 import TopicGrowingVsFlashingPage from "./pages/insights/topic-growing-vs-flashing";
+import WhyTopicClustersMatterPage from "./pages/insights/why-topic-clusters-matter";
+
 
 
 
@@ -40,7 +42,8 @@ export default function App() {
       <Route path="/insights/validate-topic-before-video" element={<ValidateTopicBeforeVideoPage />} />
       <Route path="/insights/find-topics-before-big-creators" element={<FindTopicsBeforeBigCreatorsPage />} />
       <Route path="/insights/why-small-creators-spot-trends-earlier" element={<WhySmallCreatorsSpotTrendsEarlierPage />}/>
-      <Route path="/insights/topic-growing-vs-flashing" element={<TopicGrowingVsFlashingPage />}/>      
+      <Route path="/insights/topic-growing-vs-flashing" element={<TopicGrowingVsFlashingPage />}/>
+      <Route path="/insights/why-topic-clusters-matter" element={<WhyTopicClustersMatterPage />}/>      
     </Routes>
   );
 }

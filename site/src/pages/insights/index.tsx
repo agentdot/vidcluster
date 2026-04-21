@@ -72,6 +72,12 @@ const articles = [
     "Learn how to distinguish real topic momentum from short-lived spikes on YouTube.",
   slug: "/insights/topic-growing-vs-flashing",
   },
+  {
+  title: "The Hidden Layer of YouTube: Why Topic Clusters Matter More Than Videos",
+  description:
+    "Why the deepest signals on YouTube often appear at the topic-cluster level, not the individual video level.",
+  slug: "/insights/why-topic-clusters-matter",
+  },
 ];
 
 const featuredArticle = articles.find(
