@@ -1,4 +1,4 @@
-import SiteHeader from "../components/SiteHeader";
+import PageShell from "../components/layout/PageShell";
 import PageIntro from "../components/layout/PageIntro";
 import Section from "../components/layout/Section";
 
@@ -48,14 +48,15 @@ const notVidCluster = [
 
 export default function Method() {
   return (
-    <main className="min-h-screen bg-[#060708] text-white selection:bg-white/20 selection:text-white">
-      <SiteHeader />
-
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05),transparent_24%),radial-gradient(circle_at_60%_18%,rgba(120,120,145,0.08),transparent_20%),linear-gradient(to_bottom,#0b0c0f_0%,#07080a_45%,#050607_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.025]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(0,0,0,0.35))]" />
-      </div>
+    <PageShell
+      backgroundLayers={
+        <>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05),transparent_24%),radial-gradient(circle_at_60%_18%,rgba(120,120,145,0.08),transparent_20%),linear-gradient(to_bottom,#0b0c0f_0%,#07080a_45%,#050607_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.025]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(0,0,0,0.35))]" />
+        </>
+      }
+    >
 
       <Section spacing="intro">
         <PageIntro
@@ -256,6 +257,6 @@ export default function Method() {
           </div>
         </div>
       </Section>
-    </main>
+    </PageShell>
   );
 }

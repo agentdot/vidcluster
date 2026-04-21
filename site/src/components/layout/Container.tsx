@@ -1,17 +1,18 @@
-import type { ReactNode } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../../lib/utils";
 
-type ContainerProps = {
-  children: ReactNode;
-  className?: string;
-};
+type ContainerProps = ComponentPropsWithoutRef<"div">;
 
 export default function Container({
   children,
-  className = "",
+  className,
+  ...props
 }: ContainerProps) {
   return (
-    <div className={cn("mx-auto w-full max-w-[1440px] px-6 lg:px-8", className)}>
+    <div
+      className={cn("mx-auto w-full max-w-[1304px] px-6 lg:px-8", className)}
+      {...props}
+    >
       {children}
     </div>
   );

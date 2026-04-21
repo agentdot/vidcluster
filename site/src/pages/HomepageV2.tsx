@@ -1,5 +1,5 @@
-import SiteHeader from "../components/SiteHeader";
 import Container from "../components/layout/Container";
+import PageShell from "../components/layout/PageShell";
 import Section from "../components/layout/Section";
 
 const steps = [
@@ -22,13 +22,14 @@ const steps = [
 
 export default function HomepageV2() {
   return (
-    <main className="min-h-screen bg-[#060708] text-white selection:bg-white/20 selection:text-white">
-      <SiteHeader />
-
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05),transparent_24%),radial-gradient(circle_at_62%_20%,rgba(120,120,145,0.09),transparent_22%),radial-gradient(circle_at_50%_100%,rgba(255,255,255,0.015),transparent_30%),linear-gradient(to_bottom,#0b0c0f_0%,#07080a_42%,#050607_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.025]" />
-      </div>
+    <PageShell
+      backgroundLayers={
+        <>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05),transparent_24%),radial-gradient(circle_at_62%_20%,rgba(120,120,145,0.09),transparent_22%),radial-gradient(circle_at_50%_100%,rgba(255,255,255,0.015),transparent_30%),linear-gradient(to_bottom,#0b0c0f_0%,#07080a_42%,#050607_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.025]" />
+        </>
+      }
+    >
 
       <Section
         spacing="intro"
@@ -749,6 +750,6 @@ export default function HomepageV2() {
           </div>
         </Container>
       </Section>
-    </main>
+    </PageShell>
   );
 }

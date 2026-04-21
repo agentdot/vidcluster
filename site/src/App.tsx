@@ -1,20 +1,29 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { Routes, Route } from "react-router-dom";
+
+import HomePage from "./pages/HomepageV2";
+import Method from "./pages/Method";
 import Research from "./pages/Research";
 import Contact from "./pages/Contact";
-import Method from "./pages/Method";
-import NotFound from "./pages/NotFound";
+import InsightsPage from "./pages/insights/index";
+import FindTopicsPage from "./pages/insights/find-topics";
+import WhyTrendsLatePage from "./pages/insights/why-trends-are-late";
+import VidiqAlternativePage from "./pages/vidiq-alternative";
+import TubebuddyAlternativePage from "./pages/tubebuddy-alternative";
+
+
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/research" element={<Research />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/method" element={<Method />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/method" element={<Method />} />
+      <Route path="/research" element={<Research />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/insights" element={<InsightsPage />} />
+      <Route path="/insights/find-topics" element={<FindTopicsPage />} />
+      <Route path="/insights/why-trends-are-late" element={<WhyTrendsLatePage />} />
+      <Route path="/vidiq-alternative" element={<VidiqAlternativePage />} />
+      <Route path="/tubebuddy-alternative" element={<TubebuddyAlternativePage />} />
+    </Routes>
   );
 }

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import Container from "./layout/Container";
 
 const navItems = [
   { label: "Research", href: "/research" },
   { label: "Method", href: "/method" },
+  { label: "Insights", href: "/insights" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -15,7 +17,7 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/8 bg-[#060708]/72 backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-[1304px] items-center justify-between px-6 py-4">
+      <Container className="flex items-center justify-between py-4">
         <Link
           to="/"
           className="flex items-center gap-3"
@@ -75,11 +77,11 @@ export default function SiteHeader() {
             <span className="block h-[1.5px] w-4 bg-current" />
           </div>
         </button>
-      </div>
+      </Container>
 
       {isOpen && (
         <div className="border-t border-white/8 bg-[#060708]/95 md:hidden">
-          <div className="mx-auto flex w-full max-w-[1304px] flex-col gap-2 px-6 py-4">
+          <Container className="flex flex-col gap-2 py-4">
             {navItems.map((item) => {
               const active = isActive(item.href);
 
@@ -106,7 +108,7 @@ export default function SiteHeader() {
             >
               Join Early Access
             </Link>
-          </div>
+          </Container>
         </div>
       )}
     </header>
