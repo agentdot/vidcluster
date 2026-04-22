@@ -158,6 +158,41 @@ export default function YoutubeTrendingIsUselessPage() {
           Real opportunity usually exists before a topic becomes obvious, not
           after it reaches public visibility.
         </p>
+        {/* CTA */}
+        <div className="mt-16 rounded-2xl border border-border bg-muted/30 p-8 text-center">
+            <h3 className="text-xl font-semibold text-white">
+            Want to identify trends before they become obvious?
+            </h3>
+
+            <p className="mt-3 text-muted-foreground">
+            VidCluster focuses on topic-level momentum so you can spot opportunities
+            earlier — not after they peak.
+            </p>
+
+            <a
+            href="/"
+            className="mt-6 inline-block rounded-full bg-white px-6 py-3 text-sm font-medium text-black hover:opacity-90"
+            >
+            Join Early Access
+            </a>
+        </div>
+
+        <div className="mt-10 text-sm text-white/60">
+        <p>
+            If you rely heavily on keyword and optimization tools, you might be seeing
+            signals after a trend has already formed. For a deeper breakdown, see how
+            tools like{" "}
+            <a href="/vidiq-alternative" className="underline">
+            vidIQ
+            </a>{" "}
+            and{" "}
+            <a href="/tubebuddy-alternative" className="underline">
+            TubeBuddy
+            </a>{" "}
+            compare with topic-level approaches.
+        </p>
+        </div>
+
       </BlogLayout>
     </>
   );
