@@ -2,6 +2,7 @@ import Container from "../components/layout/Container";
 import PageShell from "../components/layout/PageShell";
 import Section from "../components/layout/Section";
 import PageSeo from "../components/seo/PageSeo";
+import { Link } from "react-router-dom";
 
 <PageSeo
   title="VidCluster — Find YouTube Topics Before They Become Obvious"
@@ -81,7 +82,7 @@ export default function HomepageV2() {
             Built for creators who want better timing, not more noise.
           </div>
         </div>
-
+        
         <div className="relative">
           <div className="absolute inset-0 rounded-[2.2rem] bg-[radial-gradient(circle_at_55%_40%,rgba(140,120,255,0.16),transparent_45%)] blur-3xl" />
 
@@ -237,6 +238,7 @@ export default function HomepageV2() {
               </div>
             </div>
           </div>
+          
 
           <div className="mt-4 rounded-[1.35rem] border border-white/8 bg-white/[0.02] p-5">
             <div className="text-[11px] uppercase tracking-[0.2em] text-white/38">
@@ -433,6 +435,105 @@ export default function HomepageV2() {
         </div>
       </Section>
 
+      <section className="mx-auto w-full max-w-[1304px] px-6 py-16 lg:py-20">
+  
+        {/* Header */}
+        <div className="mb-10 flex items-end justify-between">
+          <div>
+            <div className="mb-3 inline-flex rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-medium tracking-wide text-white/60">
+              Insights
+            </div>
+
+            <h2 className="text-2xl font-semibold text-white sm:text-3xl">
+              Research & Thinking
+            </h2>
+
+            <p className="mt-3 max-w-xl text-white/70">
+              Explore how topics grow, how early signals appear, and how to identify opportunities before they become obvious.
+            </p>
+          </div>
+
+          <Link
+            to="/insights"
+            className="hidden sm:inline-block text-sm text-white/70 hover:text-white"
+          >
+            View all →
+          </Link>
+        </div>
+
+        {/* Cards */}
+        <div className="grid gap-6 md:grid-cols-3">
+
+          {/* Article 1 */}
+          <Link
+            to="/insights/why-topic-clusters-matter"
+            className="group rounded-xl border border-white/10 bg-white/[0.02] p-6 transition hover:bg-white/[0.05]"
+          >
+            <h3 className="text-lg font-semibold text-white group-hover:underline">
+              Why Topic Clusters Matter More Than Videos
+            </h3>
+
+            <p className="mt-2 text-sm text-white/60">
+              The deepest signals on YouTube often appear at the topic level, not the individual video level.
+            </p>
+
+            <span className="mt-4 inline-block text-sm text-white/50 group-hover:text-white">
+              Read →
+            </span>
+          </Link>
+
+          {/* Article 2 */}
+          <Link
+            to="/insights/topic-growing-vs-flashing"
+            className="group rounded-xl border border-white/10 bg-white/[0.02] p-6 transition hover:bg-white/[0.05]"
+          >
+            <h3 className="text-lg font-semibold text-white group-hover:underline">
+              Growing vs Flashing Topics
+            </h3>
+
+            <p className="mt-2 text-sm text-white/60">
+              Learn how to distinguish real topic momentum from short-lived spikes.
+            </p>
+
+            <span className="mt-4 inline-block text-sm text-white/50 group-hover:text-white">
+              Read →
+            </span>
+          </Link>
+
+          {/* Article 3 */}
+          <Link
+            to="/insights/find-topics-before-big-creators"
+            className="group rounded-xl border border-white/10 bg-white/[0.02] p-6 transition hover:bg-white/[0.05]"
+          >
+            <h3 className="text-lg font-semibold text-white group-hover:underline">
+              Find Topics Before Big Creators
+            </h3>
+
+            <p className="mt-2 text-sm text-white/60">
+              A practical approach to identifying topics before major channels enter.
+            </p>
+
+            <span className="mt-4 inline-block text-sm text-white/50 group-hover:text-white">
+              Read →
+            </span>
+          </Link>
+
+        </div>
+
+        {/* Mobile CTA */}
+        <div className="mt-8 sm:hidden">
+          <Link
+            to="/insights"
+            className="text-sm text-white/70 hover:text-white"
+          >
+            View all insights →
+          </Link>
+        </div>
+    <div className="mt-6 text-sm text-white/60">
+    Recently featured on <a href="https://medium.com/@app.vidcluster/how-early-signals-compare-to-day-0-predictions-fe3c03b98def"> Medium </a> • 5+ applauds on our latest research
+  </div>
+
+      </section>
       <Section spacing="standard">
         <div className="overflow-hidden rounded-[2.25rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.024),rgba(255,255,255,0.014))] p-8 lg:p-10">
           <div className="max-w-3xl">
@@ -591,6 +692,7 @@ export default function HomepageV2() {
         </div>
       </Section>
 
+      
       <Section spacing="standard">
         <div className="overflow-hidden rounded-[2.25rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.026),rgba(255,255,255,0.014))] p-8 lg:p-10">
           <div className="max-w-3xl">
@@ -725,6 +827,7 @@ export default function HomepageV2() {
           </div>
         </div>
       </Section>
+      
 
       <Section id="cta" bleed spacing="none" className="border-t border-white/8 bg-white/[0.018]">
         <Container className="flex flex-col items-start justify-between gap-8 py-16 lg:flex-row lg:items-end">

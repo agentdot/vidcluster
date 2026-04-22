@@ -20,7 +20,7 @@ export default function FindTopicsPage() {
       >
         <p>
             Most creators do not struggle because they lack effort. They struggle
-            because they enter a topic after it has already become obvious.
+            because they enter a <a href="/insights/topic-growing-vs-flashing" className="underline">topic </a> after it has already become obvious.
         </p>
 
         <p>
