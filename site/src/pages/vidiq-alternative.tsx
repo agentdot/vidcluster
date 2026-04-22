@@ -1,23 +1,15 @@
 import PageShell from "../components/layout/PageShell";
-import BlogSeo from "../components/blog/BlogSeo";
 import PageSeo from "../components/seo/PageSeo";
 
-<PageSeo
-  title="vidIQ Alternative | A Different Way to Find YouTube Opportunities"
-  description="Looking for a vidIQ alternative? Discover a different approach focused on topic-level momentum."
-  url="/vidiq-alternative"
-/>
 
 export default function VidiqAlternativePage() {
   return (
     <>
-      <BlogSeo
-        title="vidIQ Alternative: A Different Way to Find YouTube Opportunities"
-        description="Looking for a vidIQ alternative? Discover a different approach focused on topic-level momentum instead of keyword competition."
-        slug="/vidiq-alternative"
-        ogTitle="vidIQ Alternative (A Smarter Way to Find YouTube Opportunities)"
-        ogDescription="Most tools focus on keywords. This approach focuses on topic momentum — before it becomes competitive."
-      />
+     <PageSeo
+        title="vidIQ Alternative | A Different Way to Find YouTube Opportunities"
+        description="Looking for a vidIQ alternative? Discover a different approach focused on topic-level momentum instead of keyword competition alone."
+        url="/vidiq-alternative"
+      /> 
 
       <PageShell>
         <div className="mx-auto w-full max-w-[900px] px-6 py-16 lg:py-24">
