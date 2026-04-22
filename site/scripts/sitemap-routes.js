@@ -1,22 +1,36 @@
-const routes = [
+import fs from "fs";
+import path from "path";
+import vm from "vm";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const staticRoutes = [
   "/",
   "/method",
   "/research",
   "/insights",
-  "/insights/find-topics",
-  "/insights/why-trends-are-late",
-  "/insights/youtube-trending-is-useless",
-  "/insights/topic-vs-keyword",
-  "/insights/viral-spike-vs-sustained-growth",
-  "/insights/validate-topic-before-video",
-  "/insights/find-topics-before-big-creators",
-  "/insights/why-small-creators-spot-trends-earlier",
-  "/insights/topic-growing-vs-flashing",
-  "/insights/why-topic-clusters-matter",
-  "/insights/vidiq-vs-tubebuddy-vs-vidcluster",
   "/vidiq-alternative",
   "/tubebuddy-alternative",
   "/contact",
 ];
 
-module.exports = routes;
+function loadInsights() {
+  const insightsPath = path.join(__dirname, "..", "src", "content", "insights.ts");
+  const source = fs.readFileSync(insightsPath, "utf8");
+
+  const match = source.match(/export const insights(?:\s*:\s*[^=]+)?\s*=\s*(\[[\s\S]*?\]);/);
+
+  if (!match) {
+    throw new Error(`Unable to parse insights registry at ${insightsPath}`);
+  }
+
+  return vm.runInNewContext(match[1]);
+}
+
+const insightRoutes = loadInsights().map((article) => article.slug);
+
+const routes = [...staticRoutes, ...insightRoutes];
+
+export default routes;

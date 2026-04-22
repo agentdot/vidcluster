@@ -1,6 +1,10 @@
-const fs = require("fs");
-const path = require("path");
-const routes = require("./sitemap-routes");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import routes from "./sitemap-routes.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const SITE_URL = "https://vidcluster.com";
 

@@ -1,60 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
   <url>
     <loc>https://vidcluster.com/</loc>
   </url>
-
   <url>
     <loc>https://vidcluster.com/method</loc>
   </url>
-
   <url>
     <loc>https://vidcluster.com/research</loc>
   </url>
-
   <url>
     <loc>https://vidcluster.com/insights</loc>
   </url>
-
-  <url>
-    <loc>https://vidcluster.com/insights/find-topics</loc>
-  </url>
-
-  <url>
-    <loc>https://vidcluster.com/insights/why-trends-are-late</loc>
-  </url>
-
   <url>
     <loc>https://vidcluster.com/vidiq-alternative</loc>
   </url>
-
   <url>
     <loc>https://vidcluster.com/tubebuddy-alternative</loc>
   </url>
-
   <url>
-  <loc>https://vidcluster.com/insights/topic-growing-vs-flashing</loc>
+    <loc>https://vidcluster.com/contact</loc>
   </url>
-
   <url>
-    <loc>https://vidcluster.com/insights/why-small-creators-spot-trends-earlier</loc>
+    <loc>https://vidcluster.com/insights/find-topics</loc>
   </url>
-
   <url>
-    <loc>https://vidcluster.com/insights/why-topic-clusters-matter</loc>
+    <loc>https://vidcluster.com/insights/why-trends-are-late</loc>
   </url>
-
   <url>
-    <loc>https://vidcluster.com/insights/validate-topic-before-video</loc>
+    <loc>https://vidcluster.com/insights/youtube-trending-is-useless</loc>
   </url>
-
+  <url>
+    <loc>https://vidcluster.com/insights/topic-vs-keyword</loc>
+  </url>
   <url>
     <loc>https://vidcluster.com/insights/viral-spike-vs-sustained-growth</loc>
   </url>
-
+  <url>
+    <loc>https://vidcluster.com/insights/validate-topic-before-video</loc>
+  </url>
+  <url>
+    <loc>https://vidcluster.com/insights/find-topics-before-big-creators</loc>
+  </url>
+  <url>
+    <loc>https://vidcluster.com/insights/why-small-creators-spot-trends-earlier</loc>
+  </url>
+  <url>
+    <loc>https://vidcluster.com/insights/topic-growing-vs-flashing</loc>
+  </url>
+  <url>
+    <loc>https://vidcluster.com/insights/why-topic-clusters-matter</loc>
+  </url>
   <url>
     <loc>https://vidcluster.com/insights/vidiq-vs-tubebuddy-vs-vidcluster</loc>
   </url>
-
 </urlset>

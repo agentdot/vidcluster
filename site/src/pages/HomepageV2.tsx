@@ -445,7 +445,7 @@ export default function HomepageV2() {
             </div>
 
             <h2 className="text-2xl font-semibold text-white sm:text-3xl">
-              Research & Thinking
+              Research & Insights on YouTube Topic Growth
             </h2>
 
             <p className="mt-3 max-w-xl text-white/70">
