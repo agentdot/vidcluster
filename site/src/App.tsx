@@ -35,7 +35,7 @@ export default function App() {
       <Route path="/insights/why-trends-are-late" element={<WhyTrendsLatePage />} />
       <Route path="/vidiq-alternative" element={<VidiqAlternativePage />} />
       <Route path="/tubebuddy-alternative" element={<TubebuddyAlternativePage />} />
-      <Route path="/insight/youtube-trending-is-useless" element={<YoutubeTrendingIsUselessPage />} />
+      <Route path="/insights/youtube-trending-is-useless" element={<YoutubeTrendingIsUselessPage />} />
       <Route path="/insights/topic-vs-keyword" element={<TopicVsKeywordPage />} />
       <Route path="/insights/viral-spike-vs-sustained-growth" element={<ViralSpikeVsSustainedGrowthPage />} />
       <Route path="/insights/vidiq-vs-tubebuddy-vs-vidcluster" element={<VidiqVsTubebuddyVsVidclusterPage />} />
