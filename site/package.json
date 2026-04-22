@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run generate:sitemap && vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@formspree/react": "^3.0.0",
@@ -83,3 +84,4 @@
     "vite": "^5.4.19"
   }
 }
+
