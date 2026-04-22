@@ -5,7 +5,7 @@ export default function Footer() {
       <div className="mx-auto max-w-[1304px] px-6 py-12">
         
         {/* Top Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
 
           {/* Brand */}
           <div>
@@ -53,42 +53,51 @@ export default function Footer() {
               Join Early Access
             </a>
           </div>
+          <div>
+                <div className="text-sm text-white/50 mb-3">Follow</div>
+
+                <div className="flex items-center gap-4">
+
+                    <a
+                    href="https://twitter.com/vidcluster"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white/60 hover:text-white transition"
+                    >
+                    <Twitter size={18} />
+                    </a>
+
+                    <a
+                    href="https://facebook.com/vidcluster"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white/60 hover:text-white transition"
+                    >
+                    <Facebook size={18} />
+                    </a>
+
+                    <a
+                    href="https://github.com/agentdot/vidcluster"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white/60 hover:text-white transition"
+                    >
+                    <Github size={18} />
+                    </a>
+                    <a
+                    href="https://medium.com/@app.vidcluster"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white/60 hover:text-white transition text-sm"
+                    >
+                    Medium
+                    </a>
+
+                </div>
+                </div>
+  
         </div>
-         <div>
-        <div className="text-sm text-white/50 mb-3">Follow</div>
-
-        <div className="flex items-center gap-4">
-
-            <a
-            href="https://twitter.com/vidcluster"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/60 hover:text-white transition"
-            >
-            <Twitter size={18} />
-            </a>
-
-            <a
-            href="https://facebook.com/vidcluster"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/60 hover:text-white transition"
-            >
-            <Facebook size={18} />
-            </a>
-
-            <a
-            href="https://github.com/agentdot/vidcluster"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/60 hover:text-white transition"
-            >
-            <Github size={18} />
-            </a>
-
-        </div>
-        </div>
-
+         
 
         {/* Bottom */}
         <div className="mt-10 pt-6 border-t border-white/10 text-xs text-white/40 flex flex-col md:flex-row justify-between gap-2">
