@@ -87,7 +87,8 @@ export default function VidiqAlternativePage() {
 
           <ul className="mt-4 list-disc pl-6 text-white/70">
             <li>consistent growth across multiple videos</li>
-            <li>increasing activity within a topic cluster</li>
+            <li>increasing activity within a <a href="/insights/why-topic-clusters-matter">
+topic cluster</a></li>
             <li>early signs of sustained interest</li>
           </ul>
 

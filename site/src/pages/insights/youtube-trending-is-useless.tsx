@@ -131,7 +131,8 @@ export default function YoutubeTrendingIsUselessPage() {
 
         <p>
           This is where the real shift happens. Instead of focusing on individual
-          breakout videos, it is often more useful to focus on topic clusters.
+          breakout videos, it is often more useful to focus on <a href="/insights/why-topic-clusters-matter">
+topic clusters.</a>
         </p>
 
         <p>
