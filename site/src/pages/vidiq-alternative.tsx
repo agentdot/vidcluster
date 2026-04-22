@@ -1,7 +1,6 @@
 import PageShell from "../components/layout/PageShell";
 import PageSeo from "../components/seo/PageSeo";
 
-
 export default function VidiqAlternativePage() {
   return (
     <>
