@@ -438,27 +438,30 @@ export default function HomepageV2() {
       <section className="mx-auto w-full max-w-[1304px] px-6 py-16 lg:py-20">
   
         {/* Header */}
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <div className="mb-3 inline-flex rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-medium tracking-wide text-white/60">
-              Insights
-            </div>
-
-            <h2 className="text-2xl font-semibold text-white sm:text-3xl">
-              Research & Insights on YouTube Topic Growth
-            </h2>
-
-            <p className="mt-3 max-w-xl text-white/70">
-              Explore how topics grow, how early signals appear, and how to identify opportunities before they become obvious.
-            </p>
+        <div className="mb-10">
+          <div className="mb-3 inline-flex rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-medium tracking-wide text-white/60">
+            Insights
           </div>
 
-          <Link
-            to="/insights"
-            className="hidden sm:inline-block text-sm text-white/70 hover:text-white"
-          >
-            View all →
-          </Link>
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+                Research & Insights on YouTube Topic Growth
+              </h2>
+
+              <p className="mt-4 max-w-2xl text-white/70">
+                Explore how topics grow, how early signals appear, and how to identify
+                opportunities before they become obvious.
+              </p>
+            </div>
+
+            <Link
+              to="/insights"
+              className="shrink-0 text-sm text-white/70 transition hover:text-white"
+            >
+              View all →
+            </Link>
+          </div>
         </div>
 
         {/* Cards */}
@@ -529,9 +532,9 @@ export default function HomepageV2() {
             View all insights →
           </Link>
         </div>
-    <div className="mt-6 text-sm text-white/60">
-    Recently featured on <a href="https://medium.com/@app.vidcluster/how-early-signals-compare-to-day-0-predictions-fe3c03b98def"> Medium </a> • 5+ applauds on our latest research
-  </div>
+        <div className="mt-6 text-sm text-white/60">
+        Recently featured on <a className="shrink-0 text-sm text-white/70 transition hover:text-white" href="https://medium.com/@app.vidcluster/how-early-signals-compare-to-day-0-predictions-fe3c03b98def"> Medium </a> • 5+ applauds on our latest research
+        </div>
 
       </section>
       <Section spacing="standard">
