@@ -50,17 +50,17 @@ export default function HomepageV2() {
           </div>
 
           <h1 className="max-w-[700px] text-5xl font-semibold leading-[0.94] tracking-[-0.07em] text-white sm:text-6xl xl:text-[4.95rem]">
-            Know which YouTube topics are gaining momentum - before they become obvious.
+            Find YouTube topics before they become saturated
           </h1>
 
           <p className="mt-6 max-w-[560px] text-[1.03rem] leading-8 text-white/60">
-            VidCluster helps you spot topics that are starting to grow - so you can
-            create content before the opportunity gets crowded.
+            Most tools show what's already trending. VidCluster identifies early-stage
+            topic momentum before it becomes obvious.
           </p>
 
           <p className="mt-4 max-w-[620px] text-[0.98rem] leading-8 text-white/46">
-            Instead of looking at one video, VidCluster looks at entire topics -
-            groups of videos moving together - to spot real growth early.
+            Built for creators who want better timing, clearer signals, and fewer
+            wasted videos.
           </p>
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
@@ -72,14 +72,14 @@ export default function HomepageV2() {
             </a>
             <a
               href="/research"
-              className="inline-flex items-center justify-center rounded-full border border-white/12 bg-white/[0.025] px-6 py-3.5 text-sm font-medium text-white/90 transition hover:border-white/20 hover:bg-white/[0.05]"
+              className="inline-flex items-center justify-center rounded-full border border-white/8 bg-transparent px-6 py-3.5 text-sm font-medium text-white/58 transition hover:border-white/14 hover:text-white/78"
             >
               View Research
             </a>
           </div>
 
           <div className="mt-6 text-sm text-white/48">
-            Built for creators who want better timing, not more noise.
+            Built on real experiments, including T+60 validation.
           </div>
         </div>
         
@@ -248,6 +248,69 @@ export default function HomepageV2() {
               Some YouTube topics spike briefly. Others continue to grow.
               VidCluster helps you focus on the ones that keep building.
             </p>
+          </div>
+        </div>
+      </Section>
+
+      <Section spacing="standard">
+        <div className="overflow-hidden rounded-[2.25rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.026),rgba(255,255,255,0.014))] p-8 lg:p-10">
+          <div className="max-w-3xl">
+            <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
+              Shift in thinking
+            </div>
+            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">
+              Most tools show what already happened. VidCluster shows what's building next.
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
+              The difference is not just what you look at. It is how early you can
+              see the topic starting to move.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 lg:grid-cols-[0.96fr_1.04fr]">
+            <div className="rounded-[1.9rem] border border-white/8 bg-white/[0.018] p-6 lg:p-7">
+              <div className="text-[11px] uppercase tracking-[0.24em] text-white/34">
+                What most tools do
+              </div>
+
+              <div className="mt-6 space-y-4">
+                {[
+                  "Look at individual videos",
+                  "React to sudden spikes",
+                  "Show what is already obvious",
+                  "Follow surface trends",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-[1.25rem] border border-white/8 bg-black/20 px-4 py-4 text-base leading-7 text-white/58"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[1.9rem] border border-emerald-400/18 bg-[linear-gradient(180deg,rgba(80,200,140,0.06),rgba(255,255,255,0.018))] p-6 shadow-[0_20px_70px_rgba(80,200,140,0.05)] lg:p-7">
+              <div className="text-[11px] uppercase tracking-[0.24em] text-emerald-300/72">
+                What VidCluster shows
+              </div>
+
+              <div className="mt-6 space-y-4">
+                {[
+                  "Look at whole topics",
+                  "Follow growth over time",
+                  "See what is starting to build",
+                  "Track what keeps growing",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-[1.25rem] border border-white/8 bg-black/20 px-4 py-4 text-base leading-7 text-white/88"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </Section>
@@ -695,70 +758,6 @@ export default function HomepageV2() {
         </div>
       </Section>
 
-      
-      <Section spacing="standard">
-        <div className="overflow-hidden rounded-[2.25rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.026),rgba(255,255,255,0.014))] p-8 lg:p-10">
-          <div className="max-w-3xl">
-            <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
-              Shift in thinking
-            </div>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">
-              Most tools show what already happened. VidCluster shows what's building next.
-            </h2>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
-              The difference is not just what you look at. It is how early you can
-              see the topic starting to move.
-            </p>
-          </div>
-
-          <div className="mt-10 grid gap-5 lg:grid-cols-[0.96fr_1.04fr]">
-            <div className="rounded-[1.9rem] border border-white/8 bg-white/[0.018] p-6 lg:p-7">
-              <div className="text-[11px] uppercase tracking-[0.24em] text-white/34">
-                What most tools do
-              </div>
-
-              <div className="mt-6 space-y-4">
-                {[
-                  "Look at individual videos",
-                  "React to sudden spikes",
-                  "Show what is already obvious",
-                  "Follow surface trends",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-[1.25rem] border border-white/8 bg-black/20 px-4 py-4 text-base leading-7 text-white/58"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-[1.9rem] border border-emerald-400/18 bg-[linear-gradient(180deg,rgba(80,200,140,0.06),rgba(255,255,255,0.018))] p-6 shadow-[0_20px_70px_rgba(80,200,140,0.05)] lg:p-7">
-              <div className="text-[11px] uppercase tracking-[0.24em] text-emerald-300/72">
-                What VidCluster shows
-              </div>
-
-              <div className="mt-6 space-y-4">
-                {[
-                  "Look at whole topics",
-                  "Follow growth over time",
-                  "See what is starting to build",
-                  "Track what keeps growing",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-[1.25rem] border border-white/8 bg-black/20 px-4 py-4 text-base leading-7 text-white/88"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
       <Section id="how-it-works" spacing="standard">
         <div className="max-w-3xl">
           <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
@@ -807,7 +806,7 @@ export default function HomepageV2() {
 
           <a
             href="/research"
-            className="inline-flex items-center justify-center rounded-full border border-white/12 bg-white/[0.03] px-6 py-3.5 text-sm font-medium text-white/90 transition hover:border-white/20 hover:bg-white/[0.05]"
+            className="inline-flex items-center justify-center rounded-full border border-white/8 bg-transparent px-6 py-3.5 text-sm font-medium text-white/58 transition hover:border-white/14 hover:text-white/78"
           >
             View Research
           </a>
@@ -845,20 +844,24 @@ export default function HomepageV2() {
               See the research, understand the approach, and join early if it fits
               how you choose what to make next.
             </p>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-white/48">
+              Early access is for creators who want to test topic intelligence before
+              wider release.
+            </p>
           </div>
 
           <div className="flex flex-col gap-4 sm:flex-row">
-            <a
-              href="/research"
-              className="inline-flex items-center justify-center rounded-full border border-white/12 bg-white/[0.03] px-6 py-3.5 text-sm font-medium text-white/90 transition hover:border-white/20 hover:bg-white/[0.05]"
-            >
-              View Research
-            </a>
             <a
               href="/contact"
               className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3.5 text-sm font-medium text-black transition hover:bg-white/90"
             >
               Join Early Access
+            </a>
+            <a
+              href="/research"
+              className="inline-flex items-center justify-center rounded-full border border-white/8 bg-transparent px-6 py-3.5 text-sm font-medium text-white/58 transition hover:border-white/14 hover:text-white/78"
+            >
+              View Research
             </a>
           </div>
         </Container>
