@@ -1,295 +1,246 @@
-import { Check, ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
-
-import PageShell from "../components/layout/PageShell";
-import Section from "../components/layout/Section";
-import Container from "../components/layout/Container";
-import PageSeo from "../components/seo/PageSeo";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../components/ui/accordion";
-import { cn } from "../lib/utils";
 
 const plans = [
   {
     name: "Explorer",
-    price: "\u00a30",
-    period: "/ month",
-    description: "Get a feel for how VidCluster works",
-    features: [
-      "Limited access to top trending clusters",
-      "Basic leaderboard view",
-      "Limited detail insights",
-      "Delayed data access",
-    ],
+    price: "£0",
+    suffix: "/ month",
+    description: "Understand what is happening — at the surface level",
+    note: "See trends — but not how to act on them",
     cta: "Start exploring",
     href: "/signup?plan=explorer",
+    highlighted: false,
+    features: [
+      "Top 5 trending clusters",
+      "Basic leaderboard view",
+      "Limited topic visibility",
+      "Preview-only insights",
+    ],
   },
   {
     name: "Pro",
-    price: "\u00a319",
-    period: "/ month",
+    price: "£19",
+    suffix: "/ month",
     badge: "Most Popular",
-    description: "For creators and operators who want an edge",
+    priceNote: "Early access price · £49 standard price",
+    description: "Identify high-growth topics before the crowd",
+    note: "Know what to create — and when to act",
+    cta: "Unlock full topic intelligence",
+    href: "/signup?plan=pro",
+    highlighted: true,
     features: [
       "Full leaderboard access",
-      "Complete topic detail view",
-      '"Why this score" explanation',
+      "Complete topic breakdown",
+      "Why this score intelligence",
       "Recommended Actions",
       "Advanced filtering",
-      "Latest data access",
     ],
-    cta: "Get full access",
-    href: "/signup?plan=pro",
-    featured: true,
   },
   {
     name: "Advanced",
-    price: "\u00a349",
-    period: "/ month",
-    description: "For teams and serious growth operators",
+    price: "£49",
+    suffix: "/ month",
+    priceNote: "Early access price · £149 standard price",
+    description: "Scale faster with deeper signals and full data access",
+    note: "Designed for serious growth operators and teams",
+    cta: "Upgrade to Advanced",
+    href: "/signup?plan=advanced",
+    highlighted: false,
     features: [
       "Everything in Pro",
       "Full cluster universe",
       "Early-stage trend signals",
       "CSV export",
-      "Priority access to new features",
-      "Future: watchlists and alerts",
+      "Priority feature access",
+      "Upcoming: watchlists & alerts",
     ],
-    cta: "Upgrade to Advanced",
-    href: "/signup?plan=advanced",
   },
   {
     name: "Enterprise",
     price: "Custom",
-    period: "",
-    description: "For organisations and platforms",
-    features: ["API access future", "Custom dashboards", "Dedicated support"],
+    suffix: "",
+    description: "For organisations that need full integration and scale",
+    note: "Built for platforms, agencies, and enterprise teams",
     cta: "Contact us",
     href: "/contact",
+    highlighted: false,
+    features: [
+      "API access coming soon",
+      "Custom dashboards",
+      "Dedicated support",
+      "Team workflows",
+    ],
   },
 ];
 
-const valueSignals = [
-  "Identify topics early",
-  "Avoid saturated niches",
-  "Evidence-backed signals",
-  "Actionable recommendations",
-];
-
-const faqs = [
-  {
-    question: "How is this different from vidIQ or TubeBuddy?",
-    answer:
-      "VidCluster focuses on topic-level intelligence, not individual videos or keywords. It identifies early growth patterns across clusters of content - not just what is already popular.",
-  },
-  {
-    question: "What does the trend score mean?",
-    answer:
-      "The trend score reflects sustained growth, consistency, and signal strength over time - not short-term spikes.",
-  },
-  {
-    question: "Can I cancel anytime?",
-    answer: "Yes. You can cancel your subscription at any time.",
-  },
-];
-
-export default function Pricing() {
+export default function PricingPage() {
   return (
-    <PageShell
-      backgroundLayers={
-        <>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.06),transparent_24%),radial-gradient(circle_at_52%_34%,rgba(80,200,140,0.08),transparent_24%),radial-gradient(circle_at_80%_18%,rgba(120,120,145,0.08),transparent_22%),linear-gradient(to_bottom,#0B0F17_0%,#07090d_48%,#050607_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.03]" />
-        </>
-      }
-    >
-      <PageSeo
-        title="VidCluster Pricing - Topic Intelligence for YouTube Creators"
-        description="Simple pricing for serious creators and teams using VidCluster to find YouTube topics before they become saturated."
-        url="/pricing"
-      />
-
-      <Section spacing="intro" containerClassName="max-w-[1200px]">
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-white/56">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300/80" />
+    <main className="min-h-screen bg-[#0B0F17] text-white">
+      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-400">
             Pricing
-          </div>
+          </p>
 
-          <h1 className="text-4xl font-semibold leading-[1.02] tracking-[-0.06em] text-white sm:text-6xl lg:text-[4.5rem]">
-            Simple pricing for serious creators and teams
+          <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">
+            Simple pricing for serious operators
           </h1>
 
-          <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-white/62">
-            Find YouTube topics before they become saturated - backed by real data
-            and evaluated over time.
+          <p className="mt-6 text-lg leading-8 text-white/65">
+            Find YouTube topics before they become saturated — built on real
+            experiments and evaluated over time.
           </p>
+
+          <div className="mx-auto mt-8 inline-flex flex-col items-center rounded-2xl border border-emerald-400/20 bg-emerald-400/5 px-6 py-4">
+            <p className="text-sm font-semibold text-emerald-300">
+              Early Access Pricing — locked until public release
+            </p>
+            <p className="mt-1 text-sm text-white/50">
+              Pricing will increase once VidCluster opens to a wider audience.
+            </p>
+          </div>
         </div>
 
-        <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-16 grid gap-6 lg:grid-cols-4">
           {plans.map((plan) => (
-            <article
+            <div
               key={plan.name}
-              className={cn(
-                "relative flex min-h-[560px] flex-col overflow-hidden rounded-[2rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.034),rgba(255,255,255,0.016))] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)]",
-                plan.featured
-                  ? "border-emerald-300/28 shadow-[0_24px_90px_rgba(80,200,140,0.12)]"
-                  : "border-white/9",
-              )}
+              className={[
+                "relative flex flex-col rounded-3xl border p-8 transition",
+                plan.highlighted
+                  ? "border-emerald-400/50 bg-white/[0.07] shadow-[0_0_50px_rgba(16,185,129,0.18)] lg:-mt-4 lg:mb-4"
+                  : "border-white/10 bg-white/[0.035] hover:border-white/20",
+              ].join(" ")}
             >
-              {plan.featured ? (
-                <>
-                  <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent" />
-                  <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-emerald-300/12 blur-3xl" />
-                </>
-              ) : null}
-
-              <div className="relative flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-medium tracking-[-0.03em] text-white/94">
-                    {plan.name}
-                  </h2>
-                  <p className="mt-3 min-h-[3.5rem] text-sm leading-6 text-white/52">
-                    {plan.description}
-                  </p>
+              {plan.badge && (
+                <div className="absolute right-6 top-6 rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold uppercase tracking-wide text-black">
+                  {plan.badge}
                 </div>
+              )}
 
-                {plan.badge ? (
-                  <span className="shrink-0 rounded-full border border-emerald-300/22 bg-emerald-300/[0.08] px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-emerald-200/82">
-                    {plan.badge}
-                  </span>
-                ) : null}
-              </div>
+              <h2 className="text-2xl font-semibold">{plan.name}</h2>
 
-              <div className="relative mt-7 flex items-end gap-2">
-                <div className="text-4xl font-semibold tracking-[-0.05em] text-white">
+              <p className="mt-4 min-h-[56px] text-sm leading-6 text-white/60">
+                {plan.description}
+              </p>
+
+              <div className="mt-8">
+                <span className="text-5xl font-semibold tracking-tight">
                   {plan.price}
-                </div>
-                {plan.period ? (
-                  <div className="pb-1 text-sm text-white/42">{plan.period}</div>
-                ) : null}
+                </span>
+                {plan.suffix && (
+                  <span className="ml-2 text-sm text-white/50">{plan.suffix}</span>
+                )}
               </div>
 
-              <Link
-                to={plan.href}
-                className={cn(
-                  "relative mt-7 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition",
-                  plan.featured
-                    ? "bg-white text-black shadow-[0_14px_34px_rgba(255,255,255,0.10)] hover:bg-white/90"
-                    : "border border-white/10 bg-white/[0.03] text-white/82 hover:border-white/18 hover:bg-white/[0.05] hover:text-white",
-                )}
-              >
-                {plan.cta}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              {plan.priceNote && (
+                <p className="mt-3 text-sm text-emerald-300">{plan.priceNote}</p>
+              )}
 
-              <div className="relative mt-8 h-px bg-white/8" />
+              <p className="mt-5 rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/70">
+                {plan.note}
+              </p>
 
-              <ul className="relative mt-7 space-y-4">
+              <ul className="mt-8 space-y-4">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex gap-3 text-sm leading-6 text-white/64">
-                    <span
-                      className={cn(
-                        "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
-                        plan.featured
-                          ? "border-emerald-300/24 bg-emerald-300/[0.08] text-emerald-200"
-                          : "border-white/10 bg-white/[0.03] text-white/62",
-                      )}
-                    >
-                      <Check className="h-3.5 w-3.5" />
-                    </span>
+                  <li key={feature} className="flex gap-3 text-sm text-white/70">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
-            </article>
+
+              <Link
+                to={plan.href}
+                className={[
+                  "mt-8 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition",
+                  plan.highlighted
+                    ? "bg-white text-black hover:bg-white/90"
+                    : "border border-white/10 text-white hover:bg-white/10",
+                ].join(" ")}
+              >
+                {plan.cta}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           ))}
         </div>
-      </Section>
 
-      <Section spacing="standard" containerClassName="max-w-[1200px]">
-        <div className="overflow-hidden rounded-[2rem] border border-white/9 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.014))] p-7 shadow-[0_24px_80px_rgba(0,0,0,0.24)] lg:p-9">
-          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
-                Value
+        <section className="mt-20 rounded-3xl border border-white/10 bg-white/[0.035] p-8 md:p-10">
+          <h2 className="text-2xl font-semibold">Why VidCluster?</h2>
+
+          <div className="mt-8 grid gap-5 md:grid-cols-4">
+            {[
+              "Identify topics early — before they trend",
+              "Avoid saturated niches and wasted effort",
+              "Backed by real performance data",
+              "Built for decision-making, not guesswork",
+            ].map((item) => (
+              <div key={item} className="rounded-2xl border border-white/10 bg-black/20 p-5">
+                <CheckCircle2 className="mb-4 h-5 w-5 text-emerald-400" />
+                <p className="text-sm leading-6 text-white/70">{item}</p>
               </div>
-              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">
-                Built for decision-making, not guesswork
-              </h2>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {valueSignals.map((signal) => (
-                <div
-                  key={signal}
-                  className="flex items-center gap-3 rounded-[1.2rem] border border-white/8 bg-black/18 px-4 py-4 text-sm text-white/72"
-                >
-                  <span className="h-2 w-2 rounded-full bg-emerald-300/78" />
-                  {signal}
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
-        </div>
-      </Section>
+        </section>
 
-      <Section spacing="standard" containerClassName="max-w-[900px]">
-        <div className="text-center">
-          <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
-            FAQ
+        <section className="mx-auto mt-20 max-w-4xl text-center">
+          <p className="text-2xl font-semibold md:text-3xl">
+            Most tools show what is already trending.
+          </p>
+          <p className="mt-4 text-2xl font-semibold text-emerald-300 md:text-3xl">
+            VidCluster shows what is growing — before everyone else notices.
+          </p>
+        </section>
+
+        <section className="mx-auto mt-20 max-w-4xl">
+          <h2 className="text-center text-3xl font-semibold">FAQ</h2>
+
+          <div className="mt-10 space-y-4">
+            {[
+              {
+                q: "How is this different from vidIQ or TubeBuddy?",
+                a: "VidCluster focuses on topic-level intelligence, not individual videos or keywords. It identifies early growth patterns across clusters of content — not just what is already popular.",
+              },
+              {
+                q: "What does the trend score mean?",
+                a: "The trend score reflects sustained growth, consistency, and signal strength over time — not short-term spikes.",
+              },
+              {
+                q: "Can I cancel anytime?",
+                a: "Yes. You can cancel your subscription at any time.",
+              },
+            ].map((faq) => (
+              <div
+                key={faq.q}
+                className="rounded-2xl border border-white/10 bg-white/[0.035] p-6"
+              >
+                <h3 className="font-semibold">{faq.q}</h3>
+                <p className="mt-3 text-sm leading-6 text-white/60">{faq.a}</p>
+              </div>
+            ))}
           </div>
-          <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">
-            Questions before you choose a plan
+        </section>
+
+        <section className="mt-20 rounded-3xl border border-emerald-400/20 bg-emerald-400/5 p-10 text-center">
+          <h2 className="text-3xl font-semibold">
+            Start finding topics before they become saturated
           </h2>
-        </div>
+          <p className="mx-auto mt-4 max-w-2xl text-white/60">
+            Unlock the full topic intelligence system and start acting before
+            the market becomes crowded.
+          </p>
 
-        <Accordion type="single" collapsible defaultValue="item-0" className="mt-10 space-y-4">
-          {faqs.map((faq, index) => (
-            <AccordionItem
-              key={faq.question}
-              value={`item-${index}`}
-              className="overflow-hidden rounded-[1.35rem] border border-white/8 bg-white/[0.025] px-5"
-            >
-              <AccordionTrigger className="py-5 text-left text-base text-white/88 hover:no-underline">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="pb-5 text-base leading-7 text-white/58">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </Section>
-
-      <Section bleed spacing="none" className="border-t border-white/8 bg-white/[0.018]">
-        <Container className="max-w-[1200px] py-16 text-center lg:py-20">
-          <div className="mx-auto max-w-3xl">
-            <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
-              Next step
-            </div>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-6xl sm:leading-[0.98]">
-              Start finding topics before they become saturated
-            </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/58">
-              Use topic-level signals to choose what to make next with more
-              confidence and less reactive guessing.
-            </p>
-
-            <Link
-              to="/signup?plan=pro"
-              className="mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-medium text-black shadow-[0_12px_34px_rgba(255,255,255,0.08)] transition hover:bg-white/90"
-            >
-              Get full access
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </Container>
-      </Section>
-    </PageShell>
+          <Link
+            to="/signup?plan=pro"
+            className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90"
+          >
+            Unlock full access
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </section>
+      </section>
+    </main>
   );
 }
