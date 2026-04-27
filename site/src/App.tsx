@@ -4,6 +4,11 @@ import HomePage from "./pages/HomepageV2";
 import Method from "./pages/Method";
 import Research from "./pages/Research";
 import Contact from "./pages/Contact";
+import Pricing from "./pages/Pricing";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import InsightsPage from "./pages/insights/index";
 import FindTopicsPage from "./pages/insights/find-topics";
 import WhyTrendsLatePage from "./pages/insights/why-trends-are-late";
@@ -30,6 +35,17 @@ export default function App() {
       <Route path="/method" element={<Method />} />
       <Route path="/research" element={<Research />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/insights" element={<InsightsPage />} />
       <Route path="/insights/find-topics" element={<FindTopicsPage />} />
       <Route path="/insights/why-trends-are-late" element={<WhyTrendsLatePage />} />

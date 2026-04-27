@@ -5,6 +5,7 @@ import Container from "./layout/Container";
 const navItems = [
   { label: "Research", href: "/research" },
   { label: "Method", href: "/method" },
+  { label: "Pricing", href: "/pricing" },
   { label: "Insights", href: "/insights" },
   { label: "Contact", href: "/contact" },
 ];
@@ -57,7 +58,7 @@ export default function SiteHeader() {
 
         <div className="hidden md:block">
           <Link
-            to="/contact"
+            to="/signup"
             className="inline-flex items-center justify-center rounded-full border border-white/12 bg-white/[0.03] px-4 py-2.5 text-sm text-white/88 transition hover:border-white/20 hover:bg-white/[0.05]"
           >
             Join Early Access
@@ -102,7 +103,7 @@ export default function SiteHeader() {
             })}
 
             <Link
-              to="/contact"
+              to="/signup"
               onClick={() => setIsOpen(false)}
               className="mt-2 inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90"
             >

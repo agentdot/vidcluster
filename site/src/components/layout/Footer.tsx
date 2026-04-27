@@ -32,6 +32,9 @@ export default function Footer() {
                 <a href="/method" className="hover:text-white">Method</a>
               </li>
               <li>
+                <a href="/pricing" className="hover:text-white">Pricing</a>
+              </li>
+              <li>
                 <a href="/contact" className="hover:text-white">Contact</a>
               </li>
             </ul>
@@ -47,7 +50,7 @@ export default function Footer() {
             </p>
 
             <a
-              href="/"
+              href="/signup"
               className="inline-block rounded-lg border border-white/20 px-4 py-2 text-sm text-white hover:border-white/40 transition"
             >
               Join Early Access
