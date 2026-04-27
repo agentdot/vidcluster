@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type MouseEvent } from "react";
 import { ArrowUpRight, Check, Lock, ShieldCheck, Star } from "lucide-react";
 
 import PageShell from "../components/layout/PageShell";
@@ -182,11 +182,12 @@ const hasPremiumAccess = userPlan === "pro" || userPlan === "advanced";
 const EXPLORER_WATCHLIST_LIMIT = 2;
 
 function formatDecision(label: string) {
-  return label
-    .toLowerCase()
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  if (label === "STRONG_TREND") return "Strong Trend";
+  if (label === "EARLY_TREND") return "Early Trend";
+  if (label === "EMERGING") return "Emerging";
+  if (label === "WEAK_OR_RISK") return "Monitor Only";
+
+  return label;
 }
 
 function formatScore(score: number) {
@@ -199,18 +200,36 @@ function formatPercent(value: number) {
 
 function getDecisionClass(label: string) {
   if (label === "STRONG_TREND") {
-    return "border-emerald-300/22 bg-emerald-300/[0.08] text-emerald-100/86";
+    return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
   }
 
   if (label === "EARLY_TREND") {
-    return "border-amber-300/22 bg-amber-300/[0.08] text-amber-100/86";
+    return "border-amber-300/30 bg-amber-300/10 text-amber-200";
   }
 
   if (label === "EMERGING") {
-    return "border-sky-300/20 bg-sky-300/[0.07] text-sky-100/82";
+    return "border-sky-300/25 bg-sky-300/10 text-sky-200";
   }
 
-  return "border-white/10 bg-white/[0.035] text-white/56";
+  return "border-rose-300/25 bg-rose-300/10 text-rose-200";
+}
+
+function getPlanClass(plan: UserPlan) {
+  if (plan === "pro") {
+    return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
+  }
+
+  if (plan === "advanced") {
+    return "border-violet-300/30 bg-violet-300/10 text-violet-200";
+  }
+
+  return "border-slate-300/18 bg-slate-300/[0.08] text-slate-200/80";
+}
+
+function formatPlan(plan: UserPlan) {
+  if (plan === "explorer") return "Explorer Preview";
+  if (plan === "advanced") return "Advanced";
+  return "Pro";
 }
 
 function getRecommendedAction(topic: LeaderboardRow) {
@@ -231,6 +250,100 @@ function getRecommendedAction(topic: LeaderboardRow) {
 
 function getTopicId(topic: LeaderboardRow) {
   return topic.cluster_id ?? topic.display_topic_title;
+}
+
+function DecisionPill({ label, className = "" }: { label: string; className?: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex max-w-full items-center rounded-full border px-3 py-1 text-[10px] font-medium uppercase tracking-[0.13em]",
+        getDecisionClass(label),
+        className,
+      )}
+    >
+      {formatDecision(label)}
+    </span>
+  );
+}
+
+function PlanPill({ plan }: { plan: UserPlan }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium",
+        getPlanClass(plan),
+      )}
+    >
+      {formatPlan(plan)}
+    </span>
+  );
+}
+
+function SignalPill({ children }: { children: string }) {
+  return (
+    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-xs text-white/62">
+      {children}
+    </span>
+  );
+}
+
+function MetricCard({
+  label,
+  value,
+  tone = "neutral",
+}: {
+  label: string;
+  value: string;
+  tone?: "neutral" | "positive" | "risk";
+}) {
+  return (
+    <div className="rounded-[1.1rem] border border-white/8 bg-black/18 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.025)]">
+      <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">
+        {label}
+      </div>
+      <div
+        className={cn(
+          "mt-2 text-xl font-semibold tracking-[-0.03em]",
+          tone === "positive"
+            ? "text-emerald-200"
+            : tone === "risk"
+              ? "text-rose-200"
+              : "text-white",
+        )}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function WatchStarButton({
+  active,
+  size = "md",
+  onClick,
+  ariaLabel,
+}: {
+  active: boolean;
+  size?: "sm" | "md";
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
+  ariaLabel: string;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={ariaLabel}
+      onClick={onClick}
+      className={cn(
+        "flex items-center justify-center rounded-full border transition hover:scale-[1.03] hover:shadow-[0_12px_34px_rgba(245,158,11,0.16)]",
+        size === "sm" ? "h-7 w-7" : "h-9 w-9",
+        active
+          ? "border-amber-300/35 bg-amber-300/12 text-amber-200 shadow-[0_0_24px_rgba(245,158,11,0.10)]"
+          : "border-white/10 bg-white/[0.03] text-white/42 hover:border-amber-300/22 hover:text-amber-100",
+      )}
+    >
+      <Star className={cn(size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4", active ? "fill-current" : "")} />
+    </button>
+  );
 }
 
 export default function Dashboard() {
@@ -266,6 +379,7 @@ export default function Dashboard() {
   const visibleLeaderboard = showWatchlistOnly
     ? planLimitedLeaderboard.filter((topic) => isWatched(getTopicId(topic)))
     : planLimitedLeaderboard;
+  const lockedLeaderboardPreview = hasPremiumAccess ? [] : leaderboard.slice(5, 8);
 
   const handleAddTopic = (topic: LeaderboardRow) => {
     const topicId = getTopicId(topic);
@@ -324,8 +438,9 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <div className="rounded-[1.2rem] border border-white/8 bg-white/[0.025] px-4 py-3 text-sm text-white/52">
-            Snapshot: V3.3 leaderboard · {formatDecision(userPlan)} plan
+          <div className="flex flex-wrap items-center gap-3 rounded-[1.2rem] border border-white/8 bg-white/[0.025] px-4 py-3 text-sm text-white/52">
+            <span>Snapshot: V3.3 leaderboard</span>
+            <PlanPill plan={userPlan} />
           </div>
         </div>
 
@@ -391,26 +506,17 @@ export default function Dashboard() {
                   key={getTopicId(topic)}
                   type="button"
                   onClick={() => setSelectedRank(topic.rank)}
-                  className="rounded-[1.25rem] border border-white/8 bg-black/16 p-4 text-left transition hover:border-emerald-300/18 hover:bg-emerald-300/[0.035] hover:shadow-[0_18px_54px_rgba(80,200,140,0.08)]"
+                  className="rounded-[1.25rem] border border-white/8 bg-black/16 p-4 text-left transition hover:border-emerald-400/30 hover:bg-emerald-400/5 hover:shadow-[0_18px_54px_rgba(16,185,129,0.10)]"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="text-sm font-medium leading-6 text-white/88">
                       {topic.display_topic_title}
                     </h3>
-                    <Star className="h-4 w-4 shrink-0 fill-emerald-200 text-emerald-200" />
+                    <Star className="h-4 w-4 shrink-0 fill-amber-300 text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.25)]" />
                   </div>
                   <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-white/62">
-                      Score {formatScore(topic.trend_strength_score)}
-                    </span>
-                    <span
-                      className={cn(
-                        "rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.12em]",
-                        getDecisionClass(topic.decision_label),
-                      )}
-                    >
-                      {formatDecision(topic.decision_label)}
-                    </span>
+                    <SignalPill>Score {formatScore(topic.trend_strength_score)}</SignalPill>
+                    <DecisionPill label={topic.decision_label} className="px-2.5 py-1 text-[9px]" />
                   </div>
                   <div className="mt-3 text-xs text-white/46">
                     {formatPercent(topic.growth_since_freeze_pct)} growth ·{" "}
@@ -437,7 +543,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-5">
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {topOpportunities.map((topic) => {
             const isSelected = selectedTopic.rank === topic.rank;
 
@@ -447,71 +553,61 @@ export default function Dashboard() {
                 type="button"
                 onClick={() => setSelectedRank(topic.rank)}
                 className={cn(
-                  "min-h-[220px] rounded-[1.55rem] border p-5 text-left transition",
+                  "min-h-[250px] rounded-[1.65rem] border p-6 text-left transition",
                   isSelected
-                    ? "border-emerald-300/26 bg-emerald-300/[0.065] shadow-[0_22px_80px_rgba(80,200,140,0.10)]"
+                    ? "border-emerald-400/35 bg-emerald-400/5 shadow-[0_22px_80px_rgba(16,185,129,0.12)]"
                     : "border-white/8 bg-white/[0.025] hover:border-white/14 hover:bg-white/[0.04]",
                 )}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="text-xs uppercase tracking-[0.22em] text-white/36">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="text-[11px] uppercase tracking-[0.24em] text-white/36">
                     Rank {topic.rank}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      aria-label={
-                        isWatched(getTopicId(topic))
-                          ? "Remove from watchlist"
-                          : "Add to watchlist"
-                      }
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleToggleTopic(topic);
-                      }}
-                      className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-full border transition hover:shadow-[0_12px_34px_rgba(80,200,140,0.16)]",
-                        isWatched(getTopicId(topic))
-                          ? "border-emerald-300/24 bg-emerald-300/[0.09] text-emerald-100"
-                          : "border-white/10 bg-white/[0.03] text-white/44 hover:border-white/18 hover:text-white/80",
-                      )}
-                    >
-                      <Star
-                        className={cn(
-                          "h-4 w-4",
-                          isWatched(getTopicId(topic)) ? "fill-current" : "",
-                        )}
-                      />
-                    </button>
-                    <ArrowUpRight className="h-4 w-4 text-white/40" />
-                  </div>
+                  <WatchStarButton
+                    ariaLabel={
+                      isWatched(getTopicId(topic))
+                        ? "Remove from watchlist"
+                        : "Add to watchlist"
+                    }
+                    active={isWatched(getTopicId(topic))}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleToggleTopic(topic);
+                    }}
+                  />
                 </div>
-                <h3 className="mt-5 text-lg font-medium leading-6 tracking-[-0.03em] text-white/92">
+                <h3 className="mt-7 min-h-[4rem] text-2xl font-semibold leading-8 tracking-[-0.045em] text-white/94">
                   {topic.display_topic_title}
                 </h3>
-                <p className="mt-2 line-clamp-2 text-sm leading-6 text-white/46">
-                  {topic.topic_subtitle}
-                </p>
-                <div className="mt-5 flex items-end justify-between gap-3">
+
+                <div className="mt-8 flex items-end justify-between gap-4">
                   <div>
                     <div className="text-[11px] uppercase tracking-[0.18em] text-white/34">
                       Score
                     </div>
-                    <div className="mt-1 text-3xl font-semibold tracking-[-0.05em] text-white">
+                    <div className="mt-1 text-5xl font-semibold tracking-[-0.06em] text-white">
                       {formatScore(topic.trend_strength_score)}
                     </div>
                   </div>
-                  <span
-                    className={cn(
-                      "rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.14em]",
-                      getDecisionClass(topic.decision_label),
-                    )}
-                  >
-                    {formatDecision(topic.decision_label)}
-                  </span>
+
+                  <div className="text-right">
+                    <DecisionPill label={topic.decision_label} />
+                    <div
+                      className={cn(
+                        "mt-3 text-sm font-medium",
+                        topic.growth_since_freeze_pct >= 0
+                          ? "text-emerald-200/78"
+                          : "text-red-100/62",
+                      )}
+                    >
+                      {formatPercent(topic.growth_since_freeze_pct)} growth
+                    </div>
+                  </div>
                 </div>
-                <div className="mt-4 text-sm text-white/52">
-                  {formatPercent(topic.growth_since_freeze_pct)} growth
+
+                <div className="mt-6 flex items-center justify-end gap-1 text-sm text-white/44">
+                  Inspect
+                  <ArrowUpRight className="h-4 w-4" />
                 </div>
               </button>
             );
@@ -537,17 +633,26 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="relative overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[680px] table-fixed text-left">
+              <colgroup>
+                <col className="w-[56px]" />
+                <col className="w-[64px]" />
+                <col />
+                <col className="w-[76px]" />
+                <col className="w-[148px]" />
+                <col className="w-[92px]" />
+                <col className="w-[104px]" />
+              </colgroup>
               <thead className="border-b border-white/8 text-[11px] uppercase tracking-[0.18em] text-white/34">
                 <tr>
-                  <th className="px-5 py-4 font-medium">Watch</th>
-                  <th className="px-5 py-4 font-medium">Rank</th>
-                  <th className="px-5 py-4 font-medium">Topic</th>
-                  <th className="px-5 py-4 font-medium">Score</th>
-                  <th className="px-5 py-4 font-medium">Decision</th>
-                  <th className="px-5 py-4 font-medium">Growth</th>
-                  <th className="px-5 py-4 font-medium">Latest videos</th>
+                  <th className="px-3 py-3 font-medium">Watch</th>
+                  <th className="px-3 py-3 font-medium">Rank</th>
+                  <th className="px-3 py-3 font-medium">Topic</th>
+                  <th className="px-3 py-3 font-medium">Score</th>
+                  <th className="px-3 py-3 font-medium">Signal</th>
+                  <th className="px-3 py-3 font-medium">Growth</th>
+                  <th className="px-3 py-3 font-medium">Videos</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/7">
@@ -560,59 +665,41 @@ export default function Dashboard() {
                       onClick={() => setSelectedRank(topic.rank)}
                       className={cn(
                         "cursor-pointer transition",
-                        isSelected ? "bg-emerald-300/[0.055]" : "hover:bg-white/[0.025]",
+                        isSelected
+                          ? "bg-emerald-400/[0.065] shadow-[inset_3px_0_0_rgba(52,211,153,0.75)]"
+                          : "hover:bg-white/[0.028]",
                       )}
                     >
-                      <td className="px-5 py-4">
-                        <button
-                          type="button"
-                          aria-label={
+                      <td className="px-3 py-2.5">
+                        <WatchStarButton
+                          ariaLabel={
                             isWatched(getTopicId(topic))
                               ? "Remove from watchlist"
                               : "Add to watchlist"
                           }
+                          active={isWatched(getTopicId(topic))}
+                          size="sm"
                           onClick={(event) => {
                             event.stopPropagation();
                             handleToggleTopic(topic);
                           }}
-                          className={cn(
-                            "flex h-8 w-8 items-center justify-center rounded-full border transition hover:shadow-[0_12px_34px_rgba(80,200,140,0.16)]",
-                            isWatched(getTopicId(topic))
-                              ? "border-emerald-300/24 bg-emerald-300/[0.09] text-emerald-100"
-                              : "border-white/10 bg-white/[0.03] text-white/44 hover:border-white/18 hover:text-white/80",
-                          )}
-                        >
-                          <Star
-                            className={cn(
-                              "h-4 w-4",
-                              isWatched(getTopicId(topic)) ? "fill-current" : "",
-                            )}
-                          />
-                        </button>
+                        />
                       </td>
-                      <td className="px-5 py-4 text-sm text-white/50">{topic.rank}</td>
-                      <td className="px-5 py-4 text-sm font-medium text-white/86">
-                        <div>{topic.display_topic_title}</div>
-                        <div className="mt-1 max-w-[28rem] text-xs font-normal leading-5 text-white/42">
-                          {topic.topic_subtitle}
+                      <td className="px-3 py-2.5 text-sm text-white/50">{topic.rank}</td>
+                      <td className="px-3 py-2.5 text-sm font-medium text-white/86">
+                        <div className="line-clamp-2 leading-5">
+                          {topic.display_topic_title}
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-sm text-white/74">
+                      <td className="px-3 py-2.5 text-sm text-white/74">
                         {formatScore(topic.trend_strength_score)}
                       </td>
-                      <td className="px-5 py-4">
-                        <span
-                          className={cn(
-                            "rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.14em]",
-                            getDecisionClass(topic.decision_label),
-                          )}
-                        >
-                          {formatDecision(topic.decision_label)}
-                        </span>
+                      <td className="px-3 py-2.5">
+                        <DecisionPill label={topic.decision_label} className="px-2.5 py-1 text-[9px]" />
                       </td>
                       <td
                         className={cn(
-                          "px-5 py-4 text-sm",
+                          "px-3 py-2.5 text-sm",
                           topic.growth_since_freeze_pct >= 0
                             ? "text-emerald-200/78"
                             : "text-red-100/62",
@@ -620,7 +707,7 @@ export default function Dashboard() {
                       >
                         {formatPercent(topic.growth_since_freeze_pct)}
                       </td>
-                      <td className="px-5 py-4 text-sm text-white/62">
+                      <td className="px-3 py-2.5 text-sm text-white/62">
                         {topic.latest_n_videos}
                       </td>
                     </tr>
@@ -635,14 +722,10 @@ export default function Dashboard() {
                 ) : null}
               </tbody>
             </table>
-            {!hasPremiumAccess ? (
-              <BlurOverlay
-                title="Unlock the full leaderboard"
-                text="Explorer shows the first five clusters. Pro and Advanced reveal the full ranked universe."
-                cta="Upgrade for full access"
-              />
-            ) : null}
           </div>
+          {!hasPremiumAccess ? (
+            <LockedLeaderboardPreview rows={lockedLeaderboardPreview} />
+          ) : null}
         </div>
 
         <aside className="rounded-[1.8rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.038),rgba(255,255,255,0.016))] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.24)] xl:sticky xl:top-28 xl:self-start">
@@ -658,14 +741,7 @@ export default function Dashboard() {
                 {selectedTopic.topic_subtitle}
               </p>
             </div>
-            <span
-              className={cn(
-                "shrink-0 rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.14em]",
-                getDecisionClass(selectedTopic.decision_label),
-              )}
-            >
-              {formatDecision(selectedTopic.decision_label)}
-            </span>
+            <DecisionPill label={selectedTopic.decision_label} className="shrink-0" />
           </div>
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
@@ -677,10 +753,10 @@ export default function Dashboard() {
                   : handleAddTopic(selectedTopic)
               }
               className={cn(
-                "inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition hover:shadow-[0_18px_48px_rgba(80,200,140,0.18)]",
+                "inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition hover:shadow-[0_18px_48px_rgba(245,158,11,0.18)]",
                 selectedTopicIsWatched
-                  ? "border border-emerald-300/22 bg-emerald-300/[0.08] text-emerald-100 hover:bg-emerald-300/[0.12]"
-                  : "border border-white/10 bg-white/[0.03] text-white/82 hover:border-white/18 hover:bg-white/[0.05] hover:text-white",
+                  ? "border border-amber-300/30 bg-amber-300/10 text-amber-100 hover:bg-amber-300/[0.14]"
+                  : "border border-white/10 bg-white/[0.03] text-white/82 hover:border-amber-300/22 hover:bg-white/[0.05] hover:text-white",
               )}
             >
               <Star
@@ -692,24 +768,27 @@ export default function Dashboard() {
 
           <div className="mt-7 grid grid-cols-2 gap-3">
             {[
-              ["Score", formatScore(selectedTopic.trend_strength_score)],
-              ["Growth", formatPercent(selectedTopic.growth_since_freeze_pct)],
+              ["Score", formatScore(selectedTopic.trend_strength_score), "neutral"],
+              [
+                "Growth",
+                formatPercent(selectedTopic.growth_since_freeze_pct),
+                selectedTopic.growth_since_freeze_pct >= 0 ? "positive" : "risk",
+              ],
               [
                 "Confidence",
                 selectedTopic.trend_confidence === undefined
                   ? "Unavailable"
                   : `${Math.round(selectedTopic.trend_confidence * 100)}%`,
+                "neutral",
               ],
-              ["Latest videos", selectedTopic.latest_n_videos.toString()],
-            ].map(([label, value]) => (
-              <div key={label} className="rounded-[1.1rem] border border-white/8 bg-black/18 p-4">
-                <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">
-                  {label}
-                </div>
-                <div className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white">
-                  {value}
-                </div>
-              </div>
+              ["Latest videos", selectedTopic.latest_n_videos.toString(), "neutral"],
+            ].map(([label, value, tone]) => (
+              <MetricCard
+                key={label}
+                label={label}
+                value={value}
+                tone={tone as "neutral" | "positive" | "risk"}
+              />
             ))}
           </div>
 
@@ -731,29 +810,20 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="mt-7 space-y-4">
-              <div className="relative overflow-hidden rounded-[1.2rem] border border-white/8 bg-white/[0.025]">
-                <div className="space-y-4 p-4 blur-sm">
-                  <DetailBlock title="What is happening" text={selectedTopic.trend_summary} />
-                  <DetailBlock
-                    title="Why this score"
-                    text="Sustained growth, signal strength, and confidence are evaluated together."
-                  />
-                  <DetailBlock
-                    title="Recommended action"
-                    text="Use the signal to choose timing, angle, and production priority."
-                  />
-                </div>
-                <BlurOverlay
-                  title="Full topic detail is available on Pro"
-                  text="Upgrade to see why the score exists, what action to take, and the evidence behind each signal."
-                  cta="Upgrade to Pro"
-                />
-              </div>
-              <UpgradeCard />
+              <LockedDetailPreview topic={selectedTopic} />
+              <LockedWhyScorePreview topic={selectedTopic} />
+              <LockedRecommendedActionsPreview />
+              <UpgradeCard
+                title="Unlock complete topic intelligence"
+                description="Pro opens full topic detail, score reasoning, recommended actions, and the complete leaderboard."
+                cta="Upgrade to Pro"
+                variant="detail"
+              />
             </div>
           )}
         </aside>
       </Section>
+      {!hasPremiumAccess ? <StickyUpgradeBar /> : null}
     </PageShell>
   );
 }
@@ -813,54 +883,250 @@ function DetailBlock({ title, text }: { title: string; text: string }) {
   );
 }
 
-function UpgradeCard() {
+function UpgradeCard({
+  title,
+  description,
+  cta,
+  variant = "detail",
+}: {
+  title: string;
+  description: string;
+  cta: string;
+  variant?: "leaderboard" | "detail" | "actions";
+}) {
+  const eyebrow =
+    variant === "leaderboard"
+      ? "Full universe locked"
+      : variant === "actions"
+        ? "Action layer locked"
+        : "Insight locked";
+
   return (
-    <div className="rounded-[1.35rem] border border-emerald-300/18 bg-[linear-gradient(180deg,rgba(80,200,140,0.08),rgba(255,255,255,0.018))] p-5 shadow-[0_20px_70px_rgba(80,200,140,0.06)]">
+    <div className="rounded-[1.35rem] border border-emerald-400/30 bg-emerald-400/5 p-5 shadow-[0_20px_70px_rgba(16,185,129,0.10)]">
       <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-emerald-200/70">
         <Lock className="h-4 w-4" />
-        Upgrade signal
+        {eyebrow}
       </div>
       <h3 className="mt-3 text-xl font-semibold tracking-[-0.04em] text-white">
-        See the reason behind every topic signal
+        {title}
       </h3>
       <p className="mt-3 text-sm leading-6 text-white/56">
-        Pro unlocks full topic detail, score explanations, recommended actions,
-        and the complete leaderboard.
+        {description}
       </p>
       <a
-        href="/pricing"
-        className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black shadow-[0_12px_34px_rgba(255,255,255,0.08)] transition hover:bg-white/90 hover:shadow-[0_18px_48px_rgba(80,200,140,0.20)]"
+        href="/signup?plan=pro"
+        className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black shadow-[0_12px_34px_rgba(255,255,255,0.08)] transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_18px_48px_rgba(16,185,129,0.22)]"
       >
-        Compare plans
+        {cta}
       </a>
     </div>
   );
 }
 
-function BlurOverlay({
-  title,
-  text,
-  cta,
-}: {
-  title: string;
-  text: string;
-  cta: string;
-}) {
+function LockedLeaderboardPreview({ rows }: { rows: LeaderboardRow[] }) {
   return (
-    <div className="absolute inset-x-0 bottom-0 flex min-h-[9rem] items-end justify-center bg-gradient-to-t from-[#07090d] via-[#07090d]/92 to-transparent p-4 backdrop-blur-[2px] sm:p-6">
-      <div className="w-full max-w-md rounded-[1.2rem] border border-white/10 bg-[#0B0F17]/82 p-4 text-center shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-md">
+    <div className="border-t border-white/8 bg-black/12 p-4 sm:p-5">
+      {rows.length > 0 ? (
+        <div className="overflow-hidden rounded-[1.1rem] border border-white/8 bg-white/[0.018]">
+          <div className="divide-y divide-white/7 blur-[1.5px]">
+            {rows.map((topic) => (
+              <div
+                key={topic.rank}
+                className="grid grid-cols-[56px_64px_minmax(0,1fr)_76px_148px_92px_104px] items-center px-3 py-2.5 text-sm"
+              >
+                <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/30">
+                  <Star className="h-3.5 w-3.5" />
+                </div>
+                <div className="text-white/38">{topic.rank}</div>
+                <div className="line-clamp-1 pr-3 font-medium text-white/62">
+                  {topic.display_topic_title}
+                </div>
+                <div className="text-white/48">{formatScore(topic.trend_strength_score)}</div>
+                <div>
+                  <DecisionPill label={topic.decision_label} className="px-2.5 py-1 text-[9px]" />
+                </div>
+                <div className="text-emerald-200/48">
+                  {formatPercent(topic.growth_since_freeze_pct)}
+                </div>
+                <div className="text-white/42">{topic.latest_n_videos}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mx-auto mt-4 max-w-xl rounded-[1.2rem] border border-emerald-400/30 bg-emerald-400/5 p-5 text-center shadow-[0_18px_60px_rgba(16,185,129,0.10)] backdrop-blur-md">
         <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] text-emerald-100">
           <Lock className="h-4 w-4" />
         </div>
         <h3 className="mt-3 text-base font-semibold tracking-[-0.03em] text-white">
-          {title}
+          You’re seeing 20% of the signal
         </h3>
-        <p className="mt-2 text-sm leading-6 text-white/56">{text}</p>
+        <p className="mt-2 text-sm leading-6 text-white/56">
+          Explorer shows only the first five clusters. Upgrade to unlock the full
+          ranked universe.
+        </p>
+        <p className="mt-2 text-xs leading-5 text-emerald-100/70">
+          8 clusters were validated as T+60 winners in this run.
+        </p>
         <a
-          href="/pricing"
-          className="mt-4 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(80,200,140,0.22)]"
+          href="/signup?plan=pro"
+          className="mt-4 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
         >
-          {cta}
+          Unlock full leaderboard
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function LockedDetailPreview({ topic }: { topic: LeaderboardRow }) {
+  const teaserStats = [
+    ["Score", formatScore(topic.trend_strength_score)],
+    ["Growth", formatPercent(topic.growth_since_freeze_pct)],
+    topic.weeks_observed !== null ? ["Weeks observed", topic.weeks_observed.toString()] : null,
+    topic.consecutive_up_weeks !== null
+      ? ["Consecutive up weeks", topic.consecutive_up_weeks.toString()]
+      : null,
+    topic.latest_n_videos !== undefined ? ["Latest videos", topic.latest_n_videos.toString()] : null,
+  ].filter((stat): stat is string[] => Boolean(stat));
+
+  return (
+    <div className="relative overflow-hidden rounded-[1.25rem] border border-white/8 bg-white/[0.025] p-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        {teaserStats.map(([label, value]) => (
+          <div key={label} className="rounded-[1rem] border border-white/8 bg-black/18 p-4">
+            <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">
+              {label}
+            </div>
+            <div className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white">
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 rounded-[1rem] border border-white/8 bg-black/18 p-4 blur-[1.5px]">
+        <div className="text-[11px] uppercase tracking-[0.2em] text-white/34">
+          Topic intelligence
+        </div>
+        <p className="mt-3 text-sm leading-6 text-white/56">
+          {topic.trend_summary}
+        </p>
+      </div>
+
+      <div className="mt-4 rounded-[1.15rem] border border-emerald-400/30 bg-emerald-400/5 p-4 shadow-[0_18px_60px_rgba(16,185,129,0.10)] backdrop-blur-md">
+        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-emerald-200/70">
+          <Lock className="h-4 w-4" />
+          Full topic intelligence is locked
+        </div>
+        <p className="mt-3 text-sm leading-6 text-white/58">
+          See why this topic is growing, what action to take, and the signals behind
+          the score.
+        </p>
+        <a
+          href="/signup?plan=pro"
+          className="mt-4 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
+        >
+          Unlock full insight
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function LockedWhyScorePreview({ topic }: { topic: LeaderboardRow }) {
+  return (
+    <div className="rounded-[1.2rem] border border-white/8 bg-white/[0.025] p-4">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-white/38">
+        Why this score?
+      </div>
+      <div className="mt-4 space-y-3 text-sm leading-6">
+        <LockedSignalRow
+          label="Weeks observed"
+          value={topic.weeks_observed === null ? "Not available in preview" : topic.weeks_observed.toString()}
+          locked={false}
+        />
+        <LockedSignalRow label="Consecutive growth" value="Locked" locked />
+        <LockedSignalRow label="Expansion trend" value="Locked" locked />
+        <LockedSignalRow label="Stability signal" value="Locked" locked />
+      </div>
+      <a
+        href="/signup?plan=pro"
+        className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
+      >
+        Unlock score breakdown
+      </a>
+    </div>
+  );
+}
+
+function LockedRecommendedActionsPreview() {
+  return (
+    <div className="rounded-[1.2rem] border border-white/8 bg-white/[0.025] p-4">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-white/38">
+        Recommended Action
+      </div>
+      <div className="mt-4 space-y-3 text-sm leading-6 text-white/58">
+        <div className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/8 bg-black/18 px-4 py-3">
+          <span>Strategy identified</span>
+          <Check className="h-4 w-4 text-emerald-200/70" />
+        </div>
+        <LockedSignalRow label="Execution plan available" value="Locked" locked />
+        <LockedSignalRow label="Monetisation angles detected" value="Locked" locked />
+      </div>
+      <a
+        href="/signup?plan=pro"
+        className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
+      >
+        See what to do next
+      </a>
+    </div>
+  );
+}
+
+function LockedSignalRow({
+  label,
+  value,
+  locked,
+}: {
+  label: string;
+  value: string;
+  locked: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-between gap-4 rounded-[1rem] border border-white/8 bg-black/18 px-4 py-3",
+        locked ? "border-amber-300/14 bg-amber-300/[0.04] text-amber-100/58" : "text-white/68",
+      )}
+    >
+      <span>{label}</span>
+      <span className="inline-flex items-center gap-2">
+        {locked ? <Lock className="h-3.5 w-3.5 text-amber-200/70" /> : null}
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function StickyUpgradeBar() {
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-emerald-400/30 bg-[#07090d]/94 px-4 py-3 shadow-[0_-18px_60px_rgba(16,185,129,0.10)] backdrop-blur-xl">
+      <div className="mx-auto flex max-w-[1304px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="text-sm font-medium text-white">
+            You’re in Explorer mode — limited access
+          </div>
+          <div className="mt-1 text-sm text-white/52">
+            Unlock full topic intelligence and act early
+          </div>
+        </div>
+        <a
+          href="/signup?plan=pro"
+          className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
+        >
+          Upgrade to Pro
         </a>
       </div>
     </div>
