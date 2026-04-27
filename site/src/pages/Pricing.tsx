@@ -1,6 +1,8 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import PageShell from "../components/layout/PageShell";
+
 const plans = [
   {
     name: "Explorer",
@@ -76,7 +78,7 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <main className="min-h-screen bg-[#0B0F17] text-white">
+    <PageShell className="bg-[#0B0F17]">
       <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-400">
@@ -241,6 +243,6 @@ export default function PricingPage() {
           </Link>
         </section>
       </section>
-    </main>
+    </PageShell>
   );
 }
