@@ -13,17 +13,17 @@ import { Link } from "react-router-dom";
 const steps = [
   {
     number: "01",
-    title: "Group related videos into topics",
+    title: "Group related videos into topic clusters",
     text: "Instead of judging one upload at a time, VidCluster looks at groups of related videos so the bigger topic is easier to see.",
   },
   {
     number: "02",
-    title: "Track how each topic grows",
+    title: "Track growth over time — not just early speed",
     text: "Each topic is followed over time so it becomes easier to separate a brief spike from something that keeps building.",
   },
   {
     number: "03",
-    title: "Surface topics with better timing",
+    title: "Surface topics that continue building before they become obvious",
     text: "The goal is to help creators notice promising topics earlier - before the opportunity becomes obvious and crowded.",
   },
 ];
@@ -46,21 +46,21 @@ export default function HomepageV2() {
         <div className="flex flex-col justify-center">
           <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-white/56">
             <span className="h-1.5 w-1.5 rounded-full bg-white/72" />
-            Understand YouTube topic momentum early
+            Topic signals. Tested over time. Outcomes published.
           </div>
 
           <h1 className="max-w-[700px] text-5xl font-semibold leading-[0.94] tracking-[-0.07em] text-white sm:text-6xl xl:text-[4.95rem]">
-            Find YouTube topics before they become saturated
+            Find YouTube topics worth acting on — before they become obvious.
           </h1>
 
           <p className="mt-6 max-w-[560px] text-[1.03rem] leading-8 text-white/60">
-            Most tools show what's already trending. VidCluster identifies early-stage
-            topic momentum before it becomes obvious.
+            Most tools surface what already moved. VidCluster tracks topic clusters
+            over time — separating short spikes from signals that keep building.
           </p>
 
           <p className="mt-4 max-w-[620px] text-[0.98rem] leading-8 text-white/46">
-            Built for creators who want better timing, clearer signals, and fewer
-            wasted videos.
+            Many early signals don’t last. VidCluster tracks which ones hold — and
+            which ones fail.
           </p>
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
@@ -79,7 +79,7 @@ export default function HomepageV2() {
           </div>
 
           <div className="mt-6 text-sm text-white/48">
-            Built on real experiments, including T+60 validation.
+            Predictions pre-registered. Results checked at T+60. No retroactive edits.
           </div>
         </div>
         
@@ -256,10 +256,10 @@ export default function HomepageV2() {
         <div className="overflow-hidden rounded-[2.25rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.026),rgba(255,255,255,0.014))] p-8 lg:p-10">
           <div className="max-w-3xl">
             <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
-              Shift in thinking
+              A different starting point
             </div>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">
-              Most tools show what already happened. VidCluster shows what's building next.
+              Most tools measure what already peaked. VidCluster tracks what continues to build.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
               The difference is not just what you look at. It is how early you can
@@ -322,11 +322,11 @@ export default function HomepageV2() {
               Product Preview
             </div>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">
-              A simple view of what VidCluster will surface
+              What VidCluster surfaces
             </h2>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-white/60">
-              VidCluster is being built to surface early topic movement, grouped
-              video patterns, and clearer topic timing - not just isolated spikes.
+              Topics are grouped into clusters, tracked week by week, and ranked by
+              how consistently they grow — not how fast they spike.
             </p>
           </div>
 
@@ -796,11 +796,14 @@ export default function HomepageV2() {
               Built on real data
             </div>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">
-              Tested on real YouTube topic behaviour - not guesswork.
+              30 topics ranked in advance. The stronger ones were already near the top when outcomes arrived.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
-              VidCluster tracks how topics actually grow over time, then checks
-              whether the early signal held up later.
+              Predictions were fixed before outcomes were known. 60 days later, the
+              ranked list was checked against what actually performed. VidCluster
+              placed the strongest later topics near the top more consistently than
+              a ranking built on early spike speed alone. That difference —
+              persistence over speed — is what the system is built around.
             </p>
           </div>
 
@@ -820,11 +823,13 @@ export default function HomepageV2() {
               Philosophy
             </div>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">
-              Find better topics earlier. Ignore short-lived spikes.
+              What this is built for
             </h2>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-white/60">
-              The goal is simple: help creators spot topics with real momentum and
-              avoid wasting time on short-lived spikes.
+              VidCluster is not built to optimise videos after you’ve chosen a
+              topic. It is built to help you decide which topics are worth making
+              in the first place. Because the biggest mistake isn’t execution. It’s
+              choosing the wrong topic.
             </p>
           </div>
         </div>
@@ -838,15 +843,16 @@ export default function HomepageV2() {
               Next step
             </div>
             <h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-[-0.05em] sm:text-6xl sm:leading-[0.98]">
-              Be early to the topics that matter.
+              Choose your next topic with more than instinct behind it.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
-              See the research, understand the approach, and join early if it fits
-              how you choose what to make next.
+              The research is public. The methodology is pre-registered. Read how
+              the system was validated, then request access if this is how you want
+              to make decisions.
             </p>
             <p className="mt-3 max-w-2xl text-base leading-7 text-white/48">
-              Early access is for creators who want to test topic intelligence before
-              wider release.
+              Predictions are made before outcomes are known. Results are not edited
+              after the fact.
             </p>
           </div>
 
