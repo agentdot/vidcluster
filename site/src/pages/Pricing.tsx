@@ -8,70 +8,70 @@ const plans = [
     name: "Explorer",
     price: "£0",
     suffix: "/ month",
-    description: "Understand what is happening — at the surface level",
-    note: "See trends — but not how to act on them",
-    cta: "Start exploring",
+    description: "Get a first read on which topics are moving and which deserve attention.",
+    note: "Use it to spot signals, not to make final production decisions.",
+    cta: "Start scanning signals",
     href: "/signup?plan=explorer",
     highlighted: false,
     features: [
-      "Top 5 trending clusters",
-      "Basic leaderboard view",
-      "Limited topic visibility",
-      "Preview-only insights",
+      "See the strongest current topic signals",
+      "Compare basic growth direction",
+      "Shortlist ideas worth investigating",
+      "Preview decision context before upgrading",
     ],
   },
   {
     name: "Pro",
-    price: "£19",
+    price: "£39",
     suffix: "/ month",
     badge: "Most Popular",
-    priceNote: "Early access price · £49 standard price",
-    description: "Identify high-growth topics before the crowd",
-    note: "Know what to create — and when to act",
-    cta: "Unlock full topic intelligence",
+    priceNote: "Early access pricing",
+    description: "Decide which topics to test, scale, or avoid before the market gets crowded.",
+    note: "Built for creators and operators who need a clear next move.",
+    cta: "Make better topic decisions",
     href: "/signup?plan=pro",
     highlighted: true,
     features: [
-      "Full leaderboard access",
-      "Complete topic breakdown",
-      "Why this score intelligence",
-      "Recommended Actions",
-      "Advanced filtering",
+      "Know which signals are worth acting on",
+      "Separate early opportunity from hype",
+      "See why a topic is moving",
+      "Get recommended next actions",
+      "Filter faster when choosing what to make next",
     ],
   },
   {
     name: "Advanced",
-    price: "£49",
+    price: "£149",
     suffix: "/ month",
-    priceNote: "Early access price · £149 standard price",
-    description: "Scale faster with deeper signals and full data access",
-    note: "Designed for serious growth operators and teams",
-    cta: "Upgrade to Advanced",
+    priceNote: "Early access pricing",
+    description: "Turn topic intelligence into a repeatable planning system for higher-volume teams.",
+    note: "For teams making frequent content, research, or market decisions.",
+    cta: "Build a decision system",
     href: "/signup?plan=advanced",
     highlighted: false,
     features: [
-      "Everything in Pro",
-      "Full cluster universe",
-      "Early-stage trend signals",
-      "CSV export",
-      "Priority feature access",
-      "Upcoming: watchlists & alerts",
+      "Prioritize topics across a larger universe",
+      "Track early, scaling, and high-risk signals",
+      "Export decisions for team planning",
+      "Build repeatable research workflows",
+      "Get priority access to new decision tools",
+      "Prepare watchlists and alerts as they roll out",
     ],
   },
   {
     name: "Enterprise",
     price: "Custom",
     suffix: "",
-    description: "For organisations that need full integration and scale",
-    note: "Built for platforms, agencies, and enterprise teams",
-    cta: "Contact us",
+    description: "For teams that need topic intelligence connected to internal strategy and reporting.",
+    note: "Best for agencies, media teams, platforms, and research-led organisations.",
+    cta: "Discuss enterprise access",
     href: "/contact",
     highlighted: false,
     features: [
-      "API access coming soon",
-      "Custom dashboards",
-      "Dedicated support",
-      "Team workflows",
+      "Align topic decisions across multiple teams",
+      "Custom reporting for your market or category",
+      "Support for internal planning workflows",
+      "Integration roadmap for data and API needs",
     ],
   },
 ];
@@ -86,20 +86,20 @@ export default function PricingPage() {
           </p>
 
           <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">
-            Simple pricing for serious operators
+            Pricing for better topic decisions
           </h1>
 
           <p className="mt-6 text-lg leading-8 text-white/65">
-            Find YouTube topics before they become saturated — built on real
-            experiments and evaluated over time.
+            Choose the plan that helps you decide what to test, what to scale,
+            and what to avoid before attention gets expensive.
           </p>
 
           <div className="mx-auto mt-8 inline-flex flex-col items-center rounded-2xl border border-emerald-400/20 bg-emerald-400/5 px-6 py-4">
             <p className="text-sm font-semibold text-emerald-300">
-              Early Access Pricing — locked until public release
+              Early access pricing
             </p>
             <p className="mt-1 text-sm text-white/50">
-              Pricing will increase once VidCluster opens to a wider audience.
+              Join while VidCluster is still being shaped with early users.
             </p>
           </div>
         </div>
@@ -174,10 +174,10 @@ export default function PricingPage() {
 
           <div className="mt-8 grid gap-5 md:grid-cols-4">
             {[
-              "Identify topics early — before they trend",
-              "Avoid saturated niches and wasted effort",
-              "Backed by real performance data",
-              "Built for decision-making, not guesswork",
+              "Decide what to make before a topic is obvious",
+              "Avoid wasting time on crowded or weak signals",
+              "Understand why a trend is worth acting on",
+              "Turn research into confident next steps",
             ].map((item) => (
               <div key={item} className="rounded-2xl border border-white/10 bg-black/20 p-5">
                 <CheckCircle2 className="mb-4 h-5 w-5 text-emerald-400" />
@@ -189,10 +189,10 @@ export default function PricingPage() {
 
         <section className="mx-auto mt-20 max-w-4xl text-center">
           <p className="text-2xl font-semibold md:text-3xl">
-            Most tools show what is already trending.
+            Most tools show what already happened.
           </p>
           <p className="mt-4 text-2xl font-semibold text-emerald-300 md:text-3xl">
-            VidCluster shows what is growing — before everyone else notices.
+            VidCluster helps you decide what to do next.
           </p>
         </section>
 
@@ -203,11 +203,11 @@ export default function PricingPage() {
             {[
               {
                 q: "How is this different from vidIQ or TubeBuddy?",
-                a: "VidCluster focuses on topic-level intelligence, not individual videos or keywords. It identifies early growth patterns across clusters of content — not just what is already popular.",
+                a: "VidCluster is built around topic decisions, not keyword checklists. It helps you judge whether a signal is early, scaling, stable, or risky.",
               },
               {
                 q: "What does the trend score mean?",
-                a: "The trend score reflects sustained growth, consistency, and signal strength over time — not short-term spikes.",
+                a: "The score summarizes growth, consistency, and confidence so you can decide whether to test, scale, monitor, or avoid a topic.",
               },
               {
                 q: "Can I cancel anytime?",
@@ -227,18 +227,18 @@ export default function PricingPage() {
 
         <section className="mt-20 rounded-3xl border border-emerald-400/20 bg-emerald-400/5 p-10 text-center">
           <h2 className="text-3xl font-semibold">
-            Start finding topics before they become saturated
+            Make the next topic decision with more confidence
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-white/60">
-            Unlock the full topic intelligence system and start acting before
-            the market becomes crowded.
+            Move from guessing what might work to choosing topics with clearer
+            evidence, timing, and action context.
           </p>
 
           <Link
             to="/signup?plan=pro"
             className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90"
           >
-            Unlock full access
+            Start making better decisions
             <ArrowRight className="h-4 w-4" />
           </Link>
         </section>

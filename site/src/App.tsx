@@ -8,6 +8,7 @@ import Pricing from "./pages/Pricing";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Discovery from "./pages/Discovery";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import InsightsPage from "./pages/insights/index";
 import FindTopicsPage from "./pages/insights/find-topics";
@@ -43,6 +44,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/discovery"
+        element={
+          <ProtectedRoute>
+            <Discovery />
           </ProtectedRoute>
         }
       />

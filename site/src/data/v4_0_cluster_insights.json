@@ -1,0 +1,107 @@
+[
+  {
+    "cluster_rank": 1,
+    "subcluster_label": "macro recession warnings",
+    "insight_text": "Audience demand is clustering around recession-risk explainers that connect market stress, layoffs, and household finance decisions.",
+    "insight_score": 0.94,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 1,
+    "subcluster_label": "market fear narratives",
+    "insight_text": "High-performing videos frame the economy as an urgent decision problem rather than a broad news update.",
+    "insight_score": 0.88,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 1,
+    "subcluster_label": "bearish breakout checks",
+    "insight_text": "Some recession angles spike quickly and fade when they rely on alarm without a practical viewer action.",
+    "insight_score": 0.73,
+    "signal_state": "Failed breakout"
+  },
+  {
+    "cluster_rank": 2,
+    "subcluster_label": "budget policy market reaction",
+    "insight_text": "Policy headlines perform best when creators translate the budget impact into immediate stock-market scenarios.",
+    "insight_score": 0.91,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 2,
+    "subcluster_label": "investor reaction loops",
+    "insight_text": "Viewers are rewarding videos that explain what investors may do next after fiscal announcements.",
+    "insight_score": 0.84,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 2,
+    "subcluster_label": "headline-only coverage",
+    "insight_text": "Generic budget summaries are weakening unless they include a clear market implication or portfolio angle.",
+    "insight_score": 0.69,
+    "signal_state": "Weakening"
+  },
+  {
+    "cluster_rank": 3,
+    "subcluster_label": "where investors are moving",
+    "insight_text": "Positioning content is gaining when it contrasts cash, stocks, bonds, and defensive sectors in one decision frame.",
+    "insight_score": 0.89,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 3,
+    "subcluster_label": "portfolio anxiety",
+    "insight_text": "Creators are seeing traction by turning uncertainty into a checklist for what viewers should review now.",
+    "insight_score": 0.82,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 3,
+    "subcluster_label": "late-cycle rotation",
+    "insight_text": "Rotation predictions can fail when the video does not anchor the claim to visible market evidence.",
+    "insight_score": 0.67,
+    "signal_state": "Failed breakout"
+  },
+  {
+    "cluster_rank": 4,
+    "subcluster_label": "retirement account choices",
+    "insight_text": "Retirement strategy content is outperforming when it answers a specific account-choice question for beginners.",
+    "insight_score": 0.86,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 4,
+    "subcluster_label": "ETF retirement allocations",
+    "insight_text": "ETF allocation explainers are pulling steady interest when paired with age, risk, or contribution context.",
+    "insight_score": 0.78,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 4,
+    "subcluster_label": "broad retirement advice",
+    "insight_text": "Broad retirement tips are weakening because they lack a concrete decision point for the viewer.",
+    "insight_score": 0.61,
+    "signal_state": "Weakening"
+  },
+  {
+    "cluster_rank": 5,
+    "subcluster_label": "small-cap conviction cases",
+    "insight_text": "Small-cap ideas gain attention when the thesis is narrow, timely, and framed around overlooked upside.",
+    "insight_score": 0.84,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 5,
+    "subcluster_label": "undervalued stock watchlists",
+    "insight_text": "Ranked watchlists work when creators explain why the market may be mispricing each stock.",
+    "insight_score": 0.76,
+    "signal_state": "Emerging"
+  },
+  {
+    "cluster_rank": 5,
+    "subcluster_label": "speculative ticker spikes",
+    "insight_text": "Ticker-only hype is a failed breakout pattern unless it is supported by a durable business catalyst.",
+    "insight_score": 0.64,
+    "signal_state": "Failed breakout"
+  }
+]

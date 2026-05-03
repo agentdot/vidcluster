@@ -1,11 +1,14 @@
-import { useMemo, useState, type MouseEvent } from "react";
-import { ArrowUpRight, Check, Lock, ShieldCheck, Star } from "lucide-react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { Lock, Star } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
-import PageShell from "../components/layout/PageShell";
-import Section from "../components/layout/Section";
+import SiteHeader from "../components/SiteHeader";
 import PageSeo from "../components/seo/PageSeo";
-import { useWatchlist } from "../hooks/useWatchlist";
 import leaderboardRows from "../data/leaderboard_v3_3.json";
+import clusterInsightRows from "../data/v4_0_cluster_insights.json";
+import { useDiscoveryOpportunities, type DiscoveryOpportunity } from "../hooks/useDiscoveryOpportunities";
+import { useInsightClusters, type Insight, type InsightCluster, type InsightType } from "../hooks/useInsightClusters";
+import { useWatchlist } from "../hooks/useWatchlist";
 import { cn } from "../lib/utils";
 
 type LeaderboardRow = {
@@ -30,11 +33,27 @@ type LeaderboardRow = {
   latest_snapshot_date?: string;
   t60_actual_rank?: number | null;
   t60_growth_pct?: number | null;
+  liveCluster?: InsightCluster;
 };
 
 type UserPlan = "explorer" | "pro" | "advanced";
-
+type Tone = "neutral" | "positive" | "watch" | "risk";
 type RawLeaderboardRow = Omit<LeaderboardRow, "topic_subtitle" | "cluster_label">;
+type SignalState = "Emerging" | "Failed breakout" | "Weakening";
+type ClusterInsight = Partial<Insight> & {
+  cluster_id?: string;
+  cluster_rank?: number;
+  cluster_label?: string;
+  subcluster_label: string;
+  insight_text: string;
+  insight_score: number;
+  insight_type?: InsightType;
+  signal_state?: SignalState | string;
+  observed_at?: string;
+  snapshot_date?: string;
+  share_delta?: number;
+  relative_growth_spread?: number;
+};
 
 const topicPresentationByRank: Record<
   number,
@@ -173,6 +192,9 @@ const leaderboard = (leaderboardRows as RawLeaderboardRow[]).map((topic) => {
     display_topic_title: presentation?.display_topic_title ?? topic.display_topic_title,
   };
 }) as LeaderboardRow[];
+
+const clusterInsights = clusterInsightRows as ClusterInsight[];
+
 function getMockUserPlan(): UserPlan {
   return "explorer";
 }
@@ -180,84 +202,345 @@ function getMockUserPlan(): UserPlan {
 const userPlan = getMockUserPlan();
 const hasPremiumAccess = userPlan === "pro" || userPlan === "advanced";
 const EXPLORER_WATCHLIST_LIMIT = 2;
+const ALL_CATEGORIES = "All topics";
+const DECISION_LABEL_MAP: Record<string, string> = {
+  STRONG_TREND: "Sustained Growth",
+  EARLY_TREND: "Early Opportunity",
+  EMERGING: "Watch closely",
+  WEAK_OR_RISK: "High Risk",
+};
+
+function mapDecisionLabel(label?: string) {
+  if (!label) return "Signal Unknown";
+  return DECISION_LABEL_MAP[label] ?? formatSelectedLabel(label);
+}
+
+function mapConfidence(topic: LeaderboardRow) {
+  const confidence = topic.trend_confidence ?? topic.trend_strength_score;
+  if (confidence === null || confidence === undefined) return "Unavailable";
+  const normalized = getConfidenceValue(topic);
+
+  if (normalized >= 0.72) return "High Confidence";
+  if (normalized >= 0.48) return "Moderate Confidence";
+  return "Low Confidence";
+}
+
+function getConfidenceValue(topic: LeaderboardRow) {
+  const confidence = topic.trend_confidence ?? topic.trend_strength_score;
+  if (confidence === null || confidence === undefined) return 0;
+  return Math.max(0, Math.min(1, confidence > 1 ? confidence / 100 : confidence));
+}
+
+function getConfidenceTone(topic: LeaderboardRow): Tone {
+  const confidence = getConfidenceValue(topic);
+  if (confidence >= 0.72) return "positive";
+  if (confidence >= 0.48) return "watch";
+  return "risk";
+}
+
+function mapOpportunityState(topic: LeaderboardRow) {
+  const growth = getGrowthFraction(topic);
+  const confidence = topic.trend_confidence ?? topic.trend_strength_score;
+  const normalizedConfidence = confidence > 1 ? confidence / 100 : confidence;
+
+  if (topic.decision_label === "WEAK_OR_RISK") return "Late / risky";
+  if (topic.decision_label === "STRONG_TREND" && normalizedConfidence >= 0.68) return "Scaling";
+  if (topic.decision_label === "EARLY_TREND" || topic.decision_label === "EMERGING" || growth < 0.18) {
+    return "Early";
+  }
+
+  return "Scaling";
+}
+
+function getOpportunityTone(topic: LeaderboardRow): Tone {
+  const state = mapOpportunityState(topic);
+  if (state === "Early") return "watch";
+  if (state === "Scaling") return "positive";
+  return "risk";
+}
+
+function mapWillLast(topic: LeaderboardRow) {
+  if (topic.decision_label === "STRONG_TREND") return "Likely to sustain";
+  if (topic.decision_label === "EARLY_TREND") return "Promising, validate";
+  if (topic.decision_label === "EMERGING") return "Too early to call";
+  if (topic.t60_is_winner) return "Held up before";
+  return "Not stable yet";
+}
+
+function generateWhyThisTrend(topic: LeaderboardRow, primaryInsight?: ClusterInsight) {
+  const evidence = primaryInsight?.insight_text || topic.trend_summary || topic.opportunity_summary;
+
+  if (evidence) {
+    return `${summarizeInsight(evidence)} The decision read is ${mapDecisionLabel(topic.decision_label).toLowerCase()} because the topic is in the ${mapOpportunityState(topic).toLowerCase()} opportunity stage with ${mapConfidence(topic).toLowerCase()}.`;
+  }
+
+  return `${getTopicTitle(topic)} is showing measurable movement, but the local export does not include a full narrative for this signal yet.`;
+}
+
+function mapCategory(topic: LeaderboardRow) {
+  const title = `${topic.display_topic_title} ${topic.cluster_label ?? ""}`.toLowerCase();
+
+  if (title.includes("stock") || title.includes("market") || title.includes("invest")) return "Markets";
+  if (title.includes("retirement") || title.includes("ira") || title.includes("401k")) return "Retirement";
+  if (title.includes("side hustle") || title.includes("income") || title.includes("earning")) return "Income";
+  if (title.includes("housing") || title.includes("mortgage") || title.includes("property")) return "Housing";
+  if (title.includes("tax") || title.includes("budget") || title.includes("policy")) return "Policy";
+
+  return "Personal Finance";
+}
+
+function getRecommendedActionPlaceholder(topic: LeaderboardRow) {
+  if (topic.decision_label === "STRONG_TREND") {
+    return "Scale this now: turn the topic into a repeatable series, refresh winning angles, and protect quality while demand is still active.";
+  }
+
+  if (topic.decision_label === "EARLY_TREND" || topic.decision_label === "EMERGING") {
+    return "Run a focused test: publish one sharp angle, watch early response, then scale only if the signal keeps improving.";
+  }
+
+  if (topic.decision_label === "WEAK_OR_RISK") {
+    return "Hold back: monitor for a cleaner proof point before committing a full production cycle.";
+  }
+
+  return "Use the evidence below to decide whether this topic deserves production time.";
+}
+
+function getRecommendedActionBullets(topic: LeaderboardRow) {
+  if (topic.decision_label === "STRONG_TREND") {
+    return [
+      "Scale this topic into a short repeatable series.",
+      "Refresh the strongest angle while topic growth is still active.",
+      "Use adjacent titles to defend quality as competition rises.",
+    ];
+  }
+
+  if (topic.decision_label === "EARLY_TREND") {
+    return [
+      "Run one focused test before committing a full series.",
+      "Look for another positive week before scaling production.",
+      "Keep the angle specific so the signal is easy to validate.",
+    ];
+  }
+
+  if (topic.decision_label === "EMERGING") {
+    return [
+      "Add this to monitoring and collect more examples.",
+      "Test only if it matches an existing audience lane.",
+      "Wait for confidence to improve before scaling.",
+    ];
+  }
+
+  if (topic.decision_label === "WEAK_OR_RISK") {
+    return [
+      "Do not prioritize new production yet.",
+      "Watch for stability before re-entering the topic.",
+      "Use this mainly as a risk signal for planning.",
+    ];
+  }
+
+  return ["Review the evidence before committing production time.", "Use a small test before scaling."];
+}
+
+function getTopicCardHoverInsights(topic: LeaderboardRow) {
+  return [
+    `${mapDecisionLabel(topic.decision_label)} with ${mapConfidence(topic).toLowerCase()}.`,
+    `${mapOpportunityState(topic)} opportunity; stability is ${mapWillLast(topic).toLowerCase()}.`,
+    topic.opportunity_summary || topic.trend_summary || "Open the detail panel for supporting evidence.",
+  ]
+    .map((insight) => summarizeInsight(insight))
+    .slice(0, 3);
+}
+
+function getSystemStatus(topics: LeaderboardRow[]) {
+  if (topics.length === 0) {
+    return {
+      confidence: "Unavailable",
+      confidenceValue: 0,
+      lastUpdated: "No snapshot",
+    };
+  }
+
+  const confidenceValue =
+    topics.reduce((total, topic) => total + getConfidenceValue(topic), 0) / Math.max(1, topics.length);
+  const latestTimestamp = Math.max(...topics.map((topic) => getDateTime(topic.latest_snapshot_date)));
+  const latestTopic = topics.find((topic) => getDateTime(topic.latest_snapshot_date) === latestTimestamp);
+
+  return {
+    confidence:
+      confidenceValue >= 0.72 ? "High system confidence" : confidenceValue >= 0.48 ? "Moderate system confidence" : "Low system confidence",
+    confidenceValue,
+    lastUpdated: latestTopic?.latest_snapshot_date ? formatSnapshotDate(latestTopic.latest_snapshot_date) : "Preview snapshot",
+  };
+}
+
+function getTopicTitle(topic: LeaderboardRow) {
+  return topic.display_topic_title || topic.cluster_label || "Untitled topic";
+}
 
 function formatDecision(label: string) {
-  if (label === "STRONG_TREND") return "Strong Trend";
-  if (label === "EARLY_TREND") return "Early Trend";
-  if (label === "EMERGING") return "Emerging";
-  if (label === "WEAK_OR_RISK") return "Monitor Only";
-
-  return label;
+  return mapDecisionLabel(label);
 }
 
 function formatScore(score: number) {
   return `${Math.round(score * 100)}`;
 }
 
-function formatPercent(value: number) {
-  return `${value >= 0 ? "+" : ""}${Math.round(value)}%`;
+function formatPercent(value?: number | null) {
+  if (value === null || value === undefined) return "—";
+  const percent = value * 100;
+  return `${percent >= 0 ? "+" : ""}${percent.toFixed(1)}%`;
 }
 
-function getDecisionClass(label: string) {
-  if (label === "STRONG_TREND") {
-    return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
-  }
-
-  if (label === "EARLY_TREND") {
-    return "border-amber-300/30 bg-amber-300/10 text-amber-200";
-  }
-
-  if (label === "EMERGING") {
-    return "border-sky-300/25 bg-sky-300/10 text-sky-200";
-  }
-
-  return "border-rose-300/25 bg-rose-300/10 text-rose-200";
+function formatPP(value?: number | null) {
+  if (value === null || value === undefined) return "—";
+  const points = value * 100;
+  return `${points >= 0 ? "+" : ""}${points.toFixed(1)}pp`;
 }
 
-function getPlanClass(plan: UserPlan) {
-  if (plan === "pro") {
-    return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
+function getInsightVisual(insightType?: InsightType | string) {
+  if (insightType === "INTERNAL_OUTPERFORMER") {
+    return {
+      label: "Outperforming",
+      color: "text-cyan-200",
+      icon: "↗",
+      tone: "positive" as Tone,
+    };
   }
 
-  if (plan === "advanced") {
-    return "border-violet-300/30 bg-violet-300/10 text-violet-200";
+  if (insightType === "WEAKENING_SEGMENT") {
+    return {
+      label: "Weakening",
+      color: "text-amber-200",
+      icon: "⚠",
+      tone: "watch" as Tone,
+    };
   }
 
-  return "border-slate-300/18 bg-slate-300/[0.08] text-slate-200/80";
+  if (insightType === "FAILED_BREAKOUT") {
+    return {
+      label: "Failed breakout",
+      color: "text-rose-200",
+      icon: "✕",
+      tone: "risk" as Tone,
+    };
+  }
+
+  return {
+    label: "Emerging",
+    color: "text-emerald-200",
+    icon: "🔥",
+    tone: "positive" as Tone,
+  };
 }
 
-function formatPlan(plan: UserPlan) {
-  if (plan === "explorer") return "Explorer Preview";
-  if (plan === "advanced") return "Advanced";
-  return "Pro";
+function getSignalQuality(insightType?: InsightType | string) {
+  if (insightType === "INTERNAL_OUTPERFORMER") return "Strong";
+  if (insightType === "WEAKENING_SEGMENT") return "Weak";
+  if (insightType === "FAILED_BREAKOUT") return "Unstable";
+  return "Early";
 }
 
-function getRecommendedAction(topic: LeaderboardRow) {
-  if (topic.decision_label === "STRONG_TREND") {
-    return "Prioritize this cluster for near-term research, packaging, and creator angle testing.";
+function titleCase(value: string) {
+  return value
+    .split(" ")
+    .map((word) => {
+      if (word === "—") return word;
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+}
+
+function formatSelectedLabel(value: string) {
+  return /^[A-Z0-9_]+$/.test(value) ? value : titleCase(value);
+}
+
+function formatOutcomeStatus(value: string) {
+  if (value === "ACTIVE") return "Active";
+  if (value === "PENDING") return "Awaiting confirmation";
+  if (value === "FAILED") return "Failed";
+  if (value === "WEAKENING") return "Weakening";
+  return "Unknown";
+}
+
+function getDateTime(value?: string) {
+  if (!value) return 0;
+  const time = new Date(value).getTime();
+  return Number.isNaN(time) ? 0 : time;
+}
+
+function getInsightTitle(label?: string) {
+  if (!label) return "No Primary Signal";
+  return `${titleCase(label)} Signals`;
+}
+
+function getClusterDisplayTitle(topic: LeaderboardRow, primaryInsight?: ClusterInsight) {
+  if (primaryInsight?.subcluster_label) {
+    return getInsightTitle(primaryInsight.subcluster_label);
   }
 
-  if (topic.decision_label === "EARLY_TREND") {
-    return "Validate the audience angle now, then prepare a measured content test before the cluster gets crowded.";
+  return topic.display_topic_title;
+}
+
+function getInsightMetric(insight?: ClusterInsight) {
+  if (!insight) {
+    return {
+      value: "—",
+      helper: "No metric available",
+      compact: "—",
+    };
   }
 
-  if (topic.decision_label === "EMERGING") {
-    return "Watch the cluster closely and gather more examples before committing a full production cycle.";
+  if (insight.insight_type === "WEAKENING_SEGMENT" || insight.insight_type === "FAILED_BREAKOUT") {
+    return {
+      value: formatPP(insight.share_delta),
+      helper: insight.share_delta !== undefined && insight.share_delta < 0 ? "share decline" : "share change",
+      compact: formatPP(insight.share_delta),
+    };
   }
 
-  return "Treat this as a risk signal. Deprioritize unless it strongly matches an existing audience or thesis.";
+  return {
+    value: formatPercent(insight.relative_growth_spread),
+    helper: "vs cluster",
+    compact: `${formatPercent(insight.relative_growth_spread)} vs cluster`,
+  };
+}
+
+function getPrimaryInsightClass(insight?: ClusterInsight) {
+  const visual = getInsightVisualForInsight(insight);
+
+  if (visual.tone === "risk") {
+    return "border-rose-300/16 bg-rose-300/[0.055]";
+  }
+
+  if (visual.tone === "watch") {
+    return "border-amber-300/16 bg-amber-300/[0.055]";
+  }
+
+  return "border-emerald-300/16 bg-emerald-300/[0.055]";
 }
 
 function getTopicId(topic: LeaderboardRow) {
   return topic.cluster_id ?? topic.display_topic_title;
 }
 
+function getDecisionTone(label: string): Tone {
+  if (label === "STRONG_TREND" || label === "EMERGING") return "positive";
+  if (label === "EARLY_TREND") return "watch";
+  if (label === "WEAK_OR_RISK") return "risk";
+  return "neutral";
+}
+
 function DecisionPill({ label, className = "" }: { label: string; className?: string }) {
+  const tone = getDecisionTone(label);
+
   return (
     <span
       className={cn(
-        "inline-flex max-w-full items-center rounded-full border px-3 py-1 text-[10px] font-medium uppercase tracking-[0.13em]",
-        getDecisionClass(label),
+        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em]",
+        tone === "positive" && "border-emerald-400/28 bg-emerald-400/10 text-emerald-200",
+        tone === "watch" && "border-amber-300/28 bg-amber-300/10 text-amber-200",
+        tone === "risk" && "border-rose-300/25 bg-rose-300/10 text-rose-200",
+        tone === "neutral" && "border-white/10 bg-white/[0.035] text-white/58",
         className,
       )}
     >
@@ -267,21 +550,18 @@ function DecisionPill({ label, className = "" }: { label: string; className?: st
 }
 
 function PlanPill({ plan }: { plan: UserPlan }) {
+  const label = plan === "explorer" ? "Explorer Preview" : plan === "advanced" ? "Advanced" : "Pro";
+
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium",
-        getPlanClass(plan),
-      )}
-    >
-      {formatPlan(plan)}
+    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-[10px] font-medium text-white/58">
+      {label}
     </span>
   );
 }
 
 function SignalPill({ children }: { children: string }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-xs text-white/62">
+    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-white/54">
       {children}
     </span>
   );
@@ -294,21 +574,18 @@ function MetricCard({
 }: {
   label: string;
   value: string;
-  tone?: "neutral" | "positive" | "risk";
+  tone?: Tone;
 }) {
   return (
-    <div className="rounded-[1.1rem] border border-white/8 bg-black/18 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.025)]">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">
-        {label}
-      </div>
+    <div className="min-w-0 rounded-2xl border border-white/8 bg-black/18 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.025)]">
+      <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">{label}</div>
       <div
         className={cn(
-          "mt-2 text-xl font-semibold tracking-[-0.03em]",
-          tone === "positive"
-            ? "text-emerald-200"
-            : tone === "risk"
-              ? "text-rose-200"
-              : "text-white",
+          "mt-2 truncate text-xl font-semibold tracking-[-0.03em]",
+          tone === "positive" && "text-emerald-200",
+          tone === "watch" && "text-amber-200",
+          tone === "risk" && "text-rose-200",
+          tone === "neutral" && "text-white",
         )}
       >
         {value}
@@ -317,14 +594,33 @@ function MetricCard({
   );
 }
 
+function ConfidenceMeter({ value, tone }: { value: number; tone: Tone }) {
+  const percent = Math.round(value * 100);
+
+  return (
+    <div className="mt-2">
+      <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
+        <div
+          className={cn(
+            "h-full rounded-full transition-all",
+            tone === "positive" && "bg-emerald-300 shadow-[0_0_16px_rgba(52,211,153,0.44)]",
+            tone === "watch" && "bg-amber-300 shadow-[0_0_16px_rgba(251,191,36,0.34)]",
+            tone === "risk" && "bg-rose-300 shadow-[0_0_16px_rgba(251,113,133,0.34)]",
+            tone === "neutral" && "bg-white/50",
+          )}
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function WatchStarButton({
   active,
-  size = "md",
   onClick,
   ariaLabel,
 }: {
   active: boolean;
-  size?: "sm" | "md";
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
   ariaLabel: string;
 }) {
@@ -334,52 +630,110 @@ function WatchStarButton({
       aria-label={ariaLabel}
       onClick={onClick}
       className={cn(
-        "flex items-center justify-center rounded-full border transition hover:scale-[1.03] hover:shadow-[0_12px_34px_rgba(245,158,11,0.16)]",
-        size === "sm" ? "h-7 w-7" : "h-9 w-9",
+        "flex h-7 w-7 items-center justify-center rounded-full border transition",
         active
-          ? "border-amber-300/35 bg-amber-300/12 text-amber-200 shadow-[0_0_24px_rgba(245,158,11,0.10)]"
-          : "border-white/10 bg-white/[0.03] text-white/42 hover:border-amber-300/22 hover:text-amber-100",
+          ? "border-amber-300/35 bg-amber-300/12 text-amber-200"
+          : "border-white/10 bg-white/[0.03] text-white/38 hover:border-amber-300/22 hover:text-amber-100",
       )}
     >
-      <Star className={cn(size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4", active ? "fill-current" : "")} />
+      <Star className={cn("h-3.5 w-3.5", active ? "fill-current" : "")} />
     </button>
   );
 }
 
 export default function Dashboard() {
+  const [searchParams] = useSearchParams();
+  const requestedClusterId = searchParams.get("cluster")?.trim() || null;
+  const requestedSubclusterId = searchParams.get("subcluster")?.trim() || null;
+  const openedFromDiscovery = searchParams.get("from") === "discovery";
   const [selectedRank, setSelectedRank] = useState(leaderboard[0]?.rank ?? 1);
   const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
+  const [scanMode, setScanMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES);
   const [watchlistLimitMessage, setWatchlistLimitMessage] = useState("");
   const { watchedTopicIds, isWatched, addTopic, removeTopic } = useWatchlist();
+  const { clusters: insightClusters, loading: clustersLoading, error: clustersError } = useInsightClusters();
+  const { opportunities: discoveryOpportunities } = useDiscoveryOpportunities();
+  const hasLiveClusters = insightClusters.length > 0 && !clustersError;
+  const dashboardLeaderboard = useMemo(
+    () => (hasLiveClusters ? mapClustersToLeaderboard(insightClusters) : leaderboard),
+    [hasLiveClusters, insightClusters],
+  );
+  const requestedDiscoveryOpportunity = useMemo(
+    () => {
+      if (!requestedClusterId) return undefined;
 
-  const selectedTopic =
-    leaderboard.find((topic) => topic.rank === selectedRank) ?? leaderboard[0];
+      return discoveryOpportunities
+        .filter(
+          (opportunity) =>
+            opportunity.cluster_id === requestedClusterId &&
+            (!requestedSubclusterId || opportunity.subcluster_id === requestedSubclusterId),
+        )
+        .sort(
+          (a, b) =>
+            getDateTime(b.detected_snapshot_date ?? b.snapshot_date) -
+            getDateTime(a.detected_snapshot_date ?? a.snapshot_date),
+        )[0];
+    },
+    [discoveryOpportunities, requestedClusterId, requestedSubclusterId],
+  );
+  const requestedClusterTopic = useMemo(
+    () =>
+      requestedClusterId
+        ? dashboardLeaderboard.find((topic) => topic.cluster_id === requestedClusterId)
+        : undefined,
+    [dashboardLeaderboard, requestedClusterId],
+  );
+  const requestedClusterMissing = Boolean(requestedClusterId && !requestedClusterTopic);
+  const selectedSubclusterLabel =
+    requestedDiscoveryOpportunity?.intent_label ||
+    requestedDiscoveryOpportunity?.subcluster_label ||
+    requestedSubclusterId;
+
+  useEffect(() => {
+    if (requestedClusterTopic) {
+      setSelectedRank(requestedClusterTopic.rank);
+      return;
+    }
+
+    if (!requestedClusterId && hasLiveClusters) {
+      setSelectedRank(dashboardLeaderboard[0]?.rank ?? 1);
+    }
+  }, [dashboardLeaderboard, hasLiveClusters, requestedClusterId, requestedClusterTopic]);
+
+  const selectedTopic = requestedClusterMissing
+    ? getDiscoveryFallbackTopic(requestedClusterId, requestedSubclusterId, requestedDiscoveryOpportunity)
+    : requestedClusterTopic ?? dashboardLeaderboard.find((topic) => topic.rank === selectedRank) ?? dashboardLeaderboard[0];
+  const selectedFromDeepLink = requestedClusterId === selectedTopic.cluster_id;
+  const activeSubclusterLabel = selectedFromDeepLink ? selectedSubclusterLabel : null;
   const selectedTopicId = getTopicId(selectedTopic);
   const selectedTopicIsWatched = isWatched(selectedTopicId);
+  const selectedInsights = useMemo(
+    () => prioritizeSubclusterInsights(getClusterInsights(selectedTopic), requestedSubclusterId),
+    [requestedSubclusterId, selectedTopic],
+  );
+  const primaryInsight = selectedInsights[0];
+  const visibleInsights = hasPremiumAccess ? selectedInsights.slice(0, 3) : selectedInsights.slice(0, 1);
+  const lockedInsightCount = hasPremiumAccess ? 0 : Math.max(0, 3 - visibleInsights.length);
+  const watchedTopics = dashboardLeaderboard.filter((topic) => isWatched(getTopicId(topic)));
+  const planLimitedLeaderboard = hasPremiumAccess ? dashboardLeaderboard : dashboardLeaderboard.slice(0, 5);
+  const planVisibleLeaderboard = getLeaderboardWithRequestedTopic(planLimitedLeaderboard, selectedTopic, requestedClusterId);
+  const availableCategories = useMemo(
+    () => [ALL_CATEGORIES, ...Array.from(new Set(planVisibleLeaderboard.map(mapCategory)))],
+    [planVisibleLeaderboard],
+  );
+  const visibleLeaderboard = planVisibleLeaderboard.filter((topic) => {
+    const topicText = `${getTopicTitle(topic)} ${topic.topic_subtitle} ${topic.cluster_label ?? ""}`.toLowerCase();
+    const matchesSearch = topicText.includes(searchQuery.trim().toLowerCase());
+    const matchesCategory = activeCategory === ALL_CATEGORIES || mapCategory(topic) === activeCategory;
+    const matchesWatchlist = !showWatchlistOnly || isWatched(getTopicId(topic)) || topic.cluster_id === requestedClusterId;
 
-  const metrics = useMemo(() => {
-    const totalClusters = leaderboard.length;
-    const strongEarlyCount = leaderboard.filter((topic) =>
-      ["STRONG_TREND", "EARLY_TREND"].includes(topic.decision_label),
-    ).length;
-    const winners = leaderboard.filter((topic) => topic.t60_is_winner).length;
-    const maxScore = Math.max(...leaderboard.map((topic) => topic.trend_strength_score));
-
-    return [
-      { label: "Total clusters", value: totalClusters.toString(), detail: "V3.3 app-ready rows" },
-      { label: "Strong / early", value: strongEarlyCount.toString(), detail: "Actionable signals" },
-      { label: "T+60 winners", value: winners.toString(), detail: "Validated after freeze" },
-      { label: "Max score", value: formatScore(maxScore), detail: "Trend strength" },
-    ];
-  }, []);
-
-  const topOpportunities = leaderboard.slice(0, 5);
-  const watchedTopics = leaderboard.filter((topic) => isWatched(getTopicId(topic)));
-  const planLimitedLeaderboard = hasPremiumAccess ? leaderboard : leaderboard.slice(0, 5);
-  const visibleLeaderboard = showWatchlistOnly
-    ? planLimitedLeaderboard.filter((topic) => isWatched(getTopicId(topic)))
-    : planLimitedLeaderboard;
-  const lockedLeaderboardPreview = hasPremiumAccess ? [] : leaderboard.slice(5, 8);
+    return matchesSearch && matchesCategory && matchesWatchlist;
+  });
+  const topSignals = useMemo(() => getTopSignals(planVisibleLeaderboard), [planVisibleLeaderboard]);
+  const systemStatus = useMemo(() => getSystemStatus(planVisibleLeaderboard), [planVisibleLeaderboard]);
+  const renderEmptyLeaderboard = visibleLeaderboard.length === 0;
 
   const handleAddTopic = (topic: LeaderboardRow) => {
     const topicId = getTopicId(topic);
@@ -405,480 +759,764 @@ export default function Dashboard() {
     handleAddTopic(topic);
   };
 
-  const renderEmptyLeaderboard = visibleLeaderboard.length === 0;
-
   return (
-    <PageShell
-      backgroundLayers={
-        <>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.055),transparent_24%),radial-gradient(circle_at_65%_28%,rgba(80,200,140,0.09),transparent_24%),radial-gradient(circle_at_18%_70%,rgba(120,120,145,0.08),transparent_20%),linear-gradient(to_bottom,#0B0F17_0%,#07090d_48%,#050607_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.03]" />
-        </>
-      }
-    >
+    <div className="min-h-screen bg-[#05070a] text-white">
       <PageSeo
         title="VidCluster Dashboard"
         description="Your VidCluster early topic intelligence dashboard."
         url="/dashboard"
       />
+      <SiteHeader />
 
-      <Section spacing="intro" containerClassName="max-w-[1304px]">
-        <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-white/56">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300/80" />
-              V3.3 Leaderboard
-            </div>
-            <h1 className="mt-6 max-w-4xl text-4xl font-semibold leading-[1.02] tracking-[-0.06em] text-white sm:text-6xl">
-              Topic signals ready for creator decisions
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
-              A frontend preview of the latest app-ready leaderboard generated by
-              the VidCluster engine.
-            </p>
-          </div>
+      <main className="relative bg-[radial-gradient(circle_at_52%_0%,rgba(255,255,255,0.055),transparent_26%),linear-gradient(180deg,#0b0f16_0%,#05070a_100%)] px-4 py-5 lg:px-6">
+        <div className="mx-auto flex max-w-[1480px] flex-col gap-4">
+          <DashboardHeader
+            totalTopics={planVisibleLeaderboard.length}
+            watchedTopics={watchedTopics.length}
+            hasPremiumAccess={hasPremiumAccess}
+            clustersLoading={clustersLoading}
+            clustersError={clustersError}
+          />
+          <CategoryStrip categories={availableCategories} activeCategory={activeCategory} onChange={setActiveCategory} />
+          <DashboardControls
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            showWatchlistOnly={showWatchlistOnly}
+            onWatchlistOnlyChange={setShowWatchlistOnly}
+            scanMode={scanMode}
+            onScanModeChange={setScanMode}
+            watchlistLimitMessage={watchlistLimitMessage}
+            hasPremiumAccess={hasPremiumAccess}
+            watchedCount={watchedTopics.length}
+          />
 
-          <div className="flex flex-wrap items-center gap-3 rounded-[1.2rem] border border-white/8 bg-white/[0.025] px-4 py-3 text-sm text-white/52">
-            <span>Snapshot: V3.3 leaderboard</span>
-            <PlanPill plan={userPlan} />
-          </div>
-        </div>
-
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {metrics.map((metric) => (
-            <div
-              key={metric.label}
-              className="rounded-[1.5rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.032),rgba(255,255,255,0.014))] p-5 shadow-[0_20px_70px_rgba(0,0,0,0.22)]"
-            >
-              <div className="text-[11px] uppercase tracking-[0.22em] text-white/36">
-                {metric.label}
-              </div>
-              <div className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-white">
-                {metric.value}
-              </div>
-              <div className="mt-2 text-sm text-white/46">{metric.detail}</div>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section spacing="standard" containerClassName="max-w-[1304px]">
-        <div className="mb-12 rounded-[1.8rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.032),rgba(255,255,255,0.014))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] sm:p-6">
-          <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-            <div>
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.26em] text-white/38">
-                <Star className="h-4 w-4 text-emerald-200/70" />
-                Watchlist
-              </div>
-              <h2 className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">
-                Topics you want to monitor
-              </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/48">
-                Save topics from the leaderboard and return to them as signals evolve.
-              </p>
-            </div>
-
-            <label className="flex w-fit cursor-pointer items-center gap-3 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-white/68 transition hover:border-white/16 hover:text-white">
-              <input
-                type="checkbox"
-                checked={showWatchlistOnly}
-                onChange={(event) => setShowWatchlistOnly(event.target.checked)}
-                className="h-4 w-4 accent-emerald-300"
-              />
-              Show watchlist only
-            </label>
-          </div>
-
-          {watchlistLimitMessage ? (
-            <div className="mt-5 rounded-[1.1rem] border border-amber-300/20 bg-amber-300/[0.07] px-4 py-3 text-sm leading-6 text-amber-100/82">
-              {watchlistLimitMessage}
-            </div>
-          ) : null}
-
-          {watchedTopics.length === 0 ? (
-            <div className="mt-6 rounded-[1.2rem] border border-white/8 bg-black/16 px-4 py-5 text-sm text-white/48">
-              No topics saved yet. Add topics you want to monitor.
-            </div>
-          ) : (
-            <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-              {watchedTopics.map((topic) => (
-                <button
-                  key={getTopicId(topic)}
-                  type="button"
-                  onClick={() => setSelectedRank(topic.rank)}
-                  className="rounded-[1.25rem] border border-white/8 bg-black/16 p-4 text-left transition hover:border-emerald-400/30 hover:bg-emerald-400/5 hover:shadow-[0_18px_54px_rgba(16,185,129,0.10)]"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-sm font-medium leading-6 text-white/88">
-                      {topic.display_topic_title}
-                    </h3>
-                    <Star className="h-4 w-4 shrink-0 fill-amber-300 text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.25)]" />
-                  </div>
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <SignalPill>Score {formatScore(topic.trend_strength_score)}</SignalPill>
-                    <DecisionPill label={topic.decision_label} className="px-2.5 py-1 text-[9px]" />
-                  </div>
-                  <div className="mt-3 text-xs text-white/46">
-                    {formatPercent(topic.growth_since_freeze_pct)} growth ·{" "}
-                    {topic.latest_n_videos} videos
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="mb-7 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-          <div>
-            <div className="text-[11px] uppercase tracking-[0.26em] text-white/38">
-              Top opportunities
-            </div>
-            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">
-              Highest-ranked clusters by trend strength
-            </h2>
-          </div>
-          <p className="max-w-xl text-sm leading-6 text-white/48">
-            Cards are ordered by engine rank. Select one to inspect the topic detail
-            panel below.
-          </p>
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {topOpportunities.map((topic) => {
-            const isSelected = selectedTopic.rank === topic.rank;
-
-            return (
-              <button
-                key={topic.rank}
-                type="button"
-                onClick={() => setSelectedRank(topic.rank)}
-                className={cn(
-                  "min-h-[250px] rounded-[1.65rem] border p-6 text-left transition",
-                  isSelected
-                    ? "border-emerald-400/35 bg-emerald-400/5 shadow-[0_22px_80px_rgba(16,185,129,0.12)]"
-                    : "border-white/8 bg-white/[0.025] hover:border-white/14 hover:bg-white/[0.04]",
-                )}
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="text-[11px] uppercase tracking-[0.24em] text-white/36">
-                    Rank {topic.rank}
-                  </div>
-                  <WatchStarButton
-                    ariaLabel={
-                      isWatched(getTopicId(topic))
-                        ? "Remove from watchlist"
-                        : "Add to watchlist"
-                    }
-                    active={isWatched(getTopicId(topic))}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleToggleTopic(topic);
-                    }}
-                  />
-                </div>
-                <h3 className="mt-7 min-h-[4rem] text-2xl font-semibold leading-8 tracking-[-0.045em] text-white/94">
-                  {topic.display_topic_title}
-                </h3>
-
-                <div className="mt-8 flex items-end justify-between gap-4">
-                  <div>
-                    <div className="text-[11px] uppercase tracking-[0.18em] text-white/34">
-                      Score
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
+            <section className="min-h-[620px] rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.052),rgba(255,255,255,0.022))] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.3)]">
+              {requestedClusterMissing ? (
+                <DiscoveryFallbackPanel
+                  clusterId={requestedClusterId}
+                  subclusterId={requestedSubclusterId}
+                  subclusterLabel={activeSubclusterLabel}
+                  openedFromDiscovery={openedFromDiscovery}
+                  outcomeStatus={requestedDiscoveryOpportunity?.outcome_status}
+                />
+              ) : (
+                <>
+                  {openedFromDiscovery ? (
+                    <DiscoveryContextBanner outcomeStatus={requestedDiscoveryOpportunity?.outcome_status} />
+                  ) : null}
+                  <TopSignalStrip signals={topSignals} />
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <SignalPill>{!hasPremiumAccess ? "Starter view" : "All tracked topics"}</SignalPill>
+                        <PlanPill plan={userPlan} />
+                        {activeSubclusterLabel ? <SignalPill>{formatSelectedLabel(activeSubclusterLabel)}</SignalPill> : null}
+                      </div>
+                      <h1 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">Signal Explorer</h1>
                     </div>
-                    <div className="mt-1 text-5xl font-semibold tracking-[-0.06em] text-white">
-                      {formatScore(topic.trend_strength_score)}
+                    <div className="text-sm text-white/46">
+                      {visibleLeaderboard.length} of {planVisibleLeaderboard.length} topics
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <DecisionPill label={topic.decision_label} />
-                    <div
-                      className={cn(
-                        "mt-3 text-sm font-medium",
-                        topic.growth_since_freeze_pct >= 0
-                          ? "text-emerald-200/78"
-                          : "text-red-100/62",
-                      )}
-                    >
-                      {formatPercent(topic.growth_since_freeze_pct)} growth
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex items-center justify-end gap-1 text-sm text-white/44">
-                  Inspect
-                  <ArrowUpRight className="h-4 w-4" />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </Section>
-
-      <Section spacing="standard" containerClassName="grid max-w-[1304px] gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="overflow-hidden rounded-[1.8rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.032),rgba(255,255,255,0.014))] shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
-          <div className="border-b border-white/8 p-5 sm:p-6">
-            <div className="text-[11px] uppercase tracking-[0.24em] text-white/38">
-              Leaderboard
-            </div>
-            <div className="mt-2 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-              <h2 className="text-2xl font-semibold tracking-[-0.04em] text-white">
-                Compact cluster ranking
-              </h2>
-              {!hasPremiumAccess ? (
-                <div className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-1 text-xs text-white/52">
-                  Explorer preview: top 5 rows
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[680px] table-fixed text-left">
-              <colgroup>
-                <col className="w-[56px]" />
-                <col className="w-[64px]" />
-                <col />
-                <col className="w-[76px]" />
-                <col className="w-[148px]" />
-                <col className="w-[92px]" />
-                <col className="w-[104px]" />
-              </colgroup>
-              <thead className="border-b border-white/8 text-[11px] uppercase tracking-[0.18em] text-white/34">
-                <tr>
-                  <th className="px-3 py-3 font-medium">Watch</th>
-                  <th className="px-3 py-3 font-medium">Rank</th>
-                  <th className="px-3 py-3 font-medium">Topic</th>
-                  <th className="px-3 py-3 font-medium">Score</th>
-                  <th className="px-3 py-3 font-medium">Signal</th>
-                  <th className="px-3 py-3 font-medium">Growth</th>
-                  <th className="px-3 py-3 font-medium">Videos</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/7">
-                {visibleLeaderboard.map((topic) => {
-                  const isSelected = selectedTopic.rank === topic.rank;
-
-                  return (
-                    <tr
-                      key={topic.rank}
-                      onClick={() => setSelectedRank(topic.rank)}
-                      className={cn(
-                        "cursor-pointer transition",
-                        isSelected
-                          ? "bg-emerald-400/[0.065] shadow-[inset_3px_0_0_rgba(52,211,153,0.75)]"
-                          : "hover:bg-white/[0.028]",
-                      )}
-                    >
-                      <td className="px-3 py-2.5">
-                        <WatchStarButton
-                          ariaLabel={
-                            isWatched(getTopicId(topic))
-                              ? "Remove from watchlist"
-                              : "Add to watchlist"
-                          }
-                          active={isWatched(getTopicId(topic))}
-                          size="sm"
-                          onClick={(event) => {
+                  {renderEmptyLeaderboard ? (
+                    <EmptyTopicState showWatchlistOnly={showWatchlistOnly} />
+                  ) : (
+                    <div className="mt-4 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
+                      {visibleLeaderboard.map((topic) => (
+                        <TopicCard
+                          key={`${topic.rank}-${getTopicId(topic)}`}
+                          topic={topic}
+                          selected={selectedTopic.rank === topic.rank}
+                          watched={isWatched(getTopicId(topic))}
+                          scanMode={scanMode}
+                          onSelect={() => setSelectedRank(topic.rank)}
+                          onToggleWatch={(event) => {
                             event.stopPropagation();
                             handleToggleTopic(topic);
                           }}
                         />
-                      </td>
-                      <td className="px-3 py-2.5 text-sm text-white/50">{topic.rank}</td>
-                      <td className="px-3 py-2.5 text-sm font-medium text-white/86">
-                        <div className="line-clamp-2 leading-5">
-                          {topic.display_topic_title}
-                        </div>
-                      </td>
-                      <td className="px-3 py-2.5 text-sm text-white/74">
-                        {formatScore(topic.trend_strength_score)}
-                      </td>
-                      <td className="px-3 py-2.5">
-                        <DecisionPill label={topic.decision_label} className="px-2.5 py-1 text-[9px]" />
-                      </td>
-                      <td
-                        className={cn(
-                          "px-3 py-2.5 text-sm",
-                          topic.growth_since_freeze_pct >= 0
-                            ? "text-emerald-200/78"
-                            : "text-red-100/62",
-                        )}
-                      >
-                        {formatPercent(topic.growth_since_freeze_pct)}
-                      </td>
-                      <td className="px-3 py-2.5 text-sm text-white/62">
-                        {topic.latest_n_videos}
-                      </td>
-                    </tr>
-                  );
-                })}
-                {renderEmptyLeaderboard ? (
-                  <tr>
-                    <td colSpan={7} className="px-5 py-10 text-center text-sm text-white/48">
-                      No watched topics in the current view. Add topics you want to monitor.
-                    </td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </section>
+
+            <TopicDetail
+              topic={selectedTopic}
+              primaryInsight={primaryInsight}
+              insights={selectedInsights}
+              visibleInsights={visibleInsights}
+              lockedInsightCount={lockedInsightCount}
+              hasPremiumAccess={hasPremiumAccess}
+              watched={selectedTopicIsWatched}
+              systemStatus={systemStatus}
+              onToggleWatch={() =>
+                selectedTopicIsWatched ? removeTopic(selectedTopicId) : handleAddTopic(selectedTopic)
+              }
+            />
           </div>
-          {!hasPremiumAccess ? (
-            <LockedLeaderboardPreview rows={lockedLeaderboardPreview} />
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function DashboardHeader({
+  totalTopics,
+  watchedTopics,
+  hasPremiumAccess,
+  clustersLoading,
+  clustersError,
+}: {
+  totalTopics: number;
+  watchedTopics: number;
+  hasPremiumAccess: boolean;
+  clustersLoading: boolean;
+  clustersError?: string | null;
+}) {
+  return (
+    <header className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+      <div className="flex flex-wrap items-start justify-between gap-5">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <SignalPill>Topic decisions</SignalPill>
+            <SignalPill>{hasPremiumAccess ? "All insights" : "Starter access"}</SignalPill>
+          </div>
+          <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white">
+            Topic Intelligence Dashboard
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-white/56">
+            Scan the strongest signals, judge confidence quickly, and open a topic for deeper signal analysis.
+          </p>
+          {clustersLoading ? <p className="mt-2 text-xs text-white/40">Loading live insights...</p> : null}
+          {clustersError ? (
+            <p className="mt-2 text-xs text-amber-100/62">Live insights unavailable. Showing preview data.</p>
           ) : null}
         </div>
+        <div className="grid w-full grid-cols-2 gap-3 sm:w-auto sm:min-w-[280px]">
+          <MetricCard label="Topics" value={totalTopics.toString()} />
+          <MetricCard label="Watching" value={watchedTopics.toString()} tone={watchedTopics > 0 ? "positive" : "neutral"} />
+        </div>
+      </div>
+    </header>
+  );
+}
 
-        <aside className="rounded-[1.8rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.038),rgba(255,255,255,0.016))] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.24)] xl:sticky xl:top-28 xl:self-start">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.24em] text-white/38">
-                Topic detail
+function CategoryStrip({
+  categories,
+  activeCategory,
+  onChange,
+}: {
+  categories: string[];
+  activeCategory: string;
+  onChange: (category: string) => void;
+}) {
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1">
+      {categories.map((category) => (
+        <button
+          key={category}
+          type="button"
+          onClick={() => onChange(category)}
+          className={cn(
+            "shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition",
+            activeCategory === category
+              ? "border-emerald-300/35 bg-emerald-300/12 text-emerald-100"
+              : "border-white/10 bg-white/[0.035] text-white/58 hover:border-white/18 hover:text-white/80",
+          )}
+        >
+          {category}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function DashboardControls({
+  searchQuery,
+  onSearchChange,
+  showWatchlistOnly,
+  onWatchlistOnlyChange,
+  scanMode,
+  onScanModeChange,
+  watchlistLimitMessage,
+  hasPremiumAccess,
+  watchedCount,
+}: {
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
+  showWatchlistOnly: boolean;
+  onWatchlistOnlyChange: (value: boolean) => void;
+  scanMode: boolean;
+  onScanModeChange: (value: boolean) => void;
+  watchlistLimitMessage: string;
+  hasPremiumAccess: boolean;
+  watchedCount: number;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/8 bg-white/[0.026] p-3">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(event) => onSearchChange(event.target.value)}
+          placeholder="Search topics, clusters, or decisions"
+          className="min-h-11 flex-1 rounded-full border border-white/10 bg-black/24 px-4 text-sm text-white outline-none transition placeholder:text-white/34 focus:border-emerald-300/35"
+        />
+        <div className="flex flex-col gap-2 sm:flex-row">
+        <label
+          className={cn(
+            "flex cursor-pointer items-center justify-between gap-3 rounded-full border px-4 py-2.5 text-sm transition",
+            showWatchlistOnly
+              ? "border-amber-300/28 bg-amber-300/10 text-amber-100"
+              : "border-white/10 bg-black/16 text-white/62 hover:border-white/16 hover:text-white/82",
+          )}
+        >
+          <span>Watchlist {watchedCount > 0 ? `(${watchedCount})` : ""}</span>
+          <input
+            type="checkbox"
+            checked={showWatchlistOnly}
+            onChange={(event) => onWatchlistOnlyChange(event.target.checked)}
+            className="h-4 w-4 accent-emerald-300"
+          />
+        </label>
+        <label
+          className={cn(
+            "flex cursor-pointer items-center justify-between gap-3 rounded-full border px-4 py-2.5 text-sm transition",
+            scanMode
+              ? "border-cyan-300/28 bg-cyan-300/10 text-cyan-100"
+              : "border-white/10 bg-black/16 text-white/62 hover:border-white/16 hover:text-white/82",
+          )}
+        >
+          <span>Scan Mode</span>
+          <input
+            type="checkbox"
+            checked={scanMode}
+            onChange={(event) => onScanModeChange(event.target.checked)}
+            className="h-4 w-4 accent-cyan-300"
+          />
+        </label>
+        </div>
+      </div>
+      {watchlistLimitMessage ? (
+        <div className="mt-3 rounded-xl border border-amber-300/18 bg-amber-300/[0.06] px-3 py-2 text-xs leading-5 text-amber-100/78">
+          {watchlistLimitMessage}
+        </div>
+      ) : null}
+      {!hasPremiumAccess ? (
+        <div className="mt-3">
+          <UpgradeMiniCard copy="Unlock all ranked topics." />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+type TopSignal = {
+  label: string;
+  topic: LeaderboardRow;
+  helper: string;
+  tone: "positive" | "watch" | "risk";
+};
+
+function TopSignalStrip({ signals }: { signals: TopSignal[] }) {
+  return (
+    <div className="mb-4 rounded-2xl border border-white/8 bg-black/16 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.025)]">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/38">
+          3 Key Signals
+        </div>
+        <div className="text-xs text-white/36">Fast scan summary</div>
+      </div>
+      <div className="grid gap-3 lg:grid-cols-3">
+        {signals.map((signal) => (
+          <div
+            key={`${signal.label}-${getTopicId(signal.topic)}`}
+            className={cn(
+              "rounded-xl border bg-white/[0.022] p-3",
+              signal.tone === "positive" && "border-emerald-300/20",
+              signal.tone === "watch" && "border-amber-300/18",
+              signal.tone === "risk" && "border-rose-300/18",
+            )}
+          >
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "h-2.5 w-2.5 rounded-full",
+                  signal.tone === "positive" && "bg-emerald-300 shadow-[0_0_18px_rgba(52,211,153,0.32)]",
+                  signal.tone === "watch" && "bg-amber-300 shadow-[0_0_18px_rgba(251,191,36,0.24)]",
+                  signal.tone === "risk" && "bg-rose-300 shadow-[0_0_18px_rgba(251,113,133,0.24)]",
+                )}
+              />
+              <div
+                className={cn(
+                  "text-[10px] font-semibold uppercase tracking-[0.16em]",
+                  signal.tone === "positive" && "text-emerald-200",
+                  signal.tone === "watch" && "text-amber-200",
+                  signal.tone === "risk" && "text-rose-200",
+                )}
+              >
+                {signal.label}
               </div>
-              <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-[-0.05em] text-white">
-                {selectedTopic.display_topic_title}
-              </h2>
-              <p className="mt-3 max-w-md text-sm leading-6 text-white/48">
-                {selectedTopic.topic_subtitle}
-              </p>
             </div>
-            <DecisionPill label={selectedTopic.decision_label} className="shrink-0" />
+            <div className="mt-2 truncate text-sm font-semibold text-white">{getTopicTitle(signal.topic)}</div>
+            <div className="mt-1 flex items-center justify-between gap-3 text-xs text-white/48">
+              <span>{signal.helper}</span>
+              <span
+                className={cn(
+                  "font-semibold",
+                  getGrowthFraction(signal.topic) >= 0 ? "text-emerald-200/82" : "text-rose-200/82",
+                )}
+              >
+                {formatPercent(getGrowthFraction(signal.topic))}
+              </span>
+            </div>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+function TopicCard({
+  topic,
+  selected,
+  watched,
+  scanMode,
+  onSelect,
+  onToggleWatch,
+}: {
+  topic: LeaderboardRow;
+  selected: boolean;
+  watched: boolean;
+  scanMode: boolean;
+  onSelect: () => void;
+  onToggleWatch: (event: MouseEvent<HTMLButtonElement>) => void;
+}) {
+  const growth = getGrowthFraction(topic);
+  const hoverInsights = getTopicCardHoverInsights(topic);
+  const confidenceTone = getConfidenceTone(topic);
+  const isTopRank = topic.rank === 1;
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        "group relative overflow-visible rounded-2xl border p-4 text-left transition",
+        scanMode ? "min-h-[174px]" : "min-h-[230px]",
+        isTopRank && "shadow-[0_20px_80px_rgba(251,191,36,0.12)]",
+        selected
+          ? "border-emerald-300/36 bg-emerald-300/[0.075] shadow-[0_18px_60px_rgba(16,185,129,0.10),inset_0_1px_0_rgba(255,255,255,0.06)]"
+          : isTopRank
+            ? "border-amber-300/24 bg-amber-300/[0.045] hover:border-amber-300/34"
+            : watched
+              ? "border-amber-300/18 bg-amber-300/[0.035] hover:border-amber-300/28"
+              : "border-white/8 bg-black/16 hover:border-white/14 hover:bg-white/[0.04]",
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="shrink-0 text-xs font-medium text-white/36">#{topic.rank}</span>
+          {isTopRank ? (
+            <span className="rounded-full border border-amber-300/24 bg-amber-300/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-100">
+              #1 Signal
+            </span>
+          ) : null}
+          {watched ? (
+            <span className="rounded-full border border-amber-300/18 bg-amber-300/8 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-amber-100/80">
+              Watching
+            </span>
+          ) : null}
+        </div>
+        <WatchStarButton
+          ariaLabel={watched ? "Remove from watchlist" : "Add to watchlist"}
+          active={watched}
+          onClick={onToggleWatch}
+        />
+      </div>
+
+      <h2 className={cn("mt-4 line-clamp-2 font-semibold leading-tight tracking-[-0.04em] text-white", scanMode ? "text-lg" : "text-xl")}>
+        {getTopicTitle(topic)}
+      </h2>
+      {!scanMode ? <p className="mt-2 line-clamp-2 text-sm leading-6 text-white/48">{topic.topic_subtitle}</p> : null}
+
+      <div className={cn("flex flex-wrap items-center gap-2", scanMode ? "mt-4" : "mt-5")}>
+        <DecisionPill label={topic.decision_label} />
+        <span
+          className={cn(
+            "inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em]",
+            getOpportunityTone(topic) === "positive" && "border-emerald-300/28 bg-emerald-300/10 text-emerald-200",
+            getOpportunityTone(topic) === "watch" && "border-amber-300/28 bg-amber-300/10 text-amber-200",
+            getOpportunityTone(topic) === "risk" && "border-rose-300/25 bg-rose-300/10 text-rose-200",
+          )}
+        >
+          {mapOpportunityState(topic)} opportunity
+        </span>
+      </div>
+
+      <div className={cn("grid grid-cols-3 gap-2", scanMode ? "mt-4" : "mt-5")}>
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.16em] text-white/30">Topic Growth</div>
+          <div className={cn("mt-1 text-lg font-semibold", growth >= 0 ? "text-emerald-200" : "text-rose-200")}>
+            {formatPercent(growth)}
+          </div>
+        </div>
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.16em] text-white/30">Confidence</div>
+          <div className="mt-1 text-lg font-semibold text-white">{mapConfidence(topic)}</div>
+          <ConfidenceMeter value={getConfidenceValue(topic)} tone={confidenceTone} />
+        </div>
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.16em] text-white/30">Stability</div>
+          <div className="mt-1 text-sm font-semibold text-white/78">{mapWillLast(topic)}</div>
+        </div>
+      </div>
+
+      <div className="pointer-events-none absolute left-4 right-4 top-4 z-20 translate-y-2 rounded-xl border border-white/12 bg-[#070b10]/95 p-3 opacity-0 shadow-[0_18px_70px_rgba(0,0,0,0.42)] backdrop-blur-xl transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/42">Quick insight</div>
+        <ul className="mt-2 space-y-1.5 text-xs leading-5 text-white/72">
+          {hoverInsights.map((insight) => (
+            <li key={insight} className="flex gap-2">
+              <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-emerald-300/80" />
+              <span>{insight}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </button>
+  );
+}
+
+function TopicDetail({
+  topic,
+  primaryInsight,
+  insights,
+  visibleInsights,
+  lockedInsightCount,
+  hasPremiumAccess,
+  watched,
+  systemStatus,
+  onToggleWatch,
+}: {
+  topic: LeaderboardRow;
+  primaryInsight?: ClusterInsight;
+  insights: ClusterInsight[];
+  visibleInsights: ClusterInsight[];
+  lockedInsightCount: number;
+  hasPremiumAccess: boolean;
+  watched: boolean;
+  systemStatus: ReturnType<typeof getSystemStatus>;
+  onToggleWatch: () => void;
+}) {
+  const growth = getGrowthFraction(topic);
+
+  return (
+    <aside className="sticky top-5 h-fit rounded-2xl border border-white/10 bg-white/[0.035] shadow-[0_24px_80px_rgba(0,0,0,0.28)] xl:max-h-[calc(100vh-112px)] xl:overflow-y-auto">
+      <PanelHeader eyebrow="Signal Analysis" title="Decision Read" aside={`Rank ${topic.rank}`} />
+      <div className="p-4">
+        <div className={cn("rounded-2xl border p-4", getPrimaryInsightClass(primaryInsight))}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <DecisionPill label={topic.decision_label} />
+                <SignalPill>{mapOpportunityState(topic)} opportunity</SignalPill>
+                <SignalPill>{formatSnapshotDate(topic.latest_snapshot_date)}</SignalPill>
+              </div>
+              <h2 className="mt-4 text-2xl font-semibold leading-tight tracking-[-0.04em] text-white">
+                {getClusterDisplayTitle(topic, primaryInsight)}
+              </h2>
+            </div>
             <button
               type="button"
-              onClick={() =>
-                selectedTopicIsWatched
-                  ? removeTopic(selectedTopicId)
-                  : handleAddTopic(selectedTopic)
-              }
+              onClick={onToggleWatch}
               className={cn(
-                "inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition hover:shadow-[0_18px_48px_rgba(245,158,11,0.18)]",
-                selectedTopicIsWatched
-                  ? "border border-amber-300/30 bg-amber-300/10 text-amber-100 hover:bg-amber-300/[0.14]"
-                  : "border border-white/10 bg-white/[0.03] text-white/82 hover:border-amber-300/22 hover:bg-white/[0.05] hover:text-white",
+                "inline-flex shrink-0 items-center justify-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition",
+                watched
+                  ? "border-amber-300/28 bg-amber-300/10 text-amber-100"
+                  : "border-white/10 bg-white/[0.035] text-white/74 hover:border-amber-300/22 hover:text-white",
               )}
             >
-              <Star
-                className={cn("h-4 w-4", selectedTopicIsWatched ? "fill-current" : "")}
-              />
-              {selectedTopicIsWatched ? "Remove from Watchlist" : "Add to Watchlist"}
+              <Star className={cn("h-4 w-4", watched ? "fill-current" : "")} />
+              {watched ? "Watching" : "Watch"}
             </button>
           </div>
+          <p className="mt-3 text-sm leading-6 text-white/58">{topic.topic_subtitle}</p>
+        </div>
 
-          <div className="mt-7 grid grid-cols-2 gap-3">
-            {[
-              ["Score", formatScore(selectedTopic.trend_strength_score), "neutral"],
-              [
-                "Growth",
-                formatPercent(selectedTopic.growth_since_freeze_pct),
-                selectedTopic.growth_since_freeze_pct >= 0 ? "positive" : "risk",
-              ],
-              [
-                "Confidence",
-                selectedTopic.trend_confidence === undefined
-                  ? "Unavailable"
-                  : `${Math.round(selectedTopic.trend_confidence * 100)}%`,
-                "neutral",
-              ],
-              ["Latest videos", selectedTopic.latest_n_videos.toString(), "neutral"],
-            ].map(([label, value, tone]) => (
-              <MetricCard
-                key={label}
-                label={label}
-                value={value}
-                tone={tone as "neutral" | "positive" | "risk"}
-              />
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <MetricCard label="Topic Growth" value={formatPercent(growth)} tone={growth >= 0 ? "positive" : "risk"} />
+          <MetricCard label="Confidence" value={mapConfidence(topic)} />
+          <MetricCard label="Stability" value={mapWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
+          <MetricCard label="Opportunity stage" value={mapOpportunityState(topic)} tone={getOpportunityTone(topic)} />
+        </div>
+
+        <SystemStatusPanel status={systemStatus} selectedTopic={topic} />
+
+        <div className="mt-3 rounded-2xl border border-white/8 bg-black/18 p-4">
+          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Why this trend?</div>
+          <div className="mt-2 text-sm font-medium text-white/82">
+            {mapDecisionLabel(topic.decision_label)} for {getTopicTitle(topic)}
+          </div>
+          <p className="mt-3 text-sm leading-6 text-white/66">{generateWhyThisTrend(topic, primaryInsight)}</p>
+        </div>
+
+        <div className="mt-3 rounded-2xl border border-white/8 bg-black/18 p-4">
+          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Supporting evidence</div>
+          <div className="mt-3 space-y-2 text-sm text-white/58">
+            <LockedSignalRow
+              label="Weeks observed"
+              value={topic.weeks_observed === null ? "Unavailable" : topic.weeks_observed.toString()}
+              locked={false}
+            />
+            <LockedSignalRow
+              label="Positive weeks"
+              value={topic.consecutive_up_weeks === null ? "Unavailable" : topic.consecutive_up_weeks.toString()}
+              locked={false}
+            />
+            <LockedSignalRow label="Topic Growth" value={formatPercent(growth)} locked={false} />
+            <LockedSignalRow label="Signal strength" value={formatScore(topic.trend_strength_score)} locked={false} />
+            <LockedSignalRow
+              label="Model basis"
+              value={hasPremiumAccess ? normalizeAnchor(topic.score_anchor) : "Locked"}
+              locked={!hasPremiumAccess}
+            />
+          </div>
+        </div>
+
+        <div className="mt-3 rounded-2xl border border-white/8 bg-white/[0.025] p-4">
+          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Recommended Action</div>
+          <p className="mt-3 text-sm leading-6 text-white/66">{getRecommendedActionPlaceholder(topic)}</p>
+          <ul className="mt-3 space-y-2 text-sm leading-6 text-white/68">
+            {getRecommendedActionBullets(topic).map((action) => (
+              <li key={action} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300/70" />
+                <span>{action}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-3 rounded-2xl border border-white/8 bg-white/[0.025] p-4">
+          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Evidence readout</div>
+          <div className="mt-3 space-y-3">
+            {visibleInsights.map((insight) => (
+              <InsightRow key={`${insight.subcluster_label}-${insight.insight_score}`} insight={insight} locked={false} />
+            ))}
+            {Array.from({ length: lockedInsightCount }).map((_, index) => (
+              <InsightRow key={`locked-${index}`} insight={insights[index + 1]} locked />
             ))}
           </div>
+          <SignalTimeline insights={insights} />
+        </div>
 
-          {hasPremiumAccess ? (
-            <div className="mt-7 space-y-4">
-              <DetailBlock title="What is happening" text={selectedTopic.trend_summary} />
-              <DetailBlock
-                title="Why this score"
-                text={`${selectedTopic.score_anchor
-                  .toLowerCase()
-                  .split("_")
-                  .join(" ")}. The current decision label is ${formatDecision(
-                  selectedTopic.decision_label,
-                ).toLowerCase()}.`}
-              />
-              <DetailBlock title="Recommended action" text={getRecommendedAction(selectedTopic)} />
-              <EvidenceBlock topic={selectedTopic} />
-              <AuditBlock topic={selectedTopic} />
-            </div>
-          ) : (
-            <div className="mt-7 space-y-4">
-              <LockedDetailPreview topic={selectedTopic} />
-              <LockedWhyScorePreview topic={selectedTopic} />
-              <LockedRecommendedActionsPreview />
-              <UpgradeCard
-                title="Unlock complete topic intelligence"
-                description="Pro opens full topic detail, score reasoning, recommended actions, and the complete leaderboard."
-                cta="Upgrade to Pro"
-                variant="detail"
-              />
-            </div>
-          )}
-        </aside>
-      </Section>
-      {!hasPremiumAccess ? <StickyUpgradeBar /> : null}
-    </PageShell>
+        {!hasPremiumAccess ? (
+          <div className="mt-3">
+            <UpgradeCard
+              title="Unlock complete intelligence"
+              description="Pro opens the full topic universe, complete insight text, score reasoning, and execution actions."
+              cta="Upgrade to Pro"
+            />
+          </div>
+        ) : null}
+      </div>
+    </aside>
   );
 }
 
-function EvidenceBlock({ topic }: { topic: LeaderboardRow }) {
+function SystemStatusPanel({
+  status,
+  selectedTopic,
+}: {
+  status: ReturnType<typeof getSystemStatus>;
+  selectedTopic: LeaderboardRow;
+}) {
+  const tone = getConfidenceTone(selectedTopic);
+
   return (
-    <div className="rounded-[1.2rem] border border-white/8 bg-white/[0.025] p-4">
-      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-white/38">
-        <ShieldCheck className="h-4 w-4 text-emerald-200/70" />
-        Evidence
+    <div className="mt-3 rounded-2xl border border-white/8 bg-black/16 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">System Status</div>
+          <div className="mt-1 text-sm font-medium text-white/82">{status.confidence}</div>
+        </div>
+        <span className="rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-[10px] font-medium text-white/50">
+          Updated {status.lastUpdated}
+        </span>
       </div>
-      <ul className="mt-4 space-y-3 text-sm leading-6 text-white/58">
-        <li className="flex gap-3">
-          <Check className="mt-1 h-4 w-4 shrink-0 text-emerald-200/70" />
-          {topic.opportunity_summary}
-        </li>
-        <li className="flex gap-3">
-          <Check className="mt-1 h-4 w-4 shrink-0 text-emerald-200/70" />
-          T+60 winner: {topic.t60_is_winner ? "Yes" : "No"}
-          {topic.t60_actual_rank ? `, actual rank ${topic.t60_actual_rank}` : ""}
-        </li>
-        <li className="flex gap-3">
-          <Check className="mt-1 h-4 w-4 shrink-0 text-emerald-200/70" />
-          {topic.risk_summary}
-        </li>
-      </ul>
+      <ConfidenceMeter value={status.confidenceValue} tone={tone} />
     </div>
   );
 }
 
-function AuditBlock({ topic }: { topic: LeaderboardRow }) {
+function EmptyTopicState({ showWatchlistOnly }: { showWatchlistOnly: boolean }) {
   return (
-    <div className="rounded-[1.2rem] border border-white/8 bg-black/16 p-4">
-      <div className="text-[11px] uppercase tracking-[0.2em] text-white/34">
-        Audit / Internal
-      </div>
-      <div className="mt-3 grid gap-2 text-sm leading-6 text-white/50">
-        <div>
-          <span className="text-white/32">Raw cluster label: </span>
-          {topic.cluster_label ?? "Unavailable"}
-        </div>
-        <div>
-          <span className="text-white/32">Score anchor: </span>
-          {topic.score_anchor}
-        </div>
+    <div className="mt-4 flex min-h-[360px] items-center justify-center rounded-2xl border border-white/8 bg-black/16 p-8 text-center">
+      <div>
+        <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">No topics found</div>
+        <p className="mt-3 max-w-sm text-sm leading-6 text-white/58">
+          {showWatchlistOnly
+            ? "No watched topics match the current filters."
+            : "Try a broader search or a different category."}
+        </p>
       </div>
     </div>
   );
 }
 
-function DetailBlock({ title, text }: { title: string; text: string }) {
+function PanelHeader({
+  eyebrow,
+  title,
+  aside,
+}: {
+  eyebrow: string;
+  title: string;
+  aside?: string;
+}) {
   return (
-    <div className="rounded-[1.2rem] border border-white/8 bg-white/[0.025] p-4">
-      <div className="text-[11px] uppercase tracking-[0.2em] text-white/38">{title}</div>
-      <p className="mt-3 text-sm leading-6 text-white/60">{text}</p>
+    <div className="flex items-start justify-between gap-3 border-b border-white/8 p-4">
+      <div>
+        <div className="text-[10px] uppercase tracking-[0.2em] text-white/34">{eyebrow}</div>
+        <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.04em] text-white">{title}</h2>
+      </div>
+      {aside ? (
+        <span className="rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-[11px] text-white/48">
+          {aside}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function DiscoveryFallbackPanel({
+  clusterId,
+  subclusterId,
+  subclusterLabel,
+  openedFromDiscovery,
+  outcomeStatus,
+}: {
+  clusterId: string | null;
+  subclusterId?: string | null;
+  subclusterLabel?: string | null;
+  openedFromDiscovery?: boolean;
+  outcomeStatus?: string;
+}) {
+  return (
+    <div className="flex min-h-0 flex-1 items-center justify-center">
+      <div className="w-full max-w-xl rounded-2xl border border-amber-300/18 bg-amber-300/[0.055] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.22)]">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-100/68">
+          {openedFromDiscovery ? "Opened from Discovery signal" : "Dashboard insight unavailable"}
+        </div>
+        <h1 className="mt-4 text-3xl font-semibold tracking-[-0.045em] text-white">
+          Discovery signal selected
+        </h1>
+        <div className="mt-4 grid gap-2 text-sm text-white/70">
+          <div>Cluster: {clusterId}</div>
+          {subclusterId ? <div>Subcluster: {subclusterId}</div> : null}
+        </div>
+        {subclusterLabel ? (
+          <p className="mt-2 text-sm font-medium text-amber-100/76">
+            Selected subcluster: {formatSelectedLabel(subclusterLabel)}
+          </p>
+        ) : null}
+        {outcomeStatus ? (
+          <p className="mt-3 rounded-xl border border-white/8 bg-black/16 px-3 py-2 text-sm text-white/64">
+            Initial signal detected earlier. Latest outcome: {formatOutcomeStatus(outcomeStatus)}.
+          </p>
+        ) : null}
+        <p className="mt-4 text-base leading-7 text-white/68">
+          This signal is not in the current dashboard top list.
+        </p>
+        <a
+          href="/discovery"
+          className="mt-6 inline-flex rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+        >
+          Back to Discovery
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function DiscoveryContextBanner({ outcomeStatus }: { outcomeStatus?: string }) {
+  return (
+    <div className="mb-4 rounded-2xl border border-cyan-300/16 bg-cyan-300/[0.055] px-4 py-3 text-sm text-cyan-50/76">
+      <div className="font-medium text-white">Opened from Discovery signal</div>
+      {outcomeStatus ? (
+        <div className="mt-1 text-cyan-50/62">
+          Initial signal detected earlier. Latest outcome: {formatOutcomeStatus(outcomeStatus)}.
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function TrendDot({ tone }: { tone: SignalState }) {
+  const signalTone = getSignalTone(tone);
+
+  return (
+    <span
+      className={cn(
+        "h-1.5 w-1.5 rounded-full",
+        signalTone === "positive" && "bg-emerald-300/85",
+        signalTone === "watch" && "bg-amber-300/85",
+        signalTone === "risk" && "bg-rose-300/85",
+      )}
+    />
+  );
+}
+
+function InsightRow({ insight, locked }: { insight?: ClusterInsight; locked: boolean }) {
+  const visual = getInsightVisualForInsight(insight);
+  const metric = getInsightMetric(insight);
+
+  return (
+    <div
+      className={cn(
+        "rounded-xl border border-white/8 bg-black/14 px-3 py-3 text-sm leading-5",
+        locked ? "text-white/46" : "text-white/70",
+      )}
+    >
+      <div className="flex items-center gap-2">
+        {locked ? <Lock className="h-3.5 w-3.5 shrink-0 text-amber-200/72" /> : null}
+        <span className={cn("shrink-0 text-sm", visual.color)}>{visual.icon}</span>
+        <span className={cn("text-[10px] font-semibold uppercase tracking-[0.16em]", visual.color)}>
+          {visual.label}
+        </span>
+      </div>
+      <div className="mt-2 font-medium text-white/84">
+        {locked ? "Locked" : insight?.subcluster_label ?? "Insight unavailable"}
+      </div>
+      <div className="mt-1 text-xs text-white/42">
+        {locked ? "Upgrade to unlock this signal" : metric.compact}
+      </div>
+    </div>
+  );
+}
+
+function SignalTimeline({ insights }: { insights: ClusterInsight[] }) {
+  const steps = getInsightTimeline(insights);
+
+  return (
+    <div className="mt-5 space-y-4">
+      {steps.length === 0 ? (
+        <div className="text-xs leading-5 text-white/40">No signal timeline yet.</div>
+      ) : null}
+      {steps.map((step, index) => (
+        <div key={`${step.label}-${index}`} className="flex gap-3">
+          <div className="flex flex-col items-center">
+            <div className={cn("h-3 w-3 rounded-full border", getTimelineClass(step.tone))} />
+            {index < steps.length - 1 ? <div className="h-9 w-px bg-white/10" /> : null}
+          </div>
+          <div>
+            <div className="text-sm font-medium text-white/76">{step.label}</div>
+            <div className="mt-1 text-xs leading-5 text-white/40">{step.helper}</div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -887,32 +1525,19 @@ function UpgradeCard({
   title,
   description,
   cta,
-  variant = "detail",
 }: {
   title: string;
   description: string;
   cta: string;
-  variant?: "leaderboard" | "detail" | "actions";
 }) {
-  const eyebrow =
-    variant === "leaderboard"
-      ? "Full universe locked"
-      : variant === "actions"
-        ? "Action layer locked"
-        : "Insight locked";
-
   return (
-    <div className="rounded-[1.35rem] border border-emerald-400/30 bg-emerald-400/5 p-5 shadow-[0_20px_70px_rgba(16,185,129,0.10)]">
+    <div className="rounded-2xl border border-emerald-400/24 bg-emerald-400/[0.055] p-4 shadow-[0_20px_70px_rgba(16,185,129,0.10)]">
       <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-emerald-200/70">
         <Lock className="h-4 w-4" />
-        {eyebrow}
+        Explorer upgrade
       </div>
-      <h3 className="mt-3 text-xl font-semibold tracking-[-0.04em] text-white">
-        {title}
-      </h3>
-      <p className="mt-3 text-sm leading-6 text-white/56">
-        {description}
-      </p>
+      <h3 className="mt-3 text-lg font-semibold tracking-[-0.04em] text-white">{title}</h3>
+      <p className="mt-3 text-sm leading-6 text-white/56">{description}</p>
       <a
         href="/signup?plan=pro"
         className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black shadow-[0_12px_34px_rgba(255,255,255,0.08)] transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_18px_48px_rgba(16,185,129,0.22)]"
@@ -923,165 +1548,15 @@ function UpgradeCard({
   );
 }
 
-function LockedLeaderboardPreview({ rows }: { rows: LeaderboardRow[] }) {
+function UpgradeMiniCard({ copy }: { copy: string }) {
   return (
-    <div className="border-t border-white/8 bg-black/12 p-4 sm:p-5">
-      {rows.length > 0 ? (
-        <div className="overflow-hidden rounded-[1.1rem] border border-white/8 bg-white/[0.018]">
-          <div className="divide-y divide-white/7 blur-[1.5px]">
-            {rows.map((topic) => (
-              <div
-                key={topic.rank}
-                className="grid grid-cols-[56px_64px_minmax(0,1fr)_76px_148px_92px_104px] items-center px-3 py-2.5 text-sm"
-              >
-                <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/30">
-                  <Star className="h-3.5 w-3.5" />
-                </div>
-                <div className="text-white/38">{topic.rank}</div>
-                <div className="line-clamp-1 pr-3 font-medium text-white/62">
-                  {topic.display_topic_title}
-                </div>
-                <div className="text-white/48">{formatScore(topic.trend_strength_score)}</div>
-                <div>
-                  <DecisionPill label={topic.decision_label} className="px-2.5 py-1 text-[9px]" />
-                </div>
-                <div className="text-emerald-200/48">
-                  {formatPercent(topic.growth_since_freeze_pct)}
-                </div>
-                <div className="text-white/42">{topic.latest_n_videos}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      <div className="mx-auto mt-4 max-w-xl rounded-[1.2rem] border border-emerald-400/30 bg-emerald-400/5 p-5 text-center shadow-[0_18px_60px_rgba(16,185,129,0.10)] backdrop-blur-md">
-        <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] text-emerald-100">
-          <Lock className="h-4 w-4" />
-        </div>
-        <h3 className="mt-3 text-base font-semibold tracking-[-0.03em] text-white">
-          You’re seeing 20% of the signal
-        </h3>
-        <p className="mt-2 text-sm leading-6 text-white/56">
-          Explorer shows only the first five clusters. Upgrade to unlock the full
-          ranked universe.
-        </p>
-        <p className="mt-2 text-xs leading-5 text-emerald-100/70">
-          8 clusters were validated as T+60 winners in this run.
-        </p>
-        <a
-          href="/signup?plan=pro"
-          className="mt-4 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
-        >
-          Unlock full leaderboard
-        </a>
-      </div>
-    </div>
-  );
-}
-
-function LockedDetailPreview({ topic }: { topic: LeaderboardRow }) {
-  const teaserStats = [
-    ["Score", formatScore(topic.trend_strength_score)],
-    ["Growth", formatPercent(topic.growth_since_freeze_pct)],
-    topic.weeks_observed !== null ? ["Weeks observed", topic.weeks_observed.toString()] : null,
-    topic.consecutive_up_weeks !== null
-      ? ["Consecutive up weeks", topic.consecutive_up_weeks.toString()]
-      : null,
-    topic.latest_n_videos !== undefined ? ["Latest videos", topic.latest_n_videos.toString()] : null,
-  ].filter((stat): stat is string[] => Boolean(stat));
-
-  return (
-    <div className="relative overflow-hidden rounded-[1.25rem] border border-white/8 bg-white/[0.025] p-4">
-      <div className="grid gap-3 sm:grid-cols-2">
-        {teaserStats.map(([label, value]) => (
-          <div key={label} className="rounded-[1rem] border border-white/8 bg-black/18 p-4">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">
-              {label}
-            </div>
-            <div className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white">
-              {value}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-4 rounded-[1rem] border border-white/8 bg-black/18 p-4 blur-[1.5px]">
-        <div className="text-[11px] uppercase tracking-[0.2em] text-white/34">
-          Topic intelligence
-        </div>
-        <p className="mt-3 text-sm leading-6 text-white/56">
-          {topic.trend_summary}
-        </p>
-      </div>
-
-      <div className="mt-4 rounded-[1.15rem] border border-emerald-400/30 bg-emerald-400/5 p-4 shadow-[0_18px_60px_rgba(16,185,129,0.10)] backdrop-blur-md">
-        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-emerald-200/70">
-          <Lock className="h-4 w-4" />
-          Full topic intelligence is locked
-        </div>
-        <p className="mt-3 text-sm leading-6 text-white/58">
-          See why this topic is growing, what action to take, and the signals behind
-          the score.
-        </p>
-        <a
-          href="/signup?plan=pro"
-          className="mt-4 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
-        >
-          Unlock full insight
-        </a>
-      </div>
-    </div>
-  );
-}
-
-function LockedWhyScorePreview({ topic }: { topic: LeaderboardRow }) {
-  return (
-    <div className="rounded-[1.2rem] border border-white/8 bg-white/[0.025] p-4">
-      <div className="text-[11px] uppercase tracking-[0.2em] text-white/38">
-        Why this score?
-      </div>
-      <div className="mt-4 space-y-3 text-sm leading-6">
-        <LockedSignalRow
-          label="Weeks observed"
-          value={topic.weeks_observed === null ? "Not available in preview" : topic.weeks_observed.toString()}
-          locked={false}
-        />
-        <LockedSignalRow label="Consecutive growth" value="Locked" locked />
-        <LockedSignalRow label="Expansion trend" value="Locked" locked />
-        <LockedSignalRow label="Stability signal" value="Locked" locked />
-      </div>
-      <a
-        href="/signup?plan=pro"
-        className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
-      >
-        Unlock score breakdown
-      </a>
-    </div>
-  );
-}
-
-function LockedRecommendedActionsPreview() {
-  return (
-    <div className="rounded-[1.2rem] border border-white/8 bg-white/[0.025] p-4">
-      <div className="text-[11px] uppercase tracking-[0.2em] text-white/38">
-        Recommended Action
-      </div>
-      <div className="mt-4 space-y-3 text-sm leading-6 text-white/58">
-        <div className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/8 bg-black/18 px-4 py-3">
-          <span>Strategy identified</span>
-          <Check className="h-4 w-4 text-emerald-200/70" />
-        </div>
-        <LockedSignalRow label="Execution plan available" value="Locked" locked />
-        <LockedSignalRow label="Monetisation angles detected" value="Locked" locked />
-      </div>
-      <a
-        href="/signup?plan=pro"
-        className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
-      >
-        See what to do next
-      </a>
-    </div>
+    <a
+      href="/signup?plan=pro"
+      className="flex items-center justify-between gap-3 rounded-xl border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2.5 text-xs font-medium text-emerald-100/78 transition hover:border-emerald-300/32 hover:bg-emerald-300/[0.085]"
+    >
+      <span>{copy}</span>
+      <Lock className="h-3.5 w-3.5" />
+    </a>
   );
 }
 
@@ -1097,12 +1572,12 @@ function LockedSignalRow({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 rounded-[1rem] border border-white/8 bg-black/18 px-4 py-3",
+        "flex items-center justify-between gap-4 rounded-xl border border-white/8 bg-black/18 px-3 py-2.5",
         locked ? "border-amber-300/14 bg-amber-300/[0.04] text-amber-100/58" : "text-white/68",
       )}
     >
       <span>{label}</span>
-      <span className="inline-flex items-center gap-2">
+      <span className="inline-flex items-center gap-2 text-right">
         {locked ? <Lock className="h-3.5 w-3.5 text-amber-200/70" /> : null}
         {value}
       </span>
@@ -1110,25 +1585,351 @@ function LockedSignalRow({
   );
 }
 
-function StickyUpgradeBar() {
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-emerald-400/30 bg-[#07090d]/94 px-4 py-3 shadow-[0_-18px_60px_rgba(16,185,129,0.10)] backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[1304px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="text-sm font-medium text-white">
-            You’re in Explorer mode — limited access
-          </div>
-          <div className="mt-1 text-sm text-white/52">
-            Unlock full topic intelligence and act early
-          </div>
-        </div>
-        <a
-          href="/signup?plan=pro"
-          className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_16px_42px_rgba(16,185,129,0.22)]"
-        >
-          Upgrade to Pro
-        </a>
-      </div>
-    </div>
+function getClusterInsights(topic: LeaderboardRow): ClusterInsight[] {
+  if (topic.liveCluster) {
+    return topic.liveCluster.insights
+      .map((insight) => ({ ...insight }))
+      .sort((a, b) => b.insight_score - a.insight_score)
+      .slice(0, 3);
+  }
+
+  const topicId = getTopicId(topic);
+  const matchedInsights = clusterInsights
+    .filter((insight) => {
+      return (
+        insight.cluster_rank === topic.rank ||
+        insight.cluster_id === topicId ||
+        insight.cluster_label === topic.cluster_label ||
+        insight.cluster_label === topic.display_topic_title
+      );
+    })
+    .sort((a, b) => b.insight_score - a.insight_score);
+
+  if (matchedInsights.length > 0) {
+    return ensureThreeInsights(matchedInsights, topic);
+  }
+
+  return ensureThreeInsights(
+    [
+      {
+        cluster_rank: topic.rank,
+        subcluster_label: `${topic.display_topic_title} demand pocket`,
+        insight_text: topic.opportunity_summary,
+        insight_score: topic.trend_strength_score,
+        signal_state: topic.decision_label === "WEAK_OR_RISK" ? "Weakening" : "Emerging",
+      },
+      {
+        cluster_rank: topic.rank,
+        subcluster_label: `${topic.display_topic_title} risk pattern`,
+        insight_text: topic.risk_summary,
+        insight_score: Math.max(0.1, topic.trend_strength_score - 0.14),
+        signal_state: topic.decision_label === "WEAK_OR_RISK" ? "Failed breakout" : "Weakening",
+      },
+      {
+        cluster_rank: topic.rank,
+        subcluster_label: "validation read",
+        insight_text: topic.t60_is_winner
+          ? `Validated as a T+60 winner${topic.t60_actual_rank ? ` at rank ${topic.t60_actual_rank}` : ""}.`
+          : "T+60 validation is still mixed, so treat the read as conditional.",
+        insight_score: Math.max(0.1, topic.trend_strength_score - 0.22),
+        signal_state: topic.t60_is_winner ? "Emerging" : "Failed breakout",
+      },
+    ],
+    topic,
   );
+}
+
+function getLeaderboardWithRequestedTopic(
+  topics: LeaderboardRow[],
+  selectedTopic: LeaderboardRow,
+  requestedClusterId: string | null,
+) {
+  if (!requestedClusterId || topics.some((topic) => topic.cluster_id === requestedClusterId)) {
+    return topics;
+  }
+
+  return [selectedTopic, ...topics];
+}
+
+function getTopSignals(topics: LeaderboardRow[]): TopSignal[] {
+  if (topics.length === 0) return [];
+
+  const byGrowthDesc = [...topics].sort((a, b) => getGrowthFraction(b) - getGrowthFraction(a));
+  const positive = byGrowthDesc[0];
+  const decline = [...topics]
+    .filter((topic) => getGrowthFraction(topic) < 0)
+    .sort((a, b) => getGrowthFraction(a) - getGrowthFraction(b))[0] ?? byGrowthDesc[byGrowthDesc.length - 1];
+  const absoluteGrowth = topics.map((topic) => Math.abs(getGrowthFraction(topic))).sort((a, b) => a - b);
+  const medianVolatility = absoluteGrowth[Math.floor(absoluteGrowth.length / 2)] ?? 0;
+  const watch =
+    [...topics]
+      .filter((topic) => topic !== positive && topic !== decline)
+      .sort(
+        (a, b) =>
+          Math.abs(Math.abs(getGrowthFraction(a)) - medianVolatility) -
+          Math.abs(Math.abs(getGrowthFraction(b)) - medianVolatility),
+      )[0] ?? positive;
+
+  return [
+    {
+      label: "Top positive signal",
+      topic: positive,
+      helper: "Highest topic growth",
+      tone: "positive",
+    },
+    {
+      label: "Watch signal",
+      topic: watch,
+      helper: "Mid volatility",
+      tone: "watch",
+    },
+    {
+      label: "Negative signal",
+      topic: decline,
+      helper: getGrowthFraction(decline) < 0 ? "Decline detected" : "Lowest growth",
+      tone: "risk",
+    },
+  ];
+}
+
+function prioritizeSubclusterInsights(insights: ClusterInsight[], requestedSubclusterId: string | null) {
+  if (!requestedSubclusterId) return insights;
+
+  return [...insights].sort((a, b) => {
+    const aSelected = a.subcluster_id === requestedSubclusterId ? 1 : 0;
+    const bSelected = b.subcluster_id === requestedSubclusterId ? 1 : 0;
+    return bSelected - aSelected;
+  });
+}
+
+function getDiscoveryFallbackTopic(
+  clusterId: string | null,
+  subclusterId: string | null,
+  opportunity?: DiscoveryOpportunity,
+): LeaderboardRow {
+  const label = opportunity?.intent_label || opportunity?.subcluster_label || subclusterId || clusterId || "Discovery signal";
+  const score = opportunity?.discovery_score ?? 0;
+
+  return {
+    rank: 0,
+    cluster_id: clusterId ?? undefined,
+    cluster_label: clusterId ?? "Discovery signal",
+    display_topic_title: `Discovery signal selected: ${clusterId ?? "Unknown"}`,
+    topic_subtitle: opportunity
+      ? `Selected subcluster: ${formatSelectedLabel(label)}.`
+      : "This cluster is not available in the current dashboard insight set.",
+    trend_strength_score: score,
+    decision_label: opportunity?.discovery_label === "WATCHLIST_SIGNAL" ? "EARLY_TREND" : "EMERGING",
+    trend_summary: "This discovery signal is not available in the dashboard insight set.",
+    opportunity_summary: "Open Discovery to review the current opportunity.",
+    risk_summary: "Dashboard insight context is unavailable for this cluster.",
+    growth_since_freeze_pct: opportunity?.share_delta ?? 0,
+    latest_n_videos: Math.round(opportunity?.micro_n_videos ?? 0),
+    t60_is_winner: false,
+    weeks_observed: null,
+    consecutive_up_weeks: null,
+    score_anchor: "DISCOVERY_DEEP_LINK",
+    trend_confidence: score,
+    trend_direction: "DISCOVERY",
+    latest_snapshot_date: opportunity?.snapshot_date,
+  };
+}
+
+function mapClustersToLeaderboard(clusters: InsightCluster[]): LeaderboardRow[] {
+  return clusters.map((cluster, index) => {
+    const primary = cluster.insights[0];
+    const metric =
+      primary?.insight_type === "WEAKENING_SEGMENT" || primary?.insight_type === "FAILED_BREAKOUT"
+        ? primary?.share_delta
+        : primary?.relative_growth_spread;
+
+    return {
+      rank: index + 1,
+      cluster_id: cluster.clusterId,
+      cluster_label: cluster.clusterName,
+      display_topic_title: getInsightTitle(primary?.subcluster_label ?? cluster.clusterName),
+      topic_subtitle: cluster.topInsightLabel
+        ? `Latest ${getInsightVisual(cluster.topInsightType).label.toLowerCase()} signal: ${cluster.topInsightLabel}.`
+        : "Live v4.0 cluster insight.",
+      trend_strength_score: cluster.topInsightScore ?? primary?.insight_score ?? 0,
+      decision_label: getDecisionLabelFromInsightType(cluster.topInsightType ?? primary?.insight_type),
+      trend_summary: primary?.insight_text ?? "Live insight loaded from the local API.",
+      opportunity_summary: primary?.insight_text ?? "Live insight loaded from the local API.",
+      risk_summary: primary?.insight_text ?? "Live insight loaded from the local API.",
+      growth_since_freeze_pct: metric ?? 0,
+      latest_n_videos: cluster.insights.length,
+      t60_is_winner: true,
+      weeks_observed: null,
+      consecutive_up_weeks: null,
+      score_anchor: cluster.topInsightType ?? "LIVE_INSIGHT",
+      trend_confidence: cluster.topInsightScore ?? primary?.insight_score,
+      trend_direction: metric === undefined ? "LIVE" : metric >= 0 ? "UP" : "DOWN",
+      latest_snapshot_date: cluster.snapshotDate,
+      t60_actual_rank: null,
+      t60_growth_pct: null,
+      liveCluster: cluster,
+    };
+  });
+}
+
+function getDecisionLabelFromInsightType(insightType?: InsightType) {
+  if (insightType === "WEAKENING_SEGMENT" || insightType === "FAILED_BREAKOUT") {
+    return "WEAK_OR_RISK";
+  }
+
+  if (insightType === "INTERNAL_OUTPERFORMER") {
+    return "STRONG_TREND";
+  }
+
+  return "EMERGING";
+}
+
+function getGrowthFraction(topic: LeaderboardRow) {
+  if (topic.liveCluster) {
+    return topic.growth_since_freeze_pct;
+  }
+
+  return topic.growth_since_freeze_pct / 100;
+}
+
+function normalizeAnchor(anchor: string) {
+  return anchor.toLowerCase().split("_").join(" ");
+}
+
+function ensureThreeInsights(insights: ClusterInsight[], topic: LeaderboardRow) {
+  const padded = [...insights];
+
+  while (padded.length < 3) {
+    padded.push({
+      cluster_rank: topic.rank,
+      subcluster_label: "additional model insight",
+      insight_text: "Additional v4.0 insight is not present in the local data export yet.",
+      insight_score: Math.max(0.1, topic.trend_strength_score - padded.length * 0.1),
+      signal_state: "Weakening",
+    });
+  }
+
+  return padded.slice(0, 3);
+}
+
+function summarizeInsight(text: string) {
+  const words = text.split(" ");
+  if (words.length <= 24) return text;
+  return `${words.slice(0, 24).join(" ")}.`;
+}
+
+function formatSnapshotDate(value?: string) {
+  if (!value) return "V4.0";
+  return value.slice(0, 10);
+}
+
+function getInsightVisualForInsight(insight?: ClusterInsight) {
+  if (insight?.insight_type) {
+    return getInsightVisual(insight.insight_type);
+  }
+
+  const signalState = normalizeSignalState(insight?.signal_state);
+  if (signalState === "Failed breakout") return getInsightVisual("FAILED_BREAKOUT");
+  if (signalState === "Weakening") return getInsightVisual("WEAKENING_SEGMENT");
+  return getInsightVisual("EMERGING_DRIVER");
+}
+
+function normalizeSignalState(state: ClusterInsight["signal_state"]): SignalState {
+  const normalized = state?.toLowerCase() ?? "";
+
+  if (normalized.includes("failed")) return "Failed breakout";
+  if (normalized.includes("weak")) return "Weakening";
+  return "Emerging";
+}
+
+function getClusterSignalState(insights: ClusterInsight[]): SignalState {
+  if (
+    insights.some(
+      (insight) =>
+        insight.insight_type === "FAILED_BREAKOUT" ||
+        normalizeSignalState(insight.signal_state) === "Failed breakout",
+    )
+  ) {
+    return "Failed breakout";
+  }
+
+  if (
+    insights.some(
+      (insight) =>
+        insight.insight_type === "WEAKENING_SEGMENT" ||
+        normalizeSignalState(insight.signal_state) === "Weakening",
+    )
+  ) {
+    return "Weakening";
+  }
+
+  return "Emerging";
+}
+
+function getSignalTone(state: SignalState): "positive" | "watch" | "risk" {
+  if (state === "Emerging") return "positive";
+  if (state === "Weakening") return "watch";
+  return "risk";
+}
+
+function getInsightTimeline(insights: ClusterInsight[]) {
+  return getMeaningfulInsightTimeline(insights);
+
+  return insights.map((insight) => {
+    const visual = getInsightVisualForInsight(insight);
+    const metric =
+      insight.insight_type === "WEAKENING_SEGMENT" || insight.insight_type === "FAILED_BREAKOUT"
+        ? insight.share_delta
+        : insight.relative_growth_spread;
+
+    return {
+      label: `${formatSnapshotDate(insight.snapshot_date ?? insight.observed_at)} · ${visual.label}`,
+      helper: `${insight.subcluster_label} · ${formatPP(metric)}`,
+      tone: visual.tone,
+    };
+  });
+}
+
+function getMeaningfulInsightTimeline(insights: ClusterInsight[]) {
+  const seen = new Set<string>();
+
+  return insights
+    .filter((insight) => {
+      const metric = getInsightMetric(insight).value;
+      const key = `${insight.snapshot_date ?? insight.observed_at}-${insight.insight_type ?? insight.signal_state}-${insight.subcluster_label}-${metric}`;
+
+      if (metric === "—" || seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 3)
+    .map((insight) => {
+      const visual = getInsightVisualForInsight(insight);
+      const metric = getInsightMetric(insight).value;
+
+      return {
+        label: `${formatSnapshotDate(insight.snapshot_date ?? insight.observed_at)} -> ${visual.label} (${metric})`,
+        helper: insight.subcluster_label,
+        tone: visual.tone,
+      };
+    });
+}
+
+function getTimelineClass(tone: Tone) {
+  if (tone === "positive") {
+    return "border-emerald-300/40 bg-emerald-300 shadow-[0_0_18px_rgba(52,211,153,0.28)]";
+  }
+
+  if (tone === "watch") {
+    return "border-amber-300/40 bg-amber-300 shadow-[0_0_18px_rgba(251,191,36,0.20)]";
+  }
+
+  if (tone === "risk") {
+    return "border-rose-300/40 bg-rose-300 shadow-[0_0_18px_rgba(251,113,133,0.20)]";
+  }
+
+  return "border-white/20 bg-white/30";
 }
