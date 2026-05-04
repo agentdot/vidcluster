@@ -33,6 +33,9 @@ type LeaderboardRow = {
   latest_snapshot_date?: string;
   t60_actual_rank?: number | null;
   t60_growth_pct?: number | null;
+  failure_risk_score?: number | null;
+  failure_risk_level?: string;
+  failure_risk_reason_code?: string;
   liveCluster?: InsightCluster;
 };
 
@@ -192,6 +195,19 @@ const leaderboard = (leaderboardRows as RawLeaderboardRow[]).map((topic) => {
     display_topic_title: presentation?.display_topic_title ?? topic.display_topic_title,
   };
 }) as LeaderboardRow[];
+
+const failureRiskByClusterId = new Map(
+  leaderboard
+    .filter((topic) => topic.cluster_id)
+    .map((topic) => [
+      topic.cluster_id,
+      {
+        failure_risk_level: topic.failure_risk_level,
+        failure_risk_reason_code: topic.failure_risk_reason_code,
+        failure_risk_score: topic.failure_risk_score,
+      },
+    ]),
+);
 
 const clusterInsights = clusterInsightRows as ClusterInsight[];
 
@@ -530,6 +546,40 @@ function getDecisionTone(label: string): Tone {
   return "neutral";
 }
 
+function hasFailureRiskSignal(topic: LeaderboardRow) {
+  return Boolean(
+    topic.failure_risk_level ||
+      topic.failure_risk_reason_code ||
+      (topic.failure_risk_score !== null && topic.failure_risk_score !== undefined),
+  );
+}
+
+function getFailureRiskTone(topic: LeaderboardRow): Tone {
+  const level = topic.failure_risk_level?.toUpperCase();
+  if (level === "LOW") return "positive";
+  if (level === "MEDIUM" || level === "MODERATE") return "watch";
+  if (level === "HIGH" || level === "CRITICAL") return "risk";
+
+  const score = topic.failure_risk_score;
+  if (typeof score === "number") {
+    if (score >= 0.6) return "risk";
+    if (score >= 0.3) return "watch";
+    return "positive";
+  }
+
+  return "neutral";
+}
+
+function formatFailureRiskValue(value?: string | null) {
+  if (!value) return "Unavailable";
+  return formatSelectedLabel(value.split("_").join(" "));
+}
+
+function formatFailureRiskScore(score?: number | null) {
+  if (score === null || score === undefined) return "Unavailable";
+  return `${Math.round(score * 100)}%`;
+}
+
 function DecisionPill({ label, className = "" }: { label: string; className?: string }) {
   const tone = getDecisionTone(label);
 
@@ -545,6 +595,26 @@ function DecisionPill({ label, className = "" }: { label: string; className?: st
       )}
     >
       {formatDecision(label)}
+    </span>
+  );
+}
+
+function FailureRiskBadge({ topic }: { topic: LeaderboardRow }) {
+  if (!hasFailureRiskSignal(topic)) return null;
+
+  const tone = getFailureRiskTone(topic);
+
+  return (
+    <span
+      className={cn(
+        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em]",
+        tone === "positive" && "border-emerald-400/28 bg-emerald-400/10 text-emerald-200",
+        tone === "watch" && "border-amber-300/28 bg-amber-300/10 text-amber-200",
+        tone === "risk" && "border-rose-300/25 bg-rose-300/10 text-rose-200",
+        tone === "neutral" && "border-white/10 bg-white/[0.035] text-white/58",
+      )}
+    >
+      Risk {formatFailureRiskValue(topic.failure_risk_level)}
     </span>
   );
 }
@@ -1156,6 +1226,7 @@ function TopicCard({
         >
           {mapOpportunityState(topic)} opportunity
         </span>
+        <FailureRiskBadge topic={topic} />
       </div>
 
       <div className={cn("grid grid-cols-3 gap-2", scanMode ? "mt-4" : "mt-5")}>
@@ -1256,6 +1327,8 @@ function TopicDetail({
 
         <SystemStatusPanel status={systemStatus} selectedTopic={topic} />
 
+        <FailureRiskPanel topic={topic} />
+
         <div className="mt-3 rounded-2xl border border-white/8 bg-black/18 p-4">
           <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Why this trend?</div>
           <div className="mt-2 text-sm font-medium text-white/82">
@@ -1348,6 +1421,47 @@ function SystemStatusPanel({
         </span>
       </div>
       <ConfidenceMeter value={status.confidenceValue} tone={tone} />
+    </div>
+  );
+}
+
+function FailureRiskPanel({ topic }: { topic: LeaderboardRow }) {
+  if (!hasFailureRiskSignal(topic)) return null;
+
+  const tone = getFailureRiskTone(topic);
+
+  return (
+    <div
+      className={cn(
+        "mt-3 rounded-2xl border p-4",
+        tone === "positive" && "border-emerald-300/16 bg-emerald-300/[0.055]",
+        tone === "watch" && "border-amber-300/16 bg-amber-300/[0.055]",
+        tone === "risk" && "border-rose-300/16 bg-rose-300/[0.055]",
+        tone === "neutral" && "border-white/8 bg-black/16",
+      )}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Failure Risk</div>
+          <div
+            className={cn(
+              "mt-1 text-sm font-semibold",
+              tone === "positive" && "text-emerald-200",
+              tone === "watch" && "text-amber-200",
+              tone === "risk" && "text-rose-200",
+              tone === "neutral" && "text-white/78",
+            )}
+          >
+            {formatFailureRiskValue(topic.failure_risk_level)}
+          </div>
+        </div>
+        <span className="rounded-full border border-white/10 bg-black/16 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-white/58">
+          {formatFailureRiskScore(topic.failure_risk_score)}
+        </span>
+      </div>
+      <div className="mt-3 rounded-xl border border-white/8 bg-black/14 px-3 py-2 text-xs leading-5 text-white/62">
+        Reason: {formatFailureRiskValue(topic.failure_risk_reason_code)}
+      </div>
     </div>
   );
 }
@@ -1742,6 +1856,7 @@ function mapClustersToLeaderboard(clusters: InsightCluster[]): LeaderboardRow[] 
       primary?.insight_type === "WEAKENING_SEGMENT" || primary?.insight_type === "FAILED_BREAKOUT"
         ? primary?.share_delta
         : primary?.relative_growth_spread;
+    const staticFailureRisk = failureRiskByClusterId.get(cluster.clusterId);
 
     return {
       rank: index + 1,
@@ -1767,6 +1882,9 @@ function mapClustersToLeaderboard(clusters: InsightCluster[]): LeaderboardRow[] 
       latest_snapshot_date: cluster.snapshotDate,
       t60_actual_rank: null,
       t60_growth_pct: null,
+      failure_risk_level: staticFailureRisk?.failure_risk_level,
+      failure_risk_reason_code: staticFailureRisk?.failure_risk_reason_code,
+      failure_risk_score: staticFailureRisk?.failure_risk_score,
       liveCluster: cluster,
     };
   });
