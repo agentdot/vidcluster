@@ -1,7 +1,9 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 import PageShell from "../components/layout/PageShell";
+import { supabase } from "../lib/supabaseClient";
 
 const plans = [
   {
@@ -77,6 +79,42 @@ const plans = [
 ];
 
 export default function PricingPage() {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleCheckout = async (plan: string) => {
+    setLoadingPlan(plan);
+    setError(null);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('Please sign in first');
+      }
+
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plan }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      window.location.href = url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
   return (
     <PageShell className="bg-[#0B0F17]">
       <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
@@ -153,21 +191,43 @@ export default function PricingPage() {
                 ))}
               </ul>
 
-              <Link
-                to={plan.href}
-                className={[
-                  "mt-8 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition",
-                  plan.highlighted
-                    ? "bg-white text-black hover:bg-white/90"
-                    : "border border-white/10 text-white hover:bg-white/10",
-                ].join(" ")}
-              >
-                {plan.cta}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              {plan.name === 'Pro' || plan.name === 'Advanced' ? (
+                <button
+                  onClick={() => handleCheckout(plan.name.toLowerCase())}
+                  disabled={loadingPlan === plan.name.toLowerCase()}
+                  className={[
+                    "mt-8 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition disabled:opacity-50",
+                    plan.highlighted
+                      ? "bg-white text-black hover:bg-white/90"
+                      : "border border-white/10 text-white hover:bg-white/10",
+                  ].join(" ")}
+                >
+                  {loadingPlan === plan.name.toLowerCase() ? 'Loading...' : plan.cta}
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              ) : (
+                <Link
+                  to={plan.href}
+                  className={[
+                    "mt-8 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition",
+                    plan.highlighted
+                      ? "bg-white text-black hover:bg-white/90"
+                      : "border border-white/10 text-white hover:bg-white/10",
+                  ].join(" ")}
+                >
+                  {plan.cta}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
             </div>
           ))}
         </div>
+
+        {error && (
+          <div className="mt-8 rounded-xl border border-red-400/20 bg-red-400/5 px-6 py-4 text-center">
+            <p className="text-sm text-red-300">{error}</p>
+          </div>
+        )}
 
         <section className="mt-20 rounded-3xl border border-white/10 bg-white/[0.035] p-8 md:p-10">
           <h2 className="text-2xl font-semibold">Why VidCluster?</h2>
