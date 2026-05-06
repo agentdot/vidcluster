@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getUserFromToken, stripe, getCustomerId } from './_stripeHelpers';
+import { getUserFromToken, stripe, getCustomerId } from './_stripeHelpers.js';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

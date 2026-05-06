@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getUserFromToken, stripe, getCustomerId, supabaseServer } from './_stripeHelpers';
+import { getUserFromToken, stripe, getCustomerId, supabaseServer } from './_stripeHelpers.js';
 
 const PRICE_IDS = {
   pro: process.env.STRIPE_PRICE_PRO!,

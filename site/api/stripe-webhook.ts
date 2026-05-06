@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { stripe, createOrUpdateSubscription, supabaseServer } from './_stripeHelpers';
+import { stripe, createOrUpdateSubscription, supabaseServer } from './_stripeHelpers.js';
 import type Stripe from 'stripe';
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
