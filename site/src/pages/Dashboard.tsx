@@ -36,6 +36,14 @@ type LeaderboardRow = {
   failure_risk_score?: number | null;
   failure_risk_level?: string;
   failure_risk_reason_code?: string;
+  dominant_video_format?: string;
+  short_video_share?: number | null;
+  midform_video_share?: number | null;
+  long_video_share?: number | null;
+  format_strategy_label?: string;
+  format_strategy_confidence?: number | null;
+  format_strategy_reason_code?: string;
+  format_strategy_summary?: string;
   liveCluster?: InsightCluster;
 };
 
@@ -413,6 +421,31 @@ function formatPP(value?: number | null) {
   return `${points >= 0 ? "+" : ""}${points.toFixed(1)}pp`;
 }
 
+const FORMAT_STRATEGY_LABELS: Record<string, string> = {
+  SHORT_HEAVY: "Shorts-heavy",
+  MIDFORM_HEAVY: "Mid-form heavy",
+  LONG_HEAVY: "Long-form heavy",
+  HYBRID_FORMAT: "Hybrid demand",
+  UNKNOWN_FORMAT: "Format unknown",
+};
+
+function getFormatStrategyLabel(topic: LeaderboardRow) {
+  return FORMAT_STRATEGY_LABELS[topic.format_strategy_label ?? "UNKNOWN_FORMAT"] ?? "Format unknown";
+}
+
+function getFormatTone(topic: LeaderboardRow): Tone {
+  const label = topic.format_strategy_label;
+  if (label === "SHORT_HEAVY" || label === "LONG_HEAVY") return "positive";
+  if (label === "MIDFORM_HEAVY" || label === "HYBRID_FORMAT") return "watch";
+  return "neutral";
+}
+
+function formatShare(value?: number | null) {
+  if (value === null || value === undefined) return "0%";
+  const normalized = Math.max(0, Math.min(1, value));
+  return `${Math.round(normalized * 100)}%`;
+}
+
 function getInsightVisual(insightType?: InsightType | string) {
   if (insightType === "INTERNAL_OUTPERFORMER") {
     return {
@@ -615,6 +648,23 @@ function FailureRiskBadge({ topic }: { topic: LeaderboardRow }) {
       )}
     >
       Risk {formatFailureRiskValue(topic.failure_risk_level)}
+    </span>
+  );
+}
+
+function FormatStrategyPill({ topic }: { topic: LeaderboardRow }) {
+  const tone = getFormatTone(topic);
+
+  return (
+    <span
+      className={cn(
+        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em]",
+        tone === "positive" && "border-cyan-300/28 bg-cyan-300/10 text-cyan-100",
+        tone === "watch" && "border-violet-300/28 bg-violet-300/10 text-violet-100",
+        tone === "neutral" && "border-white/10 bg-white/[0.035] text-white/58",
+      )}
+    >
+      {getFormatStrategyLabel(topic)}
     </span>
   );
 }
@@ -1226,6 +1276,7 @@ function TopicCard({
         >
           {mapOpportunityState(topic)} opportunity
         </span>
+        <FormatStrategyPill topic={topic} />
         <FailureRiskBadge topic={topic} />
       </div>
 
@@ -1328,6 +1379,8 @@ function TopicDetail({
         <SystemStatusPanel status={systemStatus} selectedTopic={topic} />
 
         <FailureRiskPanel topic={topic} />
+
+        <FormatFitPanel topic={topic} />
 
         <div className="mt-3 rounded-2xl border border-white/8 bg-black/18 p-4">
           <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Why this trend?</div>
@@ -1462,6 +1515,37 @@ function FailureRiskPanel({ topic }: { topic: LeaderboardRow }) {
       <div className="mt-3 rounded-xl border border-white/8 bg-black/14 px-3 py-2 text-xs leading-5 text-white/62">
         Reason: {formatFailureRiskValue(topic.failure_risk_reason_code)}
       </div>
+    </div>
+  );
+}
+
+function FormatFitPanel({ topic }: { topic: LeaderboardRow }) {
+  return (
+    <div className="mt-3 rounded-2xl border border-cyan-300/14 bg-cyan-300/[0.045] p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-100/50">Format fit</div>
+          <div className="mt-1 text-sm font-semibold text-white">{getFormatStrategyLabel(topic)}</div>
+        </div>
+        <FormatStrategyPill topic={topic} />
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+        <div className="rounded-xl border border-white/8 bg-black/14 px-3 py-2">
+          <div className="uppercase tracking-[0.14em] text-white/34">Short</div>
+          <div className="mt-1 font-semibold text-cyan-100">{formatShare(topic.short_video_share)}</div>
+        </div>
+        <div className="rounded-xl border border-white/8 bg-black/14 px-3 py-2">
+          <div className="uppercase tracking-[0.14em] text-white/34">Mid</div>
+          <div className="mt-1 font-semibold text-cyan-100">{formatShare(topic.midform_video_share)}</div>
+        </div>
+        <div className="rounded-xl border border-white/8 bg-black/14 px-3 py-2">
+          <div className="uppercase tracking-[0.14em] text-white/34">Long</div>
+          <div className="mt-1 font-semibold text-cyan-100">{formatShare(topic.long_video_share)}</div>
+        </div>
+      </div>
+      <p className="mt-3 text-xs leading-5 text-white/58">
+        {topic.format_strategy_summary || "There is not enough reliable duration data to determine format fit."}
+      </p>
     </div>
   );
 }
