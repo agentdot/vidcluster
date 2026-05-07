@@ -292,6 +292,14 @@ function mapWillLast(topic: LeaderboardRow) {
   return "Not stable yet";
 }
 
+function mapCompactWillLast(topic: LeaderboardRow) {
+  if (topic.decision_label === "STRONG_TREND") return "Sustain";
+  if (topic.decision_label === "EARLY_TREND") return "Validate";
+  if (topic.decision_label === "EMERGING") return "Early";
+  if (topic.t60_is_winner) return "Held";
+  return "Unstable";
+}
+
 function mapCategory(topic: LeaderboardRow) {
   const title = `${topic.display_topic_title} ${topic.cluster_label ?? ""}`.toLowerCase();
 
@@ -418,6 +426,15 @@ const FORMAT_STRATEGY_LABELS: Record<string, string> = {
 
 function getFormatStrategyLabel(topic: LeaderboardRow) {
   return FORMAT_STRATEGY_LABELS[topic.format_strategy_label ?? "UNKNOWN_FORMAT"] ?? "Format unknown";
+}
+
+function getCompactFormatStrategyLabel(topic: LeaderboardRow) {
+  const label = topic.format_strategy_label;
+  if (label === "SHORT_HEAVY") return "Shorts";
+  if (label === "MIDFORM_HEAVY") return "Mid-form";
+  if (label === "LONG_HEAVY") return "Long";
+  if (label === "HYBRID_FORMAT") return "Hybrid";
+  return "Unknown";
 }
 
 function getFormatTone(topic: LeaderboardRow): Tone {
@@ -593,6 +610,11 @@ function formatFailureRiskValue(value?: string | null) {
   return formatSelectedLabel(value.split("_").join(" "));
 }
 
+function formatCompactFailureRiskValue(value?: string | null) {
+  if (!value) return "Unknown";
+  return formatFailureRiskValue(value);
+}
+
 function formatFailureRiskScore(score?: number | null) {
   if (score === null || score === undefined) return "Unavailable";
   return `${Math.round(score * 100)}%`;
@@ -610,11 +632,11 @@ function PillFrame({
   return (
     <span
       className={cn(
-        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]",
-        family === "growth" && "border-emerald-300/28 bg-emerald-300/[0.09] text-emerald-100",
-        family === "format" && "border-violet-300/26 bg-violet-300/[0.09] text-violet-100",
-        family === "risk" && "border-amber-300/28 bg-amber-300/[0.09] text-amber-100",
-        family === "neutral" && "border-slate-200/10 bg-slate-200/[0.045] text-slate-200/62",
+        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]",
+        family === "growth" && "border-emerald-300/24 bg-emerald-300/[0.075] text-emerald-100",
+        family === "format" && "border-violet-300/24 bg-violet-300/[0.075] text-violet-100",
+        family === "risk" && "border-amber-300/24 bg-amber-300/[0.075] text-amber-100",
+        family === "neutral" && "border-slate-200/10 bg-slate-200/[0.038] text-slate-200/62",
         className,
       )}
     >
@@ -1194,26 +1216,26 @@ function SignalSparkline({ topic }: { topic: LeaderboardRow }) {
   const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
   const areaPath = `${path} L 100 100 L 0 100 Z`;
   const isPositive = growth >= 0;
-  const stroke = isPositive ? "rgb(110 231 183)" : "rgb(253 164 175)";
+  const stroke = isPositive ? "rgb(94 234 212)" : "rgb(253 164 175)";
   const gradientId = `sparkline-gradient-${topic.rank}`;
   const glowId = `sparkline-glow-${topic.rank}`;
 
   return (
-    <div className="relative mt-5 h-[112px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#060a0f] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),transparent_42%),radial-gradient(circle_at_82%_16%,rgba(125,211,252,0.10),transparent_32%)]" />
+    <div className="relative mt-5 h-[110px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#060a0f] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.032),transparent_44%),radial-gradient(circle_at_82%_16%,rgba(125,211,252,0.07),transparent_34%)]" />
       <svg
-        className="absolute inset-x-3 bottom-3 top-3 h-[88px] w-[calc(100%-24px)]"
+        className="absolute inset-x-4 bottom-3 top-3 h-[86px] w-[calc(100%-32px)]"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
         <defs>
           <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor={stroke} stopOpacity="0.26" />
+            <stop offset="0%" stopColor={stroke} stopOpacity="0.22" />
             <stop offset="72%" stopColor={stroke} stopOpacity="0.03" />
           </linearGradient>
           <filter id={glowId} x="-20%" y="-50%" width="140%" height="200%">
-            <feGaussianBlur stdDeviation="2.2" result="blur" />
+            <feGaussianBlur stdDeviation="1.35" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -1221,8 +1243,8 @@ function SignalSparkline({ topic }: { topic: LeaderboardRow }) {
           </filter>
         </defs>
         <path d={areaPath} fill={`url(#${gradientId})`} />
-        <path d="M 0 72 L 100 72" stroke="rgba(148,163,184,0.14)" strokeDasharray="3 5" strokeWidth="0.9" />
-        <path d={path} fill="none" filter={`url(#${glowId})`} stroke={stroke} strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.8" />
+        <path d="M 0 72 L 100 72" stroke="rgba(148,163,184,0.13)" strokeDasharray="3 5" strokeWidth="0.8" />
+        <path d={path} fill="none" filter={`url(#${glowId})`} stroke={stroke} strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.35" />
       </svg>
       <div className="absolute left-3 top-3 text-[10px] font-medium uppercase tracking-[0.18em] text-slate-200/34">
         Trend
@@ -1245,7 +1267,7 @@ function CompactMetric({ label, value, tone = "neutral" }: { label: string; valu
       <div className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-300/34">{label}</div>
       <div
         className={cn(
-          "mt-1 truncate text-xs font-semibold",
+          "mt-1 truncate text-[13px] font-semibold leading-4",
           tone === "positive" && "text-emerald-100/88",
           tone === "watch" && "text-amber-100/88",
           tone === "risk" && "text-rose-100/88",
@@ -1284,16 +1306,16 @@ function TopicCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "group relative overflow-visible rounded-2xl border p-4 text-left transition",
-        scanMode ? "min-h-[248px]" : "min-h-[304px]",
-        isTopRank && "shadow-[0_22px_90px_rgba(251,191,36,0.10)]",
+        "group relative overflow-visible rounded-2xl border p-4 text-left transition duration-200 hover:-translate-y-0.5",
+        scanMode ? "min-h-[246px]" : "min-h-[304px]",
+        isTopRank && "shadow-[0_22px_90px_rgba(251,191,36,0.08)]",
         selected
-          ? "border-emerald-300/30 bg-emerald-300/[0.055] shadow-[0_18px_60px_rgba(16,185,129,0.09),inset_0_1px_0_rgba(255,255,255,0.055)]"
+          ? "border-emerald-300/34 bg-emerald-300/[0.052] ring-1 ring-emerald-200/12 shadow-[0_18px_60px_rgba(16,185,129,0.075),inset_0_1px_0_rgba(255,255,255,0.055)]"
           : isTopRank
-            ? "border-amber-300/20 bg-amber-300/[0.035] hover:border-amber-300/30"
+            ? "border-amber-300/18 bg-amber-300/[0.03] hover:border-amber-300/28 hover:bg-amber-300/[0.04]"
             : watched
-              ? "border-amber-300/16 bg-amber-300/[0.028] hover:border-amber-300/26"
-              : "border-slate-200/8 bg-black/18 hover:border-slate-200/14 hover:bg-white/[0.032]",
+              ? "border-amber-300/14 bg-amber-300/[0.024] hover:border-amber-300/24 hover:bg-amber-300/[0.034]"
+              : "border-slate-200/8 bg-black/18 hover:border-slate-200/14 hover:bg-white/[0.028]",
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -1325,11 +1347,11 @@ function TopicCard({
         </span>
       </div>
 
-      <div className="mt-4 grid grid-cols-4 gap-3 border-t border-slate-200/8 pt-4">
+      <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-200/8 pt-4 sm:grid-cols-4">
         <CompactMetric label="Confidence" value={mapConfidence(topic).replace(" Confidence", "")} tone={confidenceTone} />
-        <CompactMetric label="Stability" value={mapWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
-        <CompactMetric label="Risk" value={formatFailureRiskValue(topic.failure_risk_level)} tone={riskTone} />
-        <CompactMetric label="Format" value={getFormatStrategyLabel(topic)} tone="neutral" />
+        <CompactMetric label="Stability" value={mapCompactWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
+        <CompactMetric label="Risk" value={formatCompactFailureRiskValue(topic.failure_risk_level)} tone={riskTone} />
+        <CompactMetric label="Format" value={getCompactFormatStrategyLabel(topic)} tone="neutral" />
       </div>
 
       <div className="pointer-events-none absolute left-4 right-4 top-4 z-20 translate-y-2 rounded-xl border border-white/12 bg-[#070b10]/95 p-3 opacity-0 shadow-[0_18px_70px_rgba(0,0,0,0.42)] backdrop-blur-xl transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
@@ -1371,7 +1393,7 @@ function TopicDetail({
   const growth = getGrowthFraction(topic);
 
   return (
-    <aside className="sticky top-5 h-fit rounded-2xl border border-white/10 bg-white/[0.032] shadow-[0_24px_80px_rgba(0,0,0,0.28)] xl:max-h-[calc(100vh-112px)] xl:overflow-y-auto">
+    <aside className="sticky top-5 h-fit rounded-2xl border border-white/8 bg-white/[0.028] shadow-[0_24px_80px_rgba(0,0,0,0.26)] xl:max-h-[calc(100vh-112px)] xl:overflow-y-auto">
       <div className="p-4">
         <SignalSummaryPanel
           topic={topic}
@@ -1386,7 +1408,7 @@ function TopicDetail({
 
         <WhyTrendPanel topic={topic} primaryInsight={primaryInsight} />
 
-        <div className="mt-3 rounded-2xl bg-black/16 p-4 ring-1 ring-white/8">
+        <div className="mt-3 rounded-2xl bg-black/14 p-4 ring-1 ring-white/[0.07]">
           <div className="flex items-center justify-between gap-3">
             <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Supporting evidence</div>
             <span className="text-[10px] text-white/34">{formatScore(topic.trend_strength_score)} signal</span>
@@ -1409,7 +1431,7 @@ function TopicDetail({
           </div>
         </div>
 
-        <div className="mt-3 rounded-2xl border border-white/8 bg-white/[0.025] p-4">
+        <div className="mt-3 rounded-2xl bg-white/[0.022] p-4 ring-1 ring-white/[0.07]">
           <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Recommended Action</div>
           <p className="mt-3 text-sm leading-6 text-white/66">{getRecommendedActionPlaceholder(topic)}</p>
           <ul className="mt-3 space-y-2 text-sm leading-6 text-white/68">
@@ -1422,7 +1444,7 @@ function TopicDetail({
           </ul>
         </div>
 
-        <div className="mt-3 rounded-2xl border border-white/8 bg-white/[0.025] p-4">
+        <div className="mt-3 rounded-2xl bg-white/[0.022] p-4 ring-1 ring-white/[0.07]">
           <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Evidence readout</div>
           <div className="mt-3 space-y-3">
             {visibleInsights.map((insight) => (
@@ -1461,7 +1483,7 @@ function SignalSummaryPanel({
   onToggleWatch: () => void;
 }) {
   return (
-    <section className={cn("rounded-2xl p-4 ring-1 ring-white/8", getPrimaryInsightClass(primaryInsight))}>
+    <section className={cn("rounded-2xl p-4 ring-1 ring-white/[0.07]", getPrimaryInsightClass(primaryInsight))}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -1469,7 +1491,7 @@ function SignalSummaryPanel({
             <PillFrame>{formatSnapshotDate(topic.latest_snapshot_date)}</PillFrame>
             <span className="text-xs font-semibold text-white/38">Rank {topic.rank}</span>
           </div>
-          <h2 className="mt-4 text-2xl font-semibold leading-tight tracking-[-0.04em] text-white">
+          <h2 className="mt-4 text-2xl font-semibold leading-tight tracking-[-0.035em] text-white">
             {getClusterDisplayTitle(topic, primaryInsight)}
           </h2>
         </div>
@@ -1487,7 +1509,7 @@ function SignalSummaryPanel({
           {watched ? "Watching" : "Watch"}
         </button>
       </div>
-      <p className="mt-3 line-clamp-3 text-sm leading-6 text-white/62">{topic.topic_subtitle}</p>
+      <p className="mt-3 line-clamp-3 text-sm leading-6 text-white/58">{topic.topic_subtitle}</p>
     </section>
   );
 }
@@ -1504,7 +1526,7 @@ function SystemAssessmentPanel({
   const tone = getFailureRiskTone(topic);
 
   return (
-    <section className="mt-3 rounded-2xl bg-black/16 p-4 ring-1 ring-white/8">
+    <section className="mt-3 rounded-2xl bg-black/14 p-4 ring-1 ring-white/[0.07]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">System Assessment</div>
@@ -1535,7 +1557,7 @@ function FormatFitPanel({ topic }: { topic: LeaderboardRow }) {
   const longShare = normalizeShare(topic.long_video_share);
 
   return (
-    <section className="mt-3 rounded-2xl bg-[linear-gradient(180deg,rgba(125,211,252,0.055),rgba(255,255,255,0.018))] p-4 ring-1 ring-cyan-300/14">
+    <section className="mt-3 rounded-2xl bg-[linear-gradient(180deg,rgba(125,211,252,0.046),rgba(255,255,255,0.016))] p-4 ring-1 ring-cyan-300/12">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-100/50">Format fit</div>
@@ -1543,11 +1565,11 @@ function FormatFitPanel({ topic }: { topic: LeaderboardRow }) {
         </div>
         <FormatStrategyPill topic={topic} />
       </div>
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.07]">
-        <div className="flex h-full">
-          <div className="bg-cyan-300/85" style={{ width: `${shortShare * 100}%` }} />
-          <div className="bg-violet-300/85" style={{ width: `${midShare * 100}%` }} />
-          <div className="bg-emerald-300/85" style={{ width: `${longShare * 100}%` }} />
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.065]">
+        <div className="flex h-full gap-px">
+          <div className="bg-cyan-300/82" style={{ width: `${shortShare * 100}%` }} />
+          <div className="bg-violet-300/82" style={{ width: `${midShare * 100}%` }} />
+          <div className="bg-emerald-300/82" style={{ width: `${longShare * 100}%` }} />
         </div>
       </div>
       <div className="mt-3 grid grid-cols-3 gap-3 text-xs">
@@ -1566,15 +1588,15 @@ function WhyTrendPanel({ topic, primaryInsight }: { topic: LeaderboardRow; prima
   const trendPoints = getWhyTrendPoints(topic, primaryInsight);
 
   return (
-    <section className="mt-3 rounded-2xl bg-white/[0.022] p-4 ring-1 ring-white/8">
+    <section className="mt-3 rounded-2xl bg-white/[0.02] p-4 ring-1 ring-white/[0.07]">
       <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Why this trend?</div>
       <div className="mt-2 text-lg font-semibold tracking-[-0.03em] text-white/88">
         {mapDecisionLabel(topic.decision_label)}
       </div>
       <div className="mt-3 space-y-2">
         {trendPoints.map((point) => (
-          <div key={point} className="flex gap-2 rounded-xl bg-black/14 px-3 py-2 text-sm leading-5 text-white/66">
-            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300/70" />
+          <div key={point} className="flex gap-2 rounded-xl bg-black/12 px-3 py-2 text-sm leading-5 text-white/64">
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300/62" />
             <span>{point}</span>
           </div>
         ))}
