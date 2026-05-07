@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from "react";
 import { Lock, Star } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 
@@ -49,6 +49,7 @@ type LeaderboardRow = {
 
 type UserPlan = "explorer" | "pro" | "advanced";
 type Tone = "neutral" | "positive" | "watch" | "risk";
+type PillFamily = "growth" | "format" | "risk" | "neutral";
 type RawLeaderboardRow = Omit<LeaderboardRow, "topic_subtitle" | "cluster_label">;
 type SignalState = "Emerging" | "Failed breakout" | "Weakening";
 type ClusterInsight = Partial<Insight> & {
@@ -632,22 +633,27 @@ function DecisionPill({ label, className = "" }: { label: string; className?: st
   );
 }
 
-function FailureRiskBadge({ topic }: { topic: LeaderboardRow }) {
-  if (!hasFailureRiskSignal(topic)) return null;
-
-  const tone = getFailureRiskTone(topic);
-
+function PillFrame({
+  children,
+  family = "neutral",
+  className = "",
+}: {
+  children: ReactNode;
+  family?: PillFamily;
+  className?: string;
+}) {
   return (
     <span
       className={cn(
-        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em]",
-        tone === "positive" && "border-emerald-400/28 bg-emerald-400/10 text-emerald-200",
-        tone === "watch" && "border-amber-300/28 bg-amber-300/10 text-amber-200",
-        tone === "risk" && "border-rose-300/25 bg-rose-300/10 text-rose-200",
-        tone === "neutral" && "border-white/10 bg-white/[0.035] text-white/58",
+        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]",
+        family === "growth" && "border-emerald-300/28 bg-emerald-300/[0.09] text-emerald-100",
+        family === "format" && "border-violet-300/26 bg-violet-300/[0.09] text-violet-100",
+        family === "risk" && "border-amber-300/28 bg-amber-300/[0.09] text-amber-100",
+        family === "neutral" && "border-slate-200/10 bg-slate-200/[0.045] text-slate-200/62",
+        className,
       )}
     >
-      Risk {formatFailureRiskValue(topic.failure_risk_level)}
+      {children}
     </span>
   );
 }
@@ -669,6 +675,22 @@ function FormatStrategyPill({ topic }: { topic: LeaderboardRow }) {
   );
 }
 
+function PrimaryIntelligencePill({ topic }: { topic: LeaderboardRow }) {
+  if (topic.format_strategy_label) {
+    return <PillFrame family="format">{getFormatStrategyLabel(topic)}</PillFrame>;
+  }
+
+  if (topic.decision_label) {
+    return <PillFrame family="growth">{mapDecisionLabel(topic.decision_label)}</PillFrame>;
+  }
+
+  if (hasFailureRiskSignal(topic)) {
+    return <PillFrame family="risk">Risk {formatFailureRiskValue(topic.failure_risk_level)}</PillFrame>;
+  }
+
+  return <PillFrame>Signal pending</PillFrame>;
+}
+
 function PlanPill({ plan }: { plan: UserPlan }) {
   const label = plan === "explorer" ? "Explorer Preview" : plan === "advanced" ? "Advanced" : "Pro";
 
@@ -679,7 +701,7 @@ function PlanPill({ plan }: { plan: UserPlan }) {
   );
 }
 
-function SignalPill({ children }: { children: string }) {
+function SignalPill({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-white/54">
       {children}
@@ -1201,6 +1223,76 @@ function TopSignalStrip({ signals }: { signals: TopSignal[] }) {
   );
 }
 
+function SignalSparkline({ topic }: { topic: LeaderboardRow }) {
+  const growth = getGrowthFraction(topic);
+  const points = getSparklinePoints(topic);
+  const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
+  const areaPath = `${path} L 100 100 L 0 100 Z`;
+  const isPositive = growth >= 0;
+  const stroke = isPositive ? "rgb(110 231 183)" : "rgb(253 164 175)";
+  const gradientId = `sparkline-gradient-${topic.rank}`;
+  const glowId = `sparkline-glow-${topic.rank}`;
+
+  return (
+    <div className="relative mt-5 h-[112px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#060a0f] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),transparent_42%),radial-gradient(circle_at_82%_16%,rgba(125,211,252,0.10),transparent_32%)]" />
+      <svg
+        className="absolute inset-x-3 bottom-3 top-3 h-[88px] w-[calc(100%-24px)]"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={stroke} stopOpacity="0.26" />
+            <stop offset="72%" stopColor={stroke} stopOpacity="0.03" />
+          </linearGradient>
+          <filter id={glowId} x="-20%" y="-50%" width="140%" height="200%">
+            <feGaussianBlur stdDeviation="2.2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <path d={areaPath} fill={`url(#${gradientId})`} />
+        <path d="M 0 72 L 100 72" stroke="rgba(148,163,184,0.14)" strokeDasharray="3 5" strokeWidth="0.9" />
+        <path d={path} fill="none" filter={`url(#${glowId})`} stroke={stroke} strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.8" />
+      </svg>
+      <div className="absolute left-3 top-3 text-[10px] font-medium uppercase tracking-[0.18em] text-slate-200/34">
+        Trend
+      </div>
+      <div
+        className={cn(
+          "absolute bottom-3 right-3 text-lg font-semibold tracking-[-0.035em]",
+          isPositive ? "text-emerald-100" : "text-rose-100",
+        )}
+      >
+        {formatPercent(growth)}
+      </div>
+    </div>
+  );
+}
+
+function CompactMetric({ label, value, tone = "neutral" }: { label: string; value: string; tone?: Tone }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-300/34">{label}</div>
+      <div
+        className={cn(
+          "mt-1 truncate text-xs font-semibold",
+          tone === "positive" && "text-emerald-100/88",
+          tone === "watch" && "text-amber-100/88",
+          tone === "risk" && "text-rose-100/88",
+          tone === "neutral" && "text-slate-100/76",
+        )}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
 function TopicCard({
   topic,
   selected,
@@ -1220,6 +1312,7 @@ function TopicCard({
   const hoverInsights = getTopicCardHoverInsights(topic);
   const confidenceTone = getConfidenceTone(topic);
   const isTopRank = topic.rank === 1;
+  const riskTone = getFailureRiskTone(topic);
 
   return (
     <button
@@ -1227,30 +1320,27 @@ function TopicCard({
       onClick={onSelect}
       className={cn(
         "group relative overflow-visible rounded-2xl border p-4 text-left transition",
-        scanMode ? "min-h-[174px]" : "min-h-[230px]",
-        isTopRank && "shadow-[0_20px_80px_rgba(251,191,36,0.12)]",
+        scanMode ? "min-h-[248px]" : "min-h-[304px]",
+        isTopRank && "shadow-[0_22px_90px_rgba(251,191,36,0.10)]",
         selected
-          ? "border-emerald-300/36 bg-emerald-300/[0.075] shadow-[0_18px_60px_rgba(16,185,129,0.10),inset_0_1px_0_rgba(255,255,255,0.06)]"
+          ? "border-emerald-300/30 bg-emerald-300/[0.055] shadow-[0_18px_60px_rgba(16,185,129,0.09),inset_0_1px_0_rgba(255,255,255,0.055)]"
           : isTopRank
-            ? "border-amber-300/24 bg-amber-300/[0.045] hover:border-amber-300/34"
+            ? "border-amber-300/20 bg-amber-300/[0.035] hover:border-amber-300/30"
             : watched
-              ? "border-amber-300/18 bg-amber-300/[0.035] hover:border-amber-300/28"
-              : "border-white/8 bg-black/16 hover:border-white/14 hover:bg-white/[0.04]",
+              ? "border-amber-300/16 bg-amber-300/[0.028] hover:border-amber-300/26"
+              : "border-slate-200/8 bg-black/18 hover:border-slate-200/14 hover:bg-white/[0.032]",
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <span className="shrink-0 text-xs font-medium text-white/36">#{topic.rank}</span>
-          {isTopRank ? (
-            <span className="rounded-full border border-amber-300/24 bg-amber-300/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-100">
-              #1 Signal
-            </span>
-          ) : null}
-          {watched ? (
-            <span className="rounded-full border border-amber-300/18 bg-amber-300/8 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-amber-100/80">
-              Watching
-            </span>
-          ) : null}
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="shrink-0 text-xs font-semibold text-slate-200/42">#{topic.rank}</span>
+            {isTopRank ? <PillFrame family="risk" className="px-2 py-0.5">#1 Signal</PillFrame> : null}
+            {watched ? <PillFrame className="px-2 py-0.5">Watching</PillFrame> : null}
+          </div>
+          <h2 className={cn("mt-3 line-clamp-2 font-semibold leading-tight tracking-[-0.035em] text-white", scanMode ? "text-lg" : "text-xl")}>
+            {getTopicTitle(topic)}
+          </h2>
         </div>
         <WatchStarButton
           ariaLabel={watched ? "Remove from watchlist" : "Add to watchlist"}
@@ -1259,43 +1349,22 @@ function TopicCard({
         />
       </div>
 
-      <h2 className={cn("mt-4 line-clamp-2 font-semibold leading-tight tracking-[-0.04em] text-white", scanMode ? "text-lg" : "text-xl")}>
-        {getTopicTitle(topic)}
-      </h2>
-      {!scanMode ? <p className="mt-2 line-clamp-2 text-sm leading-6 text-white/48">{topic.topic_subtitle}</p> : null}
+      {!scanMode ? <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-200/46">{topic.topic_subtitle}</p> : null}
 
-      <div className={cn("flex flex-wrap items-center gap-2", scanMode ? "mt-4" : "mt-5")}>
-        <DecisionPill label={topic.decision_label} />
-        <span
-          className={cn(
-            "inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em]",
-            getOpportunityTone(topic) === "positive" && "border-emerald-300/28 bg-emerald-300/10 text-emerald-200",
-            getOpportunityTone(topic) === "watch" && "border-amber-300/28 bg-amber-300/10 text-amber-200",
-            getOpportunityTone(topic) === "risk" && "border-rose-300/25 bg-rose-300/10 text-rose-200",
-          )}
-        >
-          {mapOpportunityState(topic)} opportunity
+      <SignalSparkline topic={topic} />
+
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <PrimaryIntelligencePill topic={topic} />
+        <span className={cn("text-xs font-semibold", growth >= 0 ? "text-emerald-100/76" : "text-rose-100/76")}>
+          {growth >= 0 ? "Growth" : "Decline"}
         </span>
-        <FormatStrategyPill topic={topic} />
-        <FailureRiskBadge topic={topic} />
       </div>
 
-      <div className={cn("grid grid-cols-3 gap-2", scanMode ? "mt-4" : "mt-5")}>
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.16em] text-white/30">Topic Growth</div>
-          <div className={cn("mt-1 text-lg font-semibold", growth >= 0 ? "text-emerald-200" : "text-rose-200")}>
-            {formatPercent(growth)}
-          </div>
-        </div>
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.16em] text-white/30">Confidence</div>
-          <div className="mt-1 text-lg font-semibold text-white">{mapConfidence(topic)}</div>
-          <ConfidenceMeter value={getConfidenceValue(topic)} tone={confidenceTone} />
-        </div>
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.16em] text-white/30">Stability</div>
-          <div className="mt-1 text-sm font-semibold text-white/78">{mapWillLast(topic)}</div>
-        </div>
+      <div className="mt-4 grid grid-cols-4 gap-3 border-t border-slate-200/8 pt-4">
+        <CompactMetric label="Confidence" value={mapConfidence(topic).replace(" Confidence", "")} tone={confidenceTone} />
+        <CompactMetric label="Stability" value={mapWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
+        <CompactMetric label="Risk" value={formatFailureRiskValue(topic.failure_risk_level)} tone={riskTone} />
+        <CompactMetric label="Format" value={getFormatStrategyLabel(topic)} tone="neutral" />
       </div>
 
       <div className="pointer-events-none absolute left-4 right-4 top-4 z-20 translate-y-2 rounded-xl border border-white/12 bg-[#070b10]/95 p-3 opacity-0 shadow-[0_18px_70px_rgba(0,0,0,0.42)] backdrop-blur-xl transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
@@ -1992,6 +2061,30 @@ function getGrowthFraction(topic: LeaderboardRow) {
   }
 
   return topic.growth_since_freeze_pct / 100;
+}
+
+function getSparklinePoints(topic: LeaderboardRow) {
+  const growth = Math.max(-0.45, Math.min(0.75, getGrowthFraction(topic)));
+  const confidence = getConfidenceValue(topic);
+  const stability = topic.t60_is_winner ? 0.08 : -0.05;
+  const weeks = Math.min(1, Math.max(0, (topic.weeks_observed ?? 4) / 12));
+  const direction = growth >= 0 ? 1 : -1;
+  const slope = growth * 54;
+  const baseline = 62 - confidence * 18;
+  const wave = (1 - weeks) * 7;
+  const raw = [0, 0.14, 0.29, 0.45, 0.61, 0.78, 1].map((position, index) => {
+    const drift = slope * position;
+    const lift = index > 3 ? confidence * 7 + stability * 22 : 0;
+    const wobble = Math.sin((position * Math.PI * 2) + topic.rank) * wave;
+    const y = baseline - drift - lift + wobble * direction;
+
+    return {
+      x: Math.round(position * 100),
+      y: Math.max(14, Math.min(86, y)),
+    };
+  });
+
+  return raw;
 }
 
 function normalizeAnchor(anchor: string) {
