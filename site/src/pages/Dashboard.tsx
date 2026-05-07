@@ -193,7 +193,7 @@ const topicPresentationByRank: Record<
   },
 };
 
-const leaderboard = (leaderboardRows as RawLeaderboardRow[]).map((topic) => {
+const leaderboard = (leaderboardRows as unknown as RawLeaderboardRow[]).map((topic) => {
   const presentation = topicPresentationByRank[topic.rank];
 
   return {
@@ -290,16 +290,6 @@ function mapWillLast(topic: LeaderboardRow) {
   if (topic.decision_label === "EMERGING") return "Too early to call";
   if (topic.t60_is_winner) return "Held up before";
   return "Not stable yet";
-}
-
-function generateWhyThisTrend(topic: LeaderboardRow, primaryInsight?: ClusterInsight) {
-  const evidence = primaryInsight?.insight_text || topic.trend_summary || topic.opportunity_summary;
-
-  if (evidence) {
-    return `${summarizeInsight(evidence)} The decision read is ${mapDecisionLabel(topic.decision_label).toLowerCase()} because the topic is in the ${mapOpportunityState(topic).toLowerCase()} opportunity stage with ${mapConfidence(topic).toLowerCase()}.`;
-  }
-
-  return `${getTopicTitle(topic)} is showing measurable movement, but the local export does not include a full narrative for this signal yet.`;
 }
 
 function mapCategory(topic: LeaderboardRow) {
@@ -402,10 +392,6 @@ function getTopicTitle(topic: LeaderboardRow) {
   return topic.display_topic_title || topic.cluster_label || "Untitled topic";
 }
 
-function formatDecision(label: string) {
-  return mapDecisionLabel(label);
-}
-
 function formatScore(score: number) {
   return `${Math.round(score * 100)}`;
 }
@@ -447,6 +433,11 @@ function formatShare(value?: number | null) {
   return `${Math.round(normalized * 100)}%`;
 }
 
+function normalizeShare(value?: number | null) {
+  if (value === null || value === undefined) return 0;
+  return Math.max(0, Math.min(1, value));
+}
+
 function getInsightVisual(insightType?: InsightType | string) {
   if (insightType === "INTERNAL_OUTPERFORMER") {
     return {
@@ -481,13 +472,6 @@ function getInsightVisual(insightType?: InsightType | string) {
     icon: "🔥",
     tone: "positive" as Tone,
   };
-}
-
-function getSignalQuality(insightType?: InsightType | string) {
-  if (insightType === "INTERNAL_OUTPERFORMER") return "Strong";
-  if (insightType === "WEAKENING_SEGMENT") return "Weak";
-  if (insightType === "FAILED_BREAKOUT") return "Unstable";
-  return "Early";
 }
 
 function titleCase(value: string) {
@@ -612,25 +596,6 @@ function formatFailureRiskValue(value?: string | null) {
 function formatFailureRiskScore(score?: number | null) {
   if (score === null || score === undefined) return "Unavailable";
   return `${Math.round(score * 100)}%`;
-}
-
-function DecisionPill({ label, className = "" }: { label: string; className?: string }) {
-  const tone = getDecisionTone(label);
-
-  return (
-    <span
-      className={cn(
-        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em]",
-        tone === "positive" && "border-emerald-400/28 bg-emerald-400/10 text-emerald-200",
-        tone === "watch" && "border-amber-300/28 bg-amber-300/10 text-amber-200",
-        tone === "risk" && "border-rose-300/25 bg-rose-300/10 text-rose-200",
-        tone === "neutral" && "border-white/10 bg-white/[0.035] text-white/58",
-        className,
-      )}
-    >
-      {formatDecision(label)}
-    </span>
-  );
 }
 
 function PillFrame({
@@ -1406,75 +1371,37 @@ function TopicDetail({
   const growth = getGrowthFraction(topic);
 
   return (
-    <aside className="sticky top-5 h-fit rounded-2xl border border-white/10 bg-white/[0.035] shadow-[0_24px_80px_rgba(0,0,0,0.28)] xl:max-h-[calc(100vh-112px)] xl:overflow-y-auto">
-      <PanelHeader eyebrow="Signal Analysis" title="Decision Read" aside={`Rank ${topic.rank}`} />
+    <aside className="sticky top-5 h-fit rounded-2xl border border-white/10 bg-white/[0.032] shadow-[0_24px_80px_rgba(0,0,0,0.28)] xl:max-h-[calc(100vh-112px)] xl:overflow-y-auto">
       <div className="p-4">
-        <div className={cn("rounded-2xl border p-4", getPrimaryInsightClass(primaryInsight))}>
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <DecisionPill label={topic.decision_label} />
-                <SignalPill>{mapOpportunityState(topic)} opportunity</SignalPill>
-                <SignalPill>{formatSnapshotDate(topic.latest_snapshot_date)}</SignalPill>
-              </div>
-              <h2 className="mt-4 text-2xl font-semibold leading-tight tracking-[-0.04em] text-white">
-                {getClusterDisplayTitle(topic, primaryInsight)}
-              </h2>
-            </div>
-            <button
-              type="button"
-              onClick={onToggleWatch}
-              className={cn(
-                "inline-flex shrink-0 items-center justify-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition",
-                watched
-                  ? "border-amber-300/28 bg-amber-300/10 text-amber-100"
-                  : "border-white/10 bg-white/[0.035] text-white/74 hover:border-amber-300/22 hover:text-white",
-              )}
-            >
-              <Star className={cn("h-4 w-4", watched ? "fill-current" : "")} />
-              {watched ? "Watching" : "Watch"}
-            </button>
-          </div>
-          <p className="mt-3 text-sm leading-6 text-white/58">{topic.topic_subtitle}</p>
-        </div>
+        <SignalSummaryPanel
+          topic={topic}
+          primaryInsight={primaryInsight}
+          watched={watched}
+          onToggleWatch={onToggleWatch}
+        />
 
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <MetricCard label="Topic Growth" value={formatPercent(growth)} tone={growth >= 0 ? "positive" : "risk"} />
-          <MetricCard label="Confidence" value={mapConfidence(topic)} />
-          <MetricCard label="Stability" value={mapWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
-          <MetricCard label="Opportunity stage" value={mapOpportunityState(topic)} tone={getOpportunityTone(topic)} />
-        </div>
-
-        <SystemStatusPanel status={systemStatus} selectedTopic={topic} />
-
-        <FailureRiskPanel topic={topic} />
+        <SystemAssessmentPanel topic={topic} systemStatus={systemStatus} />
 
         <FormatFitPanel topic={topic} />
 
-        <div className="mt-3 rounded-2xl border border-white/8 bg-black/18 p-4">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Why this trend?</div>
-          <div className="mt-2 text-sm font-medium text-white/82">
-            {mapDecisionLabel(topic.decision_label)} for {getTopicTitle(topic)}
-          </div>
-          <p className="mt-3 text-sm leading-6 text-white/66">{generateWhyThisTrend(topic, primaryInsight)}</p>
-        </div>
+        <WhyTrendPanel topic={topic} primaryInsight={primaryInsight} />
 
-        <div className="mt-3 rounded-2xl border border-white/8 bg-black/18 p-4">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Supporting evidence</div>
-          <div className="mt-3 space-y-2 text-sm text-white/58">
-            <LockedSignalRow
+        <div className="mt-3 rounded-2xl bg-black/16 p-4 ring-1 ring-white/8">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Supporting evidence</div>
+            <span className="text-[10px] text-white/34">{formatScore(topic.trend_strength_score)} signal</span>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 text-sm text-white/64">
+            <AssessmentRow
               label="Weeks observed"
               value={topic.weeks_observed === null ? "Unavailable" : topic.weeks_observed.toString()}
-              locked={false}
             />
-            <LockedSignalRow
+            <AssessmentRow
               label="Positive weeks"
               value={topic.consecutive_up_weeks === null ? "Unavailable" : topic.consecutive_up_weeks.toString()}
-              locked={false}
             />
-            <LockedSignalRow label="Topic Growth" value={formatPercent(growth)} locked={false} />
-            <LockedSignalRow label="Signal strength" value={formatScore(topic.trend_strength_score)} locked={false} />
-            <LockedSignalRow
+            <AssessmentRow label="Topic growth" value={formatPercent(growth)} tone={growth >= 0 ? "positive" : "risk"} />
+            <AssessmentRow
               label="Model basis"
               value={hasPremiumAccess ? normalizeAnchor(topic.score_anchor) : "Locked"}
               locked={!hasPremiumAccess}
@@ -1522,99 +1449,175 @@ function TopicDetail({
   );
 }
 
-function SystemStatusPanel({
-  status,
-  selectedTopic,
+function SignalSummaryPanel({
+  topic,
+  primaryInsight,
+  watched,
+  onToggleWatch,
 }: {
-  status: ReturnType<typeof getSystemStatus>;
-  selectedTopic: LeaderboardRow;
+  topic: LeaderboardRow;
+  primaryInsight?: ClusterInsight;
+  watched: boolean;
+  onToggleWatch: () => void;
 }) {
-  const tone = getConfidenceTone(selectedTopic);
-
   return (
-    <div className="mt-3 rounded-2xl border border-white/8 bg-black/16 p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">System Status</div>
-          <div className="mt-1 text-sm font-medium text-white/82">{status.confidence}</div>
+    <section className={cn("rounded-2xl p-4 ring-1 ring-white/8", getPrimaryInsightClass(primaryInsight))}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <PrimaryIntelligencePill topic={topic} />
+            <PillFrame>{formatSnapshotDate(topic.latest_snapshot_date)}</PillFrame>
+            <span className="text-xs font-semibold text-white/38">Rank {topic.rank}</span>
+          </div>
+          <h2 className="mt-4 text-2xl font-semibold leading-tight tracking-[-0.04em] text-white">
+            {getClusterDisplayTitle(topic, primaryInsight)}
+          </h2>
         </div>
-        <span className="rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-[10px] font-medium text-white/50">
-          Updated {status.lastUpdated}
-        </span>
+        <button
+          type="button"
+          onClick={onToggleWatch}
+          className={cn(
+            "inline-flex shrink-0 items-center justify-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition",
+            watched
+              ? "border-amber-300/28 bg-amber-300/10 text-amber-100"
+              : "border-white/10 bg-white/[0.035] text-white/74 hover:border-amber-300/22 hover:text-white",
+          )}
+        >
+          <Star className={cn("h-4 w-4", watched ? "fill-current" : "")} />
+          {watched ? "Watching" : "Watch"}
+        </button>
       </div>
-      <ConfidenceMeter value={status.confidenceValue} tone={tone} />
-    </div>
+      <p className="mt-3 line-clamp-3 text-sm leading-6 text-white/62">{topic.topic_subtitle}</p>
+    </section>
   );
 }
 
-function FailureRiskPanel({ topic }: { topic: LeaderboardRow }) {
-  if (!hasFailureRiskSignal(topic)) return null;
-
+function SystemAssessmentPanel({
+  topic,
+  systemStatus,
+}: {
+  topic: LeaderboardRow;
+  systemStatus: ReturnType<typeof getSystemStatus>;
+}) {
+  const growth = getGrowthFraction(topic);
+  const confidenceTone = getConfidenceTone(topic);
   const tone = getFailureRiskTone(topic);
 
   return (
-    <div
-      className={cn(
-        "mt-3 rounded-2xl border p-4",
-        tone === "positive" && "border-emerald-300/16 bg-emerald-300/[0.055]",
-        tone === "watch" && "border-amber-300/16 bg-amber-300/[0.055]",
-        tone === "risk" && "border-rose-300/16 bg-rose-300/[0.055]",
-        tone === "neutral" && "border-white/8 bg-black/16",
-      )}
-    >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Failure Risk</div>
-          <div
-            className={cn(
-              "mt-1 text-sm font-semibold",
-              tone === "positive" && "text-emerald-200",
-              tone === "watch" && "text-amber-200",
-              tone === "risk" && "text-rose-200",
-              tone === "neutral" && "text-white/78",
-            )}
-          >
-            {formatFailureRiskValue(topic.failure_risk_level)}
-          </div>
+    <section className="mt-3 rounded-2xl bg-black/16 p-4 ring-1 ring-white/8">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">System Assessment</div>
+          <div className="mt-1 truncate text-sm font-medium text-white/78">{systemStatus.confidence}</div>
         </div>
-        <span className="rounded-full border border-white/10 bg-black/16 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-white/58">
-          {formatFailureRiskScore(topic.failure_risk_score)}
-        </span>
+        <PillFrame>Updated {systemStatus.lastUpdated}</PillFrame>
       </div>
-      <div className="mt-3 rounded-xl border border-white/8 bg-black/14 px-3 py-2 text-xs leading-5 text-white/62">
-        Reason: {formatFailureRiskValue(topic.failure_risk_reason_code)}
+      <ConfidenceMeter value={systemStatus.confidenceValue} tone={confidenceTone} />
+      <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+        <AssessmentRow label="Topic Growth" value={formatPercent(growth)} tone={growth >= 0 ? "positive" : "risk"} />
+        <AssessmentRow label="Confidence" value={mapConfidence(topic)} tone={confidenceTone} />
+        <AssessmentRow label="Stability" value={mapWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
+        <AssessmentRow label="Opportunity" value={mapOpportunityState(topic)} tone={getOpportunityTone(topic)} />
+        <AssessmentRow
+          label="Failure Risk"
+          value={`${formatFailureRiskValue(topic.failure_risk_level)} / ${formatFailureRiskScore(topic.failure_risk_score)}`}
+          tone={tone}
+        />
+        <AssessmentRow label="Risk Reason" value={formatFailureRiskValue(topic.failure_risk_reason_code)} tone={tone} />
       </div>
-    </div>
+    </section>
   );
 }
 
 function FormatFitPanel({ topic }: { topic: LeaderboardRow }) {
+  const shortShare = normalizeShare(topic.short_video_share);
+  const midShare = normalizeShare(topic.midform_video_share);
+  const longShare = normalizeShare(topic.long_video_share);
+
   return (
-    <div className="mt-3 rounded-2xl border border-cyan-300/14 bg-cyan-300/[0.045] p-4">
+    <section className="mt-3 rounded-2xl bg-[linear-gradient(180deg,rgba(125,211,252,0.055),rgba(255,255,255,0.018))] p-4 ring-1 ring-cyan-300/14">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-100/50">Format fit</div>
-          <div className="mt-1 text-sm font-semibold text-white">{getFormatStrategyLabel(topic)}</div>
+          <div className="mt-1 text-lg font-semibold tracking-[-0.03em] text-white">{getFormatStrategyLabel(topic)}</div>
         </div>
         <FormatStrategyPill topic={topic} />
       </div>
-      <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-        <div className="rounded-xl border border-white/8 bg-black/14 px-3 py-2">
-          <div className="uppercase tracking-[0.14em] text-white/34">Short</div>
-          <div className="mt-1 font-semibold text-cyan-100">{formatShare(topic.short_video_share)}</div>
-        </div>
-        <div className="rounded-xl border border-white/8 bg-black/14 px-3 py-2">
-          <div className="uppercase tracking-[0.14em] text-white/34">Mid</div>
-          <div className="mt-1 font-semibold text-cyan-100">{formatShare(topic.midform_video_share)}</div>
-        </div>
-        <div className="rounded-xl border border-white/8 bg-black/14 px-3 py-2">
-          <div className="uppercase tracking-[0.14em] text-white/34">Long</div>
-          <div className="mt-1 font-semibold text-cyan-100">{formatShare(topic.long_video_share)}</div>
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.07]">
+        <div className="flex h-full">
+          <div className="bg-cyan-300/85" style={{ width: `${shortShare * 100}%` }} />
+          <div className="bg-violet-300/85" style={{ width: `${midShare * 100}%` }} />
+          <div className="bg-emerald-300/85" style={{ width: `${longShare * 100}%` }} />
         </div>
       </div>
-      <p className="mt-3 text-xs leading-5 text-white/58">
+      <div className="mt-3 grid grid-cols-3 gap-3 text-xs">
+        <DistributionStat label="Short" value={formatShare(topic.short_video_share)} className="text-cyan-100" />
+        <DistributionStat label="Mid" value={formatShare(topic.midform_video_share)} className="text-violet-100" />
+        <DistributionStat label="Long" value={formatShare(topic.long_video_share)} className="text-emerald-100" />
+      </div>
+      <p className="mt-3 line-clamp-3 text-xs leading-5 text-white/58">
         {topic.format_strategy_summary || "There is not enough reliable duration data to determine format fit."}
       </p>
+    </section>
+  );
+}
+
+function WhyTrendPanel({ topic, primaryInsight }: { topic: LeaderboardRow; primaryInsight?: ClusterInsight }) {
+  const trendPoints = getWhyTrendPoints(topic, primaryInsight);
+
+  return (
+    <section className="mt-3 rounded-2xl bg-white/[0.022] p-4 ring-1 ring-white/8">
+      <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Why this trend?</div>
+      <div className="mt-2 text-lg font-semibold tracking-[-0.03em] text-white/88">
+        {mapDecisionLabel(topic.decision_label)}
+      </div>
+      <div className="mt-3 space-y-2">
+        {trendPoints.map((point) => (
+          <div key={point} className="flex gap-2 rounded-xl bg-black/14 px-3 py-2 text-sm leading-5 text-white/66">
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300/70" />
+            <span>{point}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AssessmentRow({
+  label,
+  value,
+  tone = "neutral",
+  locked = false,
+}: {
+  label: string;
+  value: string;
+  tone?: Tone;
+  locked?: boolean;
+}) {
+  return (
+    <div className="min-w-0 border-t border-white/8 pt-2">
+      <div className="text-[10px] uppercase tracking-[0.16em] text-white/32">{label}</div>
+      <div
+        className={cn(
+          "mt-1 flex items-center gap-1.5 truncate text-sm font-semibold",
+          tone === "positive" && "text-emerald-100/88",
+          tone === "watch" && "text-amber-100/88",
+          tone === "risk" && "text-rose-100/88",
+          tone === "neutral" && "text-white/78",
+        )}
+      >
+        {locked ? <Lock className="h-3.5 w-3.5 shrink-0 text-amber-200/70" /> : null}
+        <span className="truncate">{value}</span>
+      </div>
+    </div>
+  );
+}
+
+function DistributionStat({ label, value, className }: { label: string; value: string; className: string }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[10px] uppercase tracking-[0.14em] text-white/34">{label}</div>
+      <div className={cn("mt-1 text-sm font-semibold", className)}>{value}</div>
     </div>
   );
 }
@@ -1630,30 +1633,6 @@ function EmptyTopicState({ showWatchlistOnly }: { showWatchlistOnly: boolean }) 
             : "Try a broader search or a different category."}
         </p>
       </div>
-    </div>
-  );
-}
-
-function PanelHeader({
-  eyebrow,
-  title,
-  aside,
-}: {
-  eyebrow: string;
-  title: string;
-  aside?: string;
-}) {
-  return (
-    <div className="flex items-start justify-between gap-3 border-b border-white/8 p-4">
-      <div>
-        <div className="text-[10px] uppercase tracking-[0.2em] text-white/34">{eyebrow}</div>
-        <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.04em] text-white">{title}</h2>
-      </div>
-      {aside ? (
-        <span className="rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-[11px] text-white/48">
-          {aside}
-        </span>
-      ) : null}
     </div>
   );
 }
@@ -1718,21 +1697,6 @@ function DiscoveryContextBanner({ outcomeStatus }: { outcomeStatus?: string }) {
         </div>
       ) : null}
     </div>
-  );
-}
-
-function TrendDot({ tone }: { tone: SignalState }) {
-  const signalTone = getSignalTone(tone);
-
-  return (
-    <span
-      className={cn(
-        "h-1.5 w-1.5 rounded-full",
-        signalTone === "positive" && "bg-emerald-300/85",
-        signalTone === "watch" && "bg-amber-300/85",
-        signalTone === "risk" && "bg-rose-300/85",
-      )}
-    />
   );
 }
 
@@ -1824,31 +1788,6 @@ function UpgradeMiniCard({ copy }: { copy: string }) {
       <span>{copy}</span>
       <Lock className="h-3.5 w-3.5" />
     </a>
-  );
-}
-
-function LockedSignalRow({
-  label,
-  value,
-  locked,
-}: {
-  label: string;
-  value: string;
-  locked: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        "flex items-center justify-between gap-4 rounded-xl border border-white/8 bg-black/18 px-3 py-2.5",
-        locked ? "border-amber-300/14 bg-amber-300/[0.04] text-amber-100/58" : "text-white/68",
-      )}
-    >
-      <span>{label}</span>
-      <span className="inline-flex items-center gap-2 text-right">
-        {locked ? <Lock className="h-3.5 w-3.5 text-amber-200/70" /> : null}
-        {value}
-      </span>
-    </div>
   );
 }
 
@@ -2113,6 +2052,17 @@ function summarizeInsight(text: string) {
   return `${words.slice(0, 24).join(" ")}.`;
 }
 
+function getWhyTrendPoints(topic: LeaderboardRow, primaryInsight?: ClusterInsight) {
+  const evidence = summarizeInsight(primaryInsight?.insight_text || topic.trend_summary || topic.opportunity_summary);
+  const risk = topic.risk_summary ? summarizeInsight(topic.risk_summary) : "";
+
+  return [
+    evidence,
+    `${mapOpportunityState(topic)} opportunity with ${mapConfidence(topic).toLowerCase()}.`,
+    risk || getRecommendedActionPlaceholder(topic),
+  ].filter(Boolean);
+}
+
 function formatSnapshotDate(value?: string) {
   if (!value) return "V4.0";
   return value.slice(0, 10);
@@ -2135,36 +2085,6 @@ function normalizeSignalState(state: ClusterInsight["signal_state"]): SignalStat
   if (normalized.includes("failed")) return "Failed breakout";
   if (normalized.includes("weak")) return "Weakening";
   return "Emerging";
-}
-
-function getClusterSignalState(insights: ClusterInsight[]): SignalState {
-  if (
-    insights.some(
-      (insight) =>
-        insight.insight_type === "FAILED_BREAKOUT" ||
-        normalizeSignalState(insight.signal_state) === "Failed breakout",
-    )
-  ) {
-    return "Failed breakout";
-  }
-
-  if (
-    insights.some(
-      (insight) =>
-        insight.insight_type === "WEAKENING_SEGMENT" ||
-        normalizeSignalState(insight.signal_state) === "Weakening",
-    )
-  ) {
-    return "Weakening";
-  }
-
-  return "Emerging";
-}
-
-function getSignalTone(state: SignalState): "positive" | "watch" | "risk" {
-  if (state === "Emerging") return "positive";
-  if (state === "Weakening") return "watch";
-  return "risk";
 }
 
 function getInsightTimeline(insights: ClusterInsight[]) {
