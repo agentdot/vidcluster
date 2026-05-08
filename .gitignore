@@ -18,6 +18,7 @@ Thumbs.db
 *.log
 *.tmp
 *.csv
+!automation-data/vertical_requests/vertical_requests.csv
 
 # ---- Secrets (must never commit) ----
 .env
