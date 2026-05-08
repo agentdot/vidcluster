@@ -1,0 +1,14 @@
+{
+  "request_id": "VR-20260508055158-aacc7b",
+  "requested_vertical": "AI coding tools",
+  "seed_queries": [
+    "cursor ai",
+    "claude code",
+    "bolt.new"
+  ],
+  "requested_by": "internal",
+  "priority": "normal",
+  "created_at": "2026-05-08T05:51:58Z",
+  "generated_at": "2026-05-08T06:07:49Z",
+  "universe_status": "READY_FOR_DISCOVERY"
+}
