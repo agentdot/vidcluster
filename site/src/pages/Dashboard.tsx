@@ -44,12 +44,14 @@ type LeaderboardRow = {
   format_strategy_confidence?: number | null;
   format_strategy_reason_code?: string;
   format_strategy_summary?: string;
+  visual_state_override?: "HOT" | "WARM" | "COLD" | "DECAY" | "BREAKOUT";
   liveCluster?: InsightCluster;
 };
 
 type UserPlan = "explorer" | "pro" | "advanced";
 type Tone = "neutral" | "positive" | "watch" | "risk";
 type PillFamily = "growth" | "format" | "risk" | "neutral";
+type SignalBriefState = "hot" | "warm" | "cold" | "decay" | "breakout";
 type RawLeaderboardRow = Omit<LeaderboardRow, "topic_subtitle" | "cluster_label">;
 type SignalState = "Emerging" | "Failed breakout" | "Weakening";
 type ClusterInsight = Partial<Insight> & {
@@ -219,6 +221,165 @@ const failureRiskByClusterId = new Map(
 );
 
 const clusterInsights = clusterInsightRows as ClusterInsight[];
+const SHOW_STATE_QA_CARDS = false;
+
+const signalBriefQaFixtures: LeaderboardRow[] = [
+  {
+    rank: 1,
+    cluster_id: "qa-hot-sustained",
+    cluster_label: "QA Sustained Growth",
+    display_topic_title: "Retirement Account Strategy Surge",
+    topic_subtitle: "Evergreen finance demand compounding with strong week-to-week persistence.",
+    trend_strength_score: 0.86,
+    decision_label: "STRONG_TREND",
+    trend_summary: "Sustained momentum with broad participation across adjacent retirement planning angles.",
+    opportunity_summary: "Sustained momentum with broad participation across adjacent retirement planning angles.",
+    risk_summary: "Low decay risk while confidence and format fit remain strong.",
+    growth_since_freeze_pct: 38,
+    latest_n_videos: 126,
+    t60_is_winner: true,
+    weeks_observed: 10,
+    consecutive_up_weeks: 7,
+    score_anchor: "STATE_QA_HOT",
+    trend_confidence: 0.86,
+    trend_direction: "UP",
+    latest_snapshot_date: "2026-05-08",
+    failure_risk_level: "LOW",
+    failure_risk_score: 0.12,
+    failure_risk_reason_code: "LOW_DECAY_RISK",
+    dominant_video_format: "LONG",
+    short_video_share: 0.14,
+    midform_video_share: 0.22,
+    long_video_share: 0.64,
+    format_strategy_label: "LONG_HEAVY",
+    format_strategy_summary: "Long-form explainers are carrying most of the durable demand.",
+    visual_state_override: "HOT",
+  },
+  {
+    rank: 2,
+    cluster_id: "qa-breakout-hockey-stick",
+    cluster_label: "QA Breakout",
+    display_topic_title: "AI Budget Planner App Breakout",
+    topic_subtitle: "Flat baseline turning sharply upward as new tool comparisons catch discovery.",
+    trend_strength_score: 0.91,
+    decision_label: "STRONG_TREND",
+    trend_summary: "Breakout acceleration detected after several quiet weeks of baseline demand.",
+    opportunity_summary: "Breakout acceleration detected after several quiet weeks of baseline demand.",
+    risk_summary: "Execution window is active, but saturation has not arrived yet.",
+    growth_since_freeze_pct: 64,
+    latest_n_videos: 88,
+    t60_is_winner: true,
+    weeks_observed: 6,
+    consecutive_up_weeks: 3,
+    score_anchor: "STATE_QA_BREAKOUT",
+    trend_confidence: 0.82,
+    trend_direction: "UP",
+    latest_snapshot_date: "2026-05-08",
+    failure_risk_level: "LOW",
+    failure_risk_score: 0.18,
+    failure_risk_reason_code: "EARLY_BREAKOUT",
+    dominant_video_format: "HYBRID",
+    short_video_share: 0.35,
+    midform_video_share: 0.25,
+    long_video_share: 0.4,
+    format_strategy_label: "HYBRID_FORMAT",
+    format_strategy_summary: "Demand is split between fast comparison clips and deeper walkthroughs.",
+    visual_state_override: "BREAKOUT",
+  },
+  {
+    rank: 3,
+    cluster_id: "qa-warm-emerging",
+    cluster_label: "QA Warm Emerging",
+    display_topic_title: "Beginner ETF Allocation Watchlist",
+    topic_subtitle: "Early audience participation improving, but confidence still needs confirmation.",
+    trend_strength_score: 0.61,
+    decision_label: "EARLY_TREND",
+    trend_summary: "Early signal building as beginner ETF questions spread across adjacent creator lanes.",
+    opportunity_summary: "Early signal building as beginner ETF questions spread across adjacent creator lanes.",
+    risk_summary: "Medium confidence means the signal should be tested before scaling.",
+    growth_since_freeze_pct: 14,
+    latest_n_videos: 54,
+    t60_is_winner: false,
+    weeks_observed: 5,
+    consecutive_up_weeks: 2,
+    score_anchor: "STATE_QA_WARM",
+    trend_confidence: 0.58,
+    trend_direction: "UP",
+    latest_snapshot_date: "2026-05-08",
+    failure_risk_level: "MEDIUM",
+    failure_risk_score: 0.32,
+    failure_risk_reason_code: "NEEDS_CONFIRMATION",
+    dominant_video_format: "SHORT",
+    short_video_share: 0.58,
+    midform_video_share: 0.24,
+    long_video_share: 0.18,
+    format_strategy_label: "SHORT_HEAVY",
+    format_strategy_summary: "Shorts are doing the early discovery work before deeper validation.",
+    visual_state_override: "WARM",
+  },
+  {
+    rank: 4,
+    cluster_id: "qa-cold-plateau",
+    cluster_label: "QA Cold Plateau",
+    display_topic_title: "Budgeting Spreadsheet Template Plateau",
+    topic_subtitle: "Mature search interest with stable demand but limited expansion pressure.",
+    trend_strength_score: 0.39,
+    decision_label: "EMERGING",
+    trend_summary: "Momentum stabilised with limited expansion beyond the existing template audience.",
+    opportunity_summary: "Momentum stabilised with limited expansion beyond the existing template audience.",
+    risk_summary: "Flat participation suggests this is more maintenance topic than growth topic.",
+    growth_since_freeze_pct: 2,
+    latest_n_videos: 41,
+    t60_is_winner: false,
+    weeks_observed: 12,
+    consecutive_up_weeks: 1,
+    score_anchor: "STATE_QA_COLD",
+    trend_confidence: 0.38,
+    trend_direction: "FLAT",
+    latest_snapshot_date: "2026-05-08",
+    failure_risk_level: "MEDIUM",
+    failure_risk_score: 0.42,
+    failure_risk_reason_code: "FLAT_SATURATED",
+    dominant_video_format: "MIDFORM",
+    short_video_share: 0.22,
+    midform_video_share: 0.56,
+    long_video_share: 0.22,
+    format_strategy_label: "MIDFORM_HEAVY",
+    format_strategy_summary: "Mid-form tutorials fit the stable, utility-led demand profile.",
+    visual_state_override: "COLD",
+  },
+  {
+    rank: 5,
+    cluster_id: "qa-decay-spike-fall",
+    cluster_label: "QA Decay",
+    display_topic_title: "Emergency Rate Cut Rumor Spike",
+    topic_subtitle: "A sharp news-driven spike is rolling over as late-entry risk increases.",
+    trend_strength_score: 0.48,
+    decision_label: "WEAK_OR_RISK",
+    trend_summary: "Peak likely passed after a short-lived rumor cycle and shrinking follow-on demand.",
+    opportunity_summary: "Peak likely passed after a short-lived rumor cycle and shrinking follow-on demand.",
+    risk_summary: "Failed breakout pattern with decay risk and weakening participation.",
+    growth_since_freeze_pct: -18,
+    latest_n_videos: 67,
+    t60_is_winner: false,
+    weeks_observed: 7,
+    consecutive_up_weeks: 0,
+    score_anchor: "STATE_QA_DECAY",
+    trend_confidence: 0.46,
+    trend_direction: "DOWN",
+    latest_snapshot_date: "2026-05-08",
+    failure_risk_level: "HIGH",
+    failure_risk_score: 0.78,
+    failure_risk_reason_code: "PEAK_PASSED_DECAY",
+    dominant_video_format: "UNKNOWN",
+    short_video_share: 0.18,
+    midform_video_share: 0.26,
+    long_video_share: 0.56,
+    format_strategy_label: "UNKNOWN_FORMAT",
+    format_strategy_summary: "Format fit is unclear because the spike was event-led rather than format-led.",
+    visual_state_override: "DECAY",
+  },
+];
 
 function getMockUserPlan(): UserPlan {
   return "explorer";
@@ -364,14 +525,143 @@ function getRecommendedActionBullets(topic: LeaderboardRow) {
   return ["Review the evidence before committing production time.", "Use a small test before scaling."];
 }
 
-function getTopicCardHoverInsights(topic: LeaderboardRow) {
-  return [
-    `${mapDecisionLabel(topic.decision_label)} with ${mapConfidence(topic).toLowerCase()}.`,
-    `${mapOpportunityState(topic)} opportunity; stability is ${mapWillLast(topic).toLowerCase()}.`,
-    topic.opportunity_summary || topic.trend_summary || "Open the detail panel for supporting evidence.",
-  ]
-    .map((insight) => summarizeInsight(insight))
-    .slice(0, 3);
+function getSignalBriefState(topic: LeaderboardRow): SignalBriefState {
+  if (SHOW_STATE_QA_CARDS && topic.visual_state_override) {
+    if (topic.visual_state_override === "BREAKOUT") return "breakout";
+    return topic.visual_state_override.toLowerCase() as SignalBriefState;
+  }
+
+  const decision = topic.decision_label.toUpperCase();
+  const riskLevel = topic.failure_risk_level?.toUpperCase() ?? "";
+  const riskReason = `${topic.failure_risk_reason_code ?? ""} ${topic.risk_summary ?? ""}`.toUpperCase();
+  const riskScore = topic.failure_risk_score ?? 0;
+  const confidence = getConfidenceValue(topic);
+  const growth = getGrowthFraction(topic);
+  const opportunityState = mapOpportunityState(topic);
+
+  if (
+    decision.includes("WEAK") ||
+    riskLevel === "HIGH" ||
+    riskLevel === "CRITICAL" ||
+    riskScore >= 0.6 ||
+    riskReason.includes("FAILED") ||
+    riskReason.includes("DECAY") ||
+    riskReason.includes("WEAKEN") ||
+    riskReason.includes("PEAK") ||
+    growth < -0.03
+  ) {
+    return "decay";
+  }
+
+  if (
+    (decision.includes("STRONG") || decision.includes("SUSTAINED") || opportunityState === "Scaling") &&
+    confidence >= 0.68 &&
+    growth >= 0.12 &&
+    riskLevel !== "MEDIUM" &&
+    riskLevel !== "MODERATE"
+  ) {
+    return "hot";
+  }
+
+  if (confidence < 0.42 || growth < 0.04 || riskReason.includes("SATURATED") || riskReason.includes("FLAT")) {
+    return "cold";
+  }
+
+  if (decision.includes("EARLY") || decision.includes("EMERGING") || confidence >= 0.48 || growth >= 0.08) {
+    return "warm";
+  }
+
+  return "cold";
+}
+
+function getSignalBriefVisual(state: SignalBriefState) {
+  if (state === "hot") {
+    return {
+      label: "HOT",
+      accent: "bg-emerald-300",
+      border: "border-emerald-300/22",
+      bg: "bg-emerald-300/[0.035]",
+      hoverBg: "hover:bg-emerald-300/[0.045]",
+      ring: "ring-emerald-200/12",
+      text: "text-emerald-100",
+      badge: "border-emerald-300/26 bg-emerald-300/[0.08] text-emerald-100",
+      read: "ring-emerald-300/16 bg-emerald-300/[0.035] shadow-[0_16px_40px_rgba(16,185,129,0.06)]",
+      stroke: "rgb(110 231 183)",
+      dash: "",
+    };
+  }
+
+  if (state === "breakout") {
+    return {
+      label: "BREAKOUT",
+      accent: "bg-[linear-gradient(180deg,rgb(250,204,21),rgb(52,211,153))]",
+      border: "border-lime-300/24",
+      bg: "bg-lime-300/[0.035]",
+      hoverBg: "hover:bg-lime-300/[0.045]",
+      ring: "ring-lime-200/12",
+      text: "text-lime-100",
+      badge: "border-lime-300/28 bg-lime-300/[0.085] text-lime-100",
+      read: "ring-lime-300/18 bg-lime-300/[0.04] shadow-[0_16px_40px_rgba(132,204,22,0.07)]",
+      stroke: "rgb(190 242 100)",
+      dash: "",
+    };
+  }
+
+  if (state === "warm") {
+    return {
+      label: "WARM",
+      accent: "bg-sky-300",
+      border: "border-sky-300/20",
+      bg: "bg-sky-300/[0.03]",
+      hoverBg: "hover:bg-sky-300/[0.04]",
+      ring: "ring-sky-200/12",
+      text: "text-sky-100",
+      badge: "border-sky-300/24 bg-sky-300/[0.075] text-sky-100",
+      read: "ring-sky-300/16 bg-sky-300/[0.03] shadow-[0_16px_40px_rgba(14,165,233,0.05)]",
+      stroke: "rgb(125 211 252)",
+      dash: "",
+    };
+  }
+
+  if (state === "cold") {
+    return {
+      label: "COLD",
+      accent: "bg-violet-300",
+      border: "border-violet-300/20",
+      bg: "bg-violet-300/[0.028]",
+      hoverBg: "hover:bg-violet-300/[0.038]",
+      ring: "ring-violet-200/12",
+      text: "text-violet-100",
+      badge: "border-violet-300/24 bg-violet-300/[0.075] text-violet-100",
+      read: "ring-violet-300/16 bg-violet-300/[0.03] shadow-[0_16px_40px_rgba(139,92,246,0.05)]",
+      stroke: "rgb(196 181 253)",
+      dash: "4 5",
+    };
+  }
+
+  return {
+    label: "DECAY",
+    accent: "bg-rose-300",
+    border: "border-rose-300/24",
+    bg: "bg-rose-300/[0.035]",
+    hoverBg: "hover:bg-rose-300/[0.045]",
+    ring: "ring-rose-200/12",
+    text: "text-rose-100",
+    badge: "border-rose-300/26 bg-rose-300/[0.08] text-rose-100",
+    read: "ring-rose-300/18 bg-rose-300/[0.04] shadow-[0_16px_40px_rgba(244,63,94,0.07)]",
+    stroke: "rgb(253 164 175)",
+    dash: "6 5",
+  };
+}
+
+function getSignalRead(topic: LeaderboardRow, state: SignalBriefState) {
+  if (state === "decay") return "Peak likely passed. Late-entry risk is increasing.";
+  if (state === "breakout") return "Breakout acceleration detected in recent weeks.";
+  if (state === "hot") return "Sustained momentum with strong persistence.";
+  if (state === "warm") return "Early signal building with improving participation.";
+  if (state === "cold") return "Momentum stabilised with limited expansion.";
+
+  return summarizeInsight(topic.opportunity_summary || topic.trend_summary || topic.topic_subtitle);
 }
 
 function getSystemStatus(topics: LeaderboardRow[]) {
@@ -428,13 +718,46 @@ function getFormatStrategyLabel(topic: LeaderboardRow) {
   return FORMAT_STRATEGY_LABELS[topic.format_strategy_label ?? "UNKNOWN_FORMAT"] ?? "Format unknown";
 }
 
-function getCompactFormatStrategyLabel(topic: LeaderboardRow) {
+function getFormatVisual(topic: LeaderboardRow) {
   const label = topic.format_strategy_label;
-  if (label === "SHORT_HEAVY") return "Shorts";
-  if (label === "MIDFORM_HEAVY") return "Mid-form";
-  if (label === "LONG_HEAVY") return "Long";
-  if (label === "HYBRID_FORMAT") return "Hybrid";
-  return "Unknown";
+
+  if (label === "SHORT_HEAVY") {
+    return {
+      value: "Shorts",
+      text: "text-sky-100",
+      dot: "bg-sky-300 shadow-[0_0_12px_rgba(56,189,248,0.28)]",
+    };
+  }
+
+  if (label === "MIDFORM_HEAVY") {
+    return {
+      value: "Mid-form",
+      text: "text-violet-100",
+      dot: "bg-violet-300 shadow-[0_0_12px_rgba(167,139,250,0.26)]",
+    };
+  }
+
+  if (label === "LONG_HEAVY") {
+    return {
+      value: "Long",
+      text: "text-emerald-100",
+      dot: "bg-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.26)]",
+    };
+  }
+
+  if (label === "HYBRID_FORMAT") {
+    return {
+      value: "Hybrid",
+      text: "text-cyan-100",
+      dot: "bg-[linear-gradient(135deg,rgb(103,232,249),rgb(196,181,253))]",
+    };
+  }
+
+  return {
+    value: "Unknown",
+    text: "text-slate-100/62",
+    dot: "bg-slate-400/55",
+  };
 }
 
 function getFormatTone(topic: LeaderboardRow): Tone {
@@ -786,7 +1109,10 @@ export default function Dashboard() {
   const { opportunities: discoveryOpportunities } = useDiscoveryOpportunities();
   const hasLiveClusters = insightClusters.length > 0 && !clustersError;
   const dashboardLeaderboard = useMemo(
-    () => (hasLiveClusters ? mapClustersToLeaderboard(insightClusters) : leaderboard),
+    () => {
+      if (SHOW_STATE_QA_CARDS) return signalBriefQaFixtures;
+      return hasLiveClusters ? mapClustersToLeaderboard(insightClusters) : leaderboard;
+    },
     [hasLiveClusters, insightClusters],
   );
   const requestedDiscoveryOpportunity = useMemo(
@@ -1210,21 +1536,27 @@ function TopSignalStrip({ signals }: { signals: TopSignal[] }) {
   );
 }
 
-function SignalSparkline({ topic }: { topic: LeaderboardRow }) {
-  const growth = getGrowthFraction(topic);
-  const points = getSparklinePoints(topic);
+function SignalSparkline({
+  topic,
+  state,
+  visual,
+}: {
+  topic: LeaderboardRow;
+  state: SignalBriefState;
+  visual: ReturnType<typeof getSignalBriefVisual>;
+}) {
+  const points = getSparklinePoints(topic, state);
   const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
   const areaPath = `${path} L 100 100 L 0 100 Z`;
-  const isPositive = growth >= 0;
-  const stroke = isPositive ? "rgb(94 234 212)" : "rgb(253 164 175)";
+  const stroke = visual.stroke;
   const gradientId = `sparkline-gradient-${topic.rank}`;
   const glowId = `sparkline-glow-${topic.rank}`;
 
   return (
-    <div className="relative mt-5 h-[110px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#060a0f] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.032),transparent_44%),radial-gradient(circle_at_82%_16%,rgba(125,211,252,0.07),transparent_34%)]" />
+    <div className="relative mt-5 h-[126px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#05090e] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.032),transparent_44%),radial-gradient(circle_at_78%_18%,rgba(125,211,252,0.055),transparent_34%)]" />
       <svg
-        className="absolute inset-x-4 bottom-3 top-3 h-[86px] w-[calc(100%-32px)]"
+        className="absolute inset-x-4 bottom-4 top-4 h-[94px] w-[calc(100%-32px)]"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         aria-hidden="true"
@@ -1244,18 +1576,20 @@ function SignalSparkline({ topic }: { topic: LeaderboardRow }) {
         </defs>
         <path d={areaPath} fill={`url(#${gradientId})`} />
         <path d="M 0 72 L 100 72" stroke="rgba(148,163,184,0.13)" strokeDasharray="3 5" strokeWidth="0.8" />
-        <path d={path} fill="none" filter={`url(#${glowId})`} stroke={stroke} strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.35" />
+        <path
+          d={path}
+          fill="none"
+          filter={`url(#${glowId})`}
+          stroke={stroke}
+          strokeDasharray={visual.dash}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeOpacity={state === "decay" ? 0.86 : 1}
+          strokeWidth="2.35"
+        />
       </svg>
       <div className="absolute left-3 top-3 text-[10px] font-medium uppercase tracking-[0.18em] text-slate-200/34">
-        Trend
-      </div>
-      <div
-        className={cn(
-          "absolute bottom-3 right-3 text-lg font-semibold tracking-[-0.035em]",
-          isPositive ? "text-emerald-100" : "text-rose-100",
-        )}
-      >
-        {formatPercent(growth)}
+        Signal curve
       </div>
     </div>
   );
@@ -1280,6 +1614,20 @@ function CompactMetric({ label, value, tone = "neutral" }: { label: string; valu
   );
 }
 
+function FormatCompactMetric({ topic }: { topic: LeaderboardRow }) {
+  const visual = getFormatVisual(topic);
+
+  return (
+    <div className="min-w-0">
+      <div className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-300/34">Format</div>
+      <div className={cn("mt-1 flex min-w-0 items-center gap-1.5 truncate text-[13px] font-semibold leading-4", visual.text)}>
+        <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", visual.dot)} />
+        <span className="truncate">{visual.value}</span>
+      </div>
+    </div>
+  );
+}
+
 function TopicCard({
   topic,
   selected,
@@ -1296,74 +1644,66 @@ function TopicCard({
   onToggleWatch: (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
   const growth = getGrowthFraction(topic);
-  const hoverInsights = getTopicCardHoverInsights(topic);
   const confidenceTone = getConfidenceTone(topic);
   const isTopRank = topic.rank === 1;
   const riskTone = getFailureRiskTone(topic);
+  const signalState = getSignalBriefState(topic);
+  const signalVisual = getSignalBriefVisual(signalState);
 
   return (
     <button
       type="button"
       onClick={onSelect}
       className={cn(
-        "group relative overflow-visible rounded-2xl border p-4 text-left transition duration-200 hover:-translate-y-0.5",
-        scanMode ? "min-h-[246px]" : "min-h-[304px]",
-        isTopRank && "shadow-[0_22px_90px_rgba(251,191,36,0.08)]",
+        "group relative overflow-hidden rounded-2xl border p-4 pl-5 text-left transition duration-200 hover:-translate-y-0.5",
+        scanMode ? "min-h-[326px]" : "min-h-[382px]",
+        isTopRank && "shadow-[0_22px_90px_rgba(251,191,36,0.07)]",
         selected
-          ? "border-emerald-300/34 bg-emerald-300/[0.052] ring-1 ring-emerald-200/12 shadow-[0_18px_60px_rgba(16,185,129,0.075),inset_0_1px_0_rgba(255,255,255,0.055)]"
-          : isTopRank
-            ? "border-amber-300/18 bg-amber-300/[0.03] hover:border-amber-300/28 hover:bg-amber-300/[0.04]"
-            : watched
-              ? "border-amber-300/14 bg-amber-300/[0.024] hover:border-amber-300/24 hover:bg-amber-300/[0.034]"
-              : "border-slate-200/8 bg-black/18 hover:border-slate-200/14 hover:bg-white/[0.028]",
+          ? cn(signalVisual.border, signalVisual.bg, signalVisual.ring, "ring-1 shadow-[0_18px_60px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.055)]")
+          : cn(signalVisual.border, "bg-black/18", signalVisual.hoverBg, "hover:border-opacity-80"),
       )}
     >
+      <div className={cn("absolute bottom-0 left-0 top-0 w-1", signalVisual.accent)} />
+
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="shrink-0 text-xs font-semibold text-slate-200/42">#{topic.rank}</span>
-            {isTopRank ? <PillFrame family="risk" className="px-2 py-0.5">#1 Signal</PillFrame> : null}
-            {watched ? <PillFrame className="px-2 py-0.5">Watching</PillFrame> : null}
+            <span className={cn("rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]", signalVisual.badge)}>
+              {signalVisual.label}
+            </span>
+            {isTopRank ? <PillFrame family="neutral" className="px-2 py-0.5">#1</PillFrame> : null}
           </div>
           <h2 className={cn("mt-3 line-clamp-2 font-semibold leading-tight tracking-[-0.035em] text-white", scanMode ? "text-lg" : "text-xl")}>
             {getTopicTitle(topic)}
           </h2>
         </div>
-        <WatchStarButton
-          ariaLabel={watched ? "Remove from watchlist" : "Add to watchlist"}
-          active={watched}
-          onClick={onToggleWatch}
-        />
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <div className={cn("text-3xl font-semibold leading-none tracking-[-0.045em]", signalVisual.text)}>
+            {formatPercent(growth)}
+          </div>
+          <WatchStarButton
+            ariaLabel={watched ? "Remove from watchlist" : "Add to watchlist"}
+            active={watched}
+            onClick={onToggleWatch}
+          />
+        </div>
       </div>
 
       {!scanMode ? <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-200/46">{topic.topic_subtitle}</p> : null}
 
-      <SignalSparkline topic={topic} />
-
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <PrimaryIntelligencePill topic={topic} />
-        <span className={cn("text-xs font-semibold", growth >= 0 ? "text-emerald-100/76" : "text-rose-100/76")}>
-          {growth >= 0 ? "Growth" : "Decline"}
-        </span>
-      </div>
+      <SignalSparkline topic={topic} state={signalState} visual={signalVisual} />
 
       <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-200/8 pt-4 sm:grid-cols-4">
         <CompactMetric label="Confidence" value={mapConfidence(topic).replace(" Confidence", "")} tone={confidenceTone} />
         <CompactMetric label="Stability" value={mapCompactWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
         <CompactMetric label="Risk" value={formatCompactFailureRiskValue(topic.failure_risk_level)} tone={riskTone} />
-        <CompactMetric label="Format" value={getCompactFormatStrategyLabel(topic)} tone="neutral" />
+        <FormatCompactMetric topic={topic} />
       </div>
 
-      <div className="pointer-events-none absolute left-4 right-4 top-4 z-20 translate-y-2 rounded-xl border border-white/12 bg-[#070b10]/95 p-3 opacity-0 shadow-[0_18px_70px_rgba(0,0,0,0.42)] backdrop-blur-xl transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/42">Quick insight</div>
-        <ul className="mt-2 space-y-1.5 text-xs leading-5 text-white/72">
-          {hoverInsights.map((insight) => (
-            <li key={insight} className="flex gap-2">
-              <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-emerald-300/80" />
-              <span>{insight}</span>
-            </li>
-          ))}
-        </ul>
+      <div className={cn("mt-4 rounded-xl px-3 py-2.5 ring-1", signalVisual.read)}>
+        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/34">Signal Read</div>
+        <p className="mt-1.5 line-clamp-3 text-xs leading-5 text-white/64">{getSignalRead(topic, signalState)}</p>
       </div>
     </button>
   );
@@ -2024,28 +2364,34 @@ function getGrowthFraction(topic: LeaderboardRow) {
   return topic.growth_since_freeze_pct / 100;
 }
 
-function getSparklinePoints(topic: LeaderboardRow) {
+function getSparklinePoints(topic: LeaderboardRow, state: SignalBriefState) {
   const growth = Math.max(-0.45, Math.min(0.75, getGrowthFraction(topic)));
   const confidence = getConfidenceValue(topic);
-  const stability = topic.t60_is_winner ? 0.08 : -0.05;
-  const weeks = Math.min(1, Math.max(0, (topic.weeks_observed ?? 4) / 12));
-  const direction = growth >= 0 ? 1 : -1;
-  const slope = growth * 54;
-  const baseline = 62 - confidence * 18;
-  const wave = (1 - weeks) * 7;
-  const raw = [0, 0.14, 0.29, 0.45, 0.61, 0.78, 1].map((position, index) => {
-    const drift = slope * position;
-    const lift = index > 3 ? confidence * 7 + stability * 22 : 0;
-    const wobble = Math.sin((position * Math.PI * 2) + topic.rank) * wave;
-    const y = baseline - drift - lift + wobble * direction;
+  const isBreakout = state === "hot" && (growth >= 0.32 || topic.rank <= 2);
+  const profiles: Record<SignalBriefState, number[]> = {
+    hot: isBreakout ? [70, 70, 69, 67, 58, 40, 20] : [76, 69, 61, 53, 44, 34, 23],
+    breakout: [72, 72, 71, 70, 58, 38, 18],
+    warm: [72, 73, 72, 69, 64, 56, 45],
+    cold: [52, 51, 52, 51, 50, 50, 49],
+    decay: [70, 42, 24, 34, 50, 64, 76],
+  };
+  const amplitude =
+    state === "hot" || state === "breakout" ? Math.min(7, Math.max(2, growth * 10)) :
+    state === "warm" ? 4 :
+    state === "cold" ? 2.2 :
+    5;
+
+  return profiles[state].map((baseY, index) => {
+    const x = Math.round((index / (profiles[state].length - 1)) * 100);
+    const wobble = Math.sin(index * 1.7 + topic.rank) * amplitude * (state === "cold" ? 0.65 : 1);
+    const confidenceLift = state === "hot" || state === "warm" ? confidence * 4 : 0;
+    const y = baseY + wobble - confidenceLift;
 
     return {
-      x: Math.round(position * 100),
+      x,
       y: Math.max(14, Math.min(86, y)),
     };
   });
-
-  return raw;
 }
 
 function normalizeAnchor(anchor: string) {
