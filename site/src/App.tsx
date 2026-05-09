@@ -8,6 +8,7 @@ import Pricing from "./pages/Pricing";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import ClusterIntelligence from "./pages/ClusterIntelligence";
 import Discovery from "./pages/Discovery";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import InsightsPage from "./pages/insights/index";
@@ -44,6 +45,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/cluster/:clusterId"
+        element={
+          <ProtectedRoute>
+            <ClusterIntelligence />
           </ProtectedRoute>
         }
       />

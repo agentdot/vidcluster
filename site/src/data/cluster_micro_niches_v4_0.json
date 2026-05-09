@@ -1,0 +1,5662 @@
+[
+  {
+    "cluster_id": "SC000",
+    "subcluster_id": "SC000_SUB00",
+    "subcluster_label": "meal prep \u2014 bowls",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC000",
+    "subcluster_id": "SC000_SUB01",
+    "subcluster_label": "meal prep \u2014 keep",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC001",
+    "subcluster_id": "SC001_SUB00",
+    "subcluster_label": "country music",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC002",
+    "subcluster_id": "SC002_SUB04",
+    "subcluster_label": "budget travels travel",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC002",
+    "subcluster_id": "SC002_SUB00",
+    "subcluster_label": "budget travel \u2014 traveler",
+    "assigned_video_count": 236,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC002",
+    "subcluster_id": "SC002_SUB01",
+    "subcluster_label": "budget travel \u2014 tips",
+    "assigned_video_count": 117,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC002",
+    "subcluster_id": "SC002_SUB02",
+    "subcluster_label": "budget travel \u2014 train",
+    "assigned_video_count": 28,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC002",
+    "subcluster_id": "SC002_SUB03",
+    "subcluster_label": "budget travel \u2014 foreststay",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC003",
+    "subcluster_id": "SC003_SUB00",
+    "subcluster_label": "mental health \u2014 change",
+    "assigned_video_count": 41,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC003",
+    "subcluster_id": "SC003_SUB02",
+    "subcluster_label": "mental health \u2014 excuse",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC003",
+    "subcluster_id": "SC003_SUB01",
+    "subcluster_label": "mental health \u2014 islamic",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC004",
+    "subcluster_id": "SC004_SUB01",
+    "subcluster_label": "business marketing \u2014 id771068869 small",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.3589914206,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC004",
+    "subcluster_id": "SC004_SUB00",
+    "subcluster_label": "business marketing \u2014 only small",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.3541167031,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC005",
+    "subcluster_id": "SC005_SUB00",
+    "subcluster_label": "real estate \u2014 estate real",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC005",
+    "subcluster_id": "SC005_SUB01",
+    "subcluster_label": "real estate \u2014 time",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.3020433299,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC006",
+    "subcluster_id": "SC006_SUB04",
+    "subcluster_label": "parenting tips \u2014 attachment",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.3631203789,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC006",
+    "subcluster_id": "SC006_SUB00",
+    "subcluster_label": "parenting tips \u2014 daily",
+    "assigned_video_count": 251,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC006",
+    "subcluster_id": "SC006_SUB03",
+    "subcluster_label": "parenting tips \u2014 islamic",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC006",
+    "subcluster_id": "SC006_SUB01",
+    "subcluster_label": "parenting tips \u2014 parents",
+    "assigned_video_count": 41,
+    "micro_emergence_score": 0.2023364983,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC006",
+    "subcluster_id": "SC006_SUB02",
+    "subcluster_label": "parenting tips \u2014 advice",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC007",
+    "subcluster_id": "SC007_SUB00",
+    "subcluster_label": "interest work",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.2959743863,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC007",
+    "subcluster_id": "SC007_SUB01",
+    "subcluster_label": "real estate",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC008",
+    "subcluster_id": "SC008_SUB01",
+    "subcluster_label": "future work \u2014 business school",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.3662860428,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC008",
+    "subcluster_id": "SC008_SUB00",
+    "subcluster_label": "future work \u2014 business owner",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC009",
+    "subcluster_id": "SC009_SUB00",
+    "subcluster_label": "mortgage rates \u2014 update",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.3551443118,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC009",
+    "subcluster_id": "SC009_SUB01",
+    "subcluster_label": "mortgage rates \u2014 real estate",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC010",
+    "subcluster_id": "SC010_SUB00",
+    "subcluster_label": "student loans \u2014 cancel",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC010",
+    "subcluster_id": "SC010_SUB01",
+    "subcluster_label": "student loans \u2014 know",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC011",
+    "subcluster_id": "SC011_SUB00",
+    "subcluster_label": "software tutorials \u2014 h10",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC011",
+    "subcluster_id": "SC011_SUB01",
+    "subcluster_label": "software tutorials \u2014 reviews geven",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC012",
+    "subcluster_id": "SC012_SUB01",
+    "subcluster_label": "meal prep \u2014 weather",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.215610028,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC012",
+    "subcluster_id": "SC012_SUB00",
+    "subcluster_label": "meal prep \u2014 reheats",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.2036979442,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC013",
+    "subcluster_id": "SC013_SUB00",
+    "subcluster_label": "tax tips \u2014 day",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC013",
+    "subcluster_id": "SC013_SUB01",
+    "subcluster_label": "tax tips \u2014 small business",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC014",
+    "subcluster_id": "SC014_SUB00",
+    "subcluster_label": "ai tools \u2014 linked",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.3621616667,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC014",
+    "subcluster_id": "SC014_SUB01",
+    "subcluster_label": "ai tools \u2014 news",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC015",
+    "subcluster_id": "SC015_SUB00",
+    "subcluster_label": "guitar lessons \u2014 lesson",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC015",
+    "subcluster_id": "SC015_SUB01",
+    "subcluster_label": "guitar lessons \u2014 courses",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC016",
+    "subcluster_id": "SC016_SUB00",
+    "subcluster_label": "credit repair \u2014 mortgage rates",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC016",
+    "subcluster_id": "SC016_SUB01",
+    "subcluster_label": "credit repair \u2014 lightning",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC018",
+    "subcluster_id": "SC018_SUB00",
+    "subcluster_label": "business has",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC019",
+    "subcluster_id": "SC019_SUB00",
+    "subcluster_label": "remote work \u2014 workfromhome2024",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC019",
+    "subcluster_id": "SC019_SUB01",
+    "subcluster_label": "remote work \u2014 26ar",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC020",
+    "subcluster_id": "SC020_SUB00",
+    "subcluster_label": "country music \u2014 williams topic",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC020",
+    "subcluster_id": "SC020_SUB01",
+    "subcluster_label": "country music \u2014 group coal",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC021",
+    "subcluster_id": "SC021_SUB04",
+    "subcluster_label": "practical tips",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.3537349296,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC021",
+    "subcluster_id": "SC021_SUB02",
+    "subcluster_label": "home organization \u2014 small bedroom",
+    "assigned_video_count": 40,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC021",
+    "subcluster_id": "SC021_SUB03",
+    "subcluster_label": "home organization \u2014 organized",
+    "assigned_video_count": 24,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC021",
+    "subcluster_id": "SC021_SUB00",
+    "subcluster_label": "meal prep",
+    "assigned_video_count": 132,
+    "micro_emergence_score": 0.2906961984,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC021",
+    "subcluster_id": "SC021_SUB01",
+    "subcluster_label": "home organization \u2014 organizing",
+    "assigned_video_count": 68,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC022",
+    "subcluster_id": "SC022_SUB00",
+    "subcluster_label": "credit repair \u2014 junkies",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC022",
+    "subcluster_id": "SC022_SUB01",
+    "subcluster_label": "credit repair \u2014 repair credit",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC023",
+    "subcluster_id": "SC023_SUB00",
+    "subcluster_label": "health care \u2014 fitness nutritional",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC023",
+    "subcluster_id": "SC023_SUB01",
+    "subcluster_label": "health care \u2014 should",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC024",
+    "subcluster_id": "SC024_SUB01",
+    "subcluster_label": "4cdgjmb budget",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.39,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC024",
+    "subcluster_id": "SC024_SUB00",
+    "subcluster_label": "mental health",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC025",
+    "subcluster_id": "SC025_SUB01",
+    "subcluster_label": "health fitness",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.3567594241,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC025",
+    "subcluster_id": "SC025_SUB00",
+    "subcluster_label": "tai chi",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC026",
+    "subcluster_id": "SC026_SUB00",
+    "subcluster_label": "ai tools \u2014 breakingnews",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC026",
+    "subcluster_id": "SC026_SUB01",
+    "subcluster_label": "ai tools \u2014 cat",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC027",
+    "subcluster_id": "SC027_SUB00",
+    "subcluster_label": "country music \u2014 all",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC027",
+    "subcluster_id": "SC027_SUB01",
+    "subcluster_label": "country music \u2014 dance afr",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC028",
+    "subcluster_id": "SC028_SUB00",
+    "subcluster_label": "real estate \u2014 like",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC028",
+    "subcluster_id": "SC028_SUB01",
+    "subcluster_label": "real estate \u2014 winning",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC029",
+    "subcluster_id": "SC029_SUB00",
+    "subcluster_label": "guitar lessons \u2014 school",
+    "assigned_video_count": 40,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC029",
+    "subcluster_id": "SC029_SUB01",
+    "subcluster_label": "guitar lessons \u2014 senior",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC029",
+    "subcluster_id": "SC029_SUB02",
+    "subcluster_label": "guitar lesson",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC030",
+    "subcluster_id": "SC030_SUB00",
+    "subcluster_label": "guitar lessons \u2014 rock",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC030",
+    "subcluster_id": "SC030_SUB01",
+    "subcluster_label": "guitar lessons \u2014 bpm",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC031",
+    "subcluster_id": "SC031_SUB00",
+    "subcluster_label": "guitar lessons \u2014 marty music",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.3576368908,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC031",
+    "subcluster_id": "SC031_SUB01",
+    "subcluster_label": "guitar lessons \u2014 filming gear",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC032",
+    "subcluster_id": "SC032_SUB02",
+    "subcluster_label": "meal prep \u2014 recipe",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.2951897299,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC032",
+    "subcluster_id": "SC032_SUB00",
+    "subcluster_label": "meal prep \u2014 cookbook",
+    "assigned_video_count": 26,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC032",
+    "subcluster_id": "SC032_SUB01",
+    "subcluster_label": "meal prep \u2014 easy",
+    "assigned_video_count": 22,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC033",
+    "subcluster_id": "SC033_SUB00",
+    "subcluster_label": "health helping",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC033",
+    "subcluster_id": "SC033_SUB01",
+    "subcluster_label": "joint health",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC034",
+    "subcluster_id": "SC034_SUB00",
+    "subcluster_label": "tutorial inside",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC034",
+    "subcluster_id": "SC034_SUB01",
+    "subcluster_label": "accidents health",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC035",
+    "subcluster_id": "SC035_SUB00",
+    "subcluster_label": "mental health \u2014 evidently",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC035",
+    "subcluster_id": "SC035_SUB01",
+    "subcluster_label": "mental health \u2014 promotion",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC036",
+    "subcluster_id": "SC036_SUB01",
+    "subcluster_label": "tradevision ai",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.3658566237,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC036",
+    "subcluster_id": "SC036_SUB00",
+    "subcluster_label": "real estate",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC037",
+    "subcluster_id": "SC037_SUB01",
+    "subcluster_label": "country music \u2014 haunting",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.3656257704,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC037",
+    "subcluster_id": "SC037_SUB00",
+    "subcluster_label": "country music \u2014 fans outlaw",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC038",
+    "subcluster_id": "SC038_SUB00",
+    "subcluster_label": "meal prep \u2014 33cnvsg",
+    "assigned_video_count": 19,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC038",
+    "subcluster_id": "SC038_SUB01",
+    "subcluster_label": "meal prep \u2014 4gwh94a music",
+    "assigned_video_count": 1,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC039",
+    "subcluster_id": "SC039_SUB00",
+    "subcluster_label": "ai tools \u2014 leonardo",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC039",
+    "subcluster_id": "SC039_SUB01",
+    "subcluster_label": "ai tools \u2014 dzine",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC040",
+    "subcluster_id": "SC040_SUB00",
+    "subcluster_label": "country music \u2014 icmr irish",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC040",
+    "subcluster_id": "SC040_SUB01",
+    "subcluster_label": "country music \u2014 live",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC041",
+    "subcluster_id": "SC041_SUB00",
+    "subcluster_label": "remote work \u2014 work remote",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC041",
+    "subcluster_id": "SC041_SUB01",
+    "subcluster_label": "remote work \u2014 languages",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC042",
+    "subcluster_id": "SC042_SUB01",
+    "subcluster_label": "zumba class \u2014 aerobicworkout zumbaclass",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC042",
+    "subcluster_id": "SC042_SUB00",
+    "subcluster_label": "zumba class \u2014 dance workout",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.3459415084,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC043",
+    "subcluster_id": "SC043_SUB04",
+    "subcluster_label": "student loans \u2014 savi",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC043",
+    "subcluster_id": "SC043_SUB00",
+    "subcluster_label": "student loans \u2014 national",
+    "assigned_video_count": 93,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC043",
+    "subcluster_id": "SC043_SUB03",
+    "subcluster_label": "student loans \u2014 fund",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC043",
+    "subcluster_id": "SC043_SUB01",
+    "subcluster_label": "student loans \u2014 lending",
+    "assigned_video_count": 43,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC043",
+    "subcluster_id": "SC043_SUB02",
+    "subcluster_label": "student loans \u2014 bureau",
+    "assigned_video_count": 39,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC044",
+    "subcluster_id": "SC044_SUB00",
+    "subcluster_label": "remote work \u2014 work remote",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC044",
+    "subcluster_id": "SC044_SUB01",
+    "subcluster_label": "remote work \u2014 remotely",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC045",
+    "subcluster_id": "SC045_SUB00",
+    "subcluster_label": "mortgage rates \u2014 rates mortgage",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC045",
+    "subcluster_id": "SC045_SUB01",
+    "subcluster_label": "mortgage rates \u2014 cost",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC046",
+    "subcluster_id": "SC046_SUB00",
+    "subcluster_label": "business join \u2014 personal",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC046",
+    "subcluster_id": "SC046_SUB01",
+    "subcluster_label": "business join \u2014 receive small",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC047",
+    "subcluster_id": "SC047_SUB00",
+    "subcluster_label": "budget interests \u2014 receive small",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC047",
+    "subcluster_id": "SC047_SUB01",
+    "subcluster_label": "budget interests \u2014 small commission",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC048",
+    "subcluster_id": "SC048_SUB00",
+    "subcluster_label": "mental health \u2014 staff",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC048",
+    "subcluster_id": "SC048_SUB01",
+    "subcluster_label": "mental health \u2014 common",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC049",
+    "subcluster_id": "SC049_SUB00",
+    "subcluster_label": "guitar lessons \u2014 lessons guitar",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC049",
+    "subcluster_id": "SC049_SUB01",
+    "subcluster_label": "guitar lessons \u2014 gospel",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC050",
+    "subcluster_id": "SC050_SUB00",
+    "subcluster_label": "mental health \u2014 substance",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC050",
+    "subcluster_id": "SC050_SUB01",
+    "subcluster_label": "mental health \u2014 adolescent",
+    "assigned_video_count": 2,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC051",
+    "subcluster_id": "SC051_SUB01",
+    "subcluster_label": "real estate \u2014 investor",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.3893220702,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC051",
+    "subcluster_id": "SC051_SUB00",
+    "subcluster_label": "real estate \u2014 choi",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.2956748535,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC052",
+    "subcluster_id": "SC052_SUB00",
+    "subcluster_label": "mental health \u2014 medication",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC052",
+    "subcluster_id": "SC052_SUB01",
+    "subcluster_label": "mental health \u2014 girl",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC053",
+    "subcluster_id": "SC053_SUB00",
+    "subcluster_label": "passive income",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC053",
+    "subcluster_id": "SC053_SUB01",
+    "subcluster_label": "advisor tax",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.3296821727,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC054",
+    "subcluster_id": "SC054_SUB00",
+    "subcluster_label": "software tutorials \u2014 selenium python",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC054",
+    "subcluster_id": "SC054_SUB01",
+    "subcluster_label": "software tutorials \u2014 automation tools",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC055",
+    "subcluster_id": "SC055_SUB00",
+    "subcluster_label": "real estate \u2014 download",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC055",
+    "subcluster_id": "SC055_SUB01",
+    "subcluster_label": "real estate \u2014 community",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC056",
+    "subcluster_id": "SC056_SUB00",
+    "subcluster_label": "remote work \u2014 workfromanywhere chic",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC056",
+    "subcluster_id": "SC056_SUB01",
+    "subcluster_label": "remote work \u2014 out",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC057",
+    "subcluster_id": "SC057_SUB00",
+    "subcluster_label": "software tutorials \u2014 vrushali",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.2996150924,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC057",
+    "subcluster_id": "SC057_SUB01",
+    "subcluster_label": "software tutorials \u2014 list plq",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC058",
+    "subcluster_id": "SC058_SUB00",
+    "subcluster_label": "student loans \u2014 capped",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.3549192492,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC058",
+    "subcluster_id": "SC058_SUB01",
+    "subcluster_label": "student loans \u2014 studentloanplanner loan",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC059",
+    "subcluster_id": "SC059_SUB00",
+    "subcluster_label": "country music \u2014 virgin",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC059",
+    "subcluster_id": "SC059_SUB01",
+    "subcluster_label": "country music \u2014 universal",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC060",
+    "subcluster_id": "SC060_SUB00",
+    "subcluster_label": "mental health \u2014 list",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC060",
+    "subcluster_id": "SC060_SUB01",
+    "subcluster_label": "mental health \u2014 3knhdp",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC061",
+    "subcluster_id": "SC061_SUB00",
+    "subcluster_label": "real estate \u2014 47m",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC061",
+    "subcluster_id": "SC061_SUB01",
+    "subcluster_label": "real estate \u2014 hotel",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC062",
+    "subcluster_id": "SC062_SUB00",
+    "subcluster_label": "hip hop \u2014 dvds follow",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC062",
+    "subcluster_id": "SC062_SUB01",
+    "subcluster_label": "hip hop \u2014 fitness beginners",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC063",
+    "subcluster_id": "SC063_SUB00",
+    "subcluster_label": "jeremy lefebvre \u2014 stocks buy",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC063",
+    "subcluster_id": "SC063_SUB01",
+    "subcluster_label": "jeremy lefebvre \u2014 private stock",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.2322340877,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC064",
+    "subcluster_id": "SC064_SUB00",
+    "subcluster_label": "remote work",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC064",
+    "subcluster_id": "SC064_SUB01",
+    "subcluster_label": "work directly",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC065",
+    "subcluster_id": "SC065_SUB00",
+    "subcluster_label": "achieving work",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC065",
+    "subcluster_id": "SC065_SUB01",
+    "subcluster_label": "student loans",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC066",
+    "subcluster_id": "SC066_SUB00",
+    "subcluster_label": "real estate",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC066",
+    "subcluster_id": "SC066_SUB01",
+    "subcluster_label": "receive small",
+    "assigned_video_count": 2,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC067",
+    "subcluster_id": "SC067_SUB00",
+    "subcluster_label": "credit repair \u2014 reviews",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC067",
+    "subcluster_id": "SC067_SUB01",
+    "subcluster_label": "credit repair \u2014 more",
+    "assigned_video_count": 2,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC068",
+    "subcluster_id": "SC068_SUB01",
+    "subcluster_label": "credit repair \u2014 area",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.3807822893,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC068",
+    "subcluster_id": "SC068_SUB00",
+    "subcluster_label": "credit repair \u2014 boostcreditscore",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.3802951156,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC069",
+    "subcluster_id": "SC069_SUB00",
+    "subcluster_label": "software tutorials",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC070",
+    "subcluster_id": "SC070_SUB00",
+    "subcluster_label": "meal prep \u2014 stay",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC070",
+    "subcluster_id": "SC070_SUB01",
+    "subcluster_label": "meal prep \u2014 budget template",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC071",
+    "subcluster_id": "SC071_SUB00",
+    "subcluster_label": "guitar lessons \u2014 lesson",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.2939787493,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC071",
+    "subcluster_id": "SC071_SUB01",
+    "subcluster_label": "guitar lessons \u2014 lesson more",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC072",
+    "subcluster_id": "SC072_SUB01",
+    "subcluster_label": "ai tools \u2014 debate",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.3589638755,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC072",
+    "subcluster_id": "SC072_SUB00",
+    "subcluster_label": "ai tools \u2014 youtubeshorts",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC073",
+    "subcluster_id": "SC073_SUB00",
+    "subcluster_label": "software training",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.39,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC073",
+    "subcluster_id": "SC073_SUB01",
+    "subcluster_label": "iit jee",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.3169245931,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC074",
+    "subcluster_id": "SC074_SUB00",
+    "subcluster_label": "meal prep \u2014 chicken",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC074",
+    "subcluster_id": "SC074_SUB01",
+    "subcluster_label": "meal prep \u2014 cheese",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC075",
+    "subcluster_id": "SC075_SUB00",
+    "subcluster_label": "software tutorials \u2014 ai tools",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC075",
+    "subcluster_id": "SC075_SUB01",
+    "subcluster_label": "software tutorials \u2014 tutorial bit",
+    "assigned_video_count": 1,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC076",
+    "subcluster_id": "SC076_SUB00",
+    "subcluster_label": "real estate \u2014 davemarsh software",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC076",
+    "subcluster_id": "SC076_SUB01",
+    "subcluster_label": "real estate \u2014 members software",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC077",
+    "subcluster_id": "SC077_SUB00",
+    "subcluster_label": "country music",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC078",
+    "subcluster_id": "SC078_SUB01",
+    "subcluster_label": "business marketing",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.3546297283,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC078",
+    "subcluster_id": "SC078_SUB00",
+    "subcluster_label": "small business",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC079",
+    "subcluster_id": "SC079_SUB00",
+    "subcluster_label": "real estate \u2014 rookie",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC079",
+    "subcluster_id": "SC079_SUB01",
+    "subcluster_label": "real estate \u2014 biggerpockets",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC080",
+    "subcluster_id": "SC080_SUB00",
+    "subcluster_label": "country music \u2014 released 2025",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.3567218792,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC080",
+    "subcluster_id": "SC080_SUB01",
+    "subcluster_label": "country music \u2014 released 2026",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC081",
+    "subcluster_id": "SC081_SUB03",
+    "subcluster_label": "real estate \u2014 private",
+    "assigned_video_count": 19,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC081",
+    "subcluster_id": "SC081_SUB00",
+    "subcluster_label": "real estate \u2014 mortgage rates",
+    "assigned_video_count": 168,
+    "micro_emergence_score": 0.2903581374,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC081",
+    "subcluster_id": "SC081_SUB04",
+    "subcluster_label": "all business",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC081",
+    "subcluster_id": "SC081_SUB01",
+    "subcluster_label": "real estate \u2014 experience",
+    "assigned_video_count": 29,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC081",
+    "subcluster_id": "SC081_SUB02",
+    "subcluster_label": "real estate \u2014 markets",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC082",
+    "subcluster_id": "SC082_SUB02",
+    "subcluster_label": "age real",
+    "assigned_video_count": 22,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC082",
+    "subcluster_id": "SC082_SUB04",
+    "subcluster_label": "believe real",
+    "assigned_video_count": 19,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC082",
+    "subcluster_id": "SC082_SUB00",
+    "subcluster_label": "fitness beginners \u2014 music beat",
+    "assigned_video_count": 55,
+    "micro_emergence_score": 0.290904966,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC082",
+    "subcluster_id": "SC082_SUB03",
+    "subcluster_label": "more tips",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC082",
+    "subcluster_id": "SC082_SUB01",
+    "subcluster_label": "fitness beginners \u2014 tips follow",
+    "assigned_video_count": 23,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC083",
+    "subcluster_id": "SC083_SUB00",
+    "subcluster_label": "student loans",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC083",
+    "subcluster_id": "SC083_SUB01",
+    "subcluster_label": "loans student",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC084",
+    "subcluster_id": "SC084_SUB00",
+    "subcluster_label": "credit repair \u2014 repair credit",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC084",
+    "subcluster_id": "SC084_SUB01",
+    "subcluster_label": "credit repair \u2014 channel",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC085",
+    "subcluster_id": "SC085_SUB00",
+    "subcluster_label": "software tutorials \u2014 lightburnsoftware lightburn",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC085",
+    "subcluster_id": "SC085_SUB01",
+    "subcluster_label": "software tutorials \u2014 boolean tools",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC086",
+    "subcluster_id": "SC086_SUB00",
+    "subcluster_label": "guitar lessons \u2014 learntoplayitright",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC086",
+    "subcluster_id": "SC086_SUB01",
+    "subcluster_label": "guitar lessons \u2014 which",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC087",
+    "subcluster_id": "SC087_SUB03",
+    "subcluster_label": "tax tips \u2014 tax tax tips",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC087",
+    "subcluster_id": "SC087_SUB04",
+    "subcluster_label": "tax tips \u2014 tally",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC087",
+    "subcluster_id": "SC087_SUB00",
+    "subcluster_label": "tax tips \u2014 jfs",
+    "assigned_video_count": 129,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC087",
+    "subcluster_id": "SC087_SUB01",
+    "subcluster_label": "tax tips \u2014 relief",
+    "assigned_video_count": 49,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC087",
+    "subcluster_id": "SC087_SUB02",
+    "subcluster_label": "tax tips \u2014 terry",
+    "assigned_video_count": 30,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC088",
+    "subcluster_id": "SC088_SUB00",
+    "subcluster_label": "real estate",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC088",
+    "subcluster_id": "SC088_SUB01",
+    "subcluster_label": "irs form",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC089",
+    "subcluster_id": "SC089_SUB00",
+    "subcluster_label": "real estate \u2014 investing",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC089",
+    "subcluster_id": "SC089_SUB01",
+    "subcluster_label": "real estate \u2014 estate real",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC090",
+    "subcluster_id": "SC090_SUB00",
+    "subcluster_label": "tax tips \u2014 property",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC090",
+    "subcluster_id": "SC090_SUB01",
+    "subcluster_label": "tax tips \u2014 mortgage rates",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC091",
+    "subcluster_id": "SC091_SUB01",
+    "subcluster_label": "meal prep \u2014 glass",
+    "assigned_video_count": 43,
+    "micro_emergence_score": 0.3520234375,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC091",
+    "subcluster_id": "SC091_SUB00",
+    "subcluster_label": "meal prep \u2014 sunday",
+    "assigned_video_count": 54,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC091",
+    "subcluster_id": "SC091_SUB02",
+    "subcluster_label": "meal prep \u2014 meals healthy",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC091",
+    "subcluster_id": "SC091_SUB03",
+    "subcluster_label": "meal prep \u2014 cookbook",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC091",
+    "subcluster_id": "SC091_SUB04",
+    "subcluster_label": "meal prep \u2014 quick",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC092",
+    "subcluster_id": "SC092_SUB00",
+    "subcluster_label": "software tutorials \u2014 tutorials software",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC092",
+    "subcluster_id": "SC092_SUB01",
+    "subcluster_label": "software tutorials \u2014 latest",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC093",
+    "subcluster_id": "SC093_SUB00",
+    "subcluster_label": "remote work \u2014 4547495381958656",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC093",
+    "subcluster_id": "SC093_SUB01",
+    "subcluster_label": "remote work \u2014 remoteworkeurope",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC094",
+    "subcluster_id": "SC094_SUB02",
+    "subcluster_label": "real estate \u2014 investors",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.3556608206,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC094",
+    "subcluster_id": "SC094_SUB03",
+    "subcluster_label": "real estate \u2014 school",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC094",
+    "subcluster_id": "SC094_SUB00",
+    "subcluster_label": "real estate \u2014 canadian",
+    "assigned_video_count": 147,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC094",
+    "subcluster_id": "SC094_SUB01",
+    "subcluster_label": "real estate \u2014 community",
+    "assigned_video_count": 30,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC094",
+    "subcluster_id": "SC094_SUB04",
+    "subcluster_label": "real estate \u2014 stephan",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.2070067243,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC095",
+    "subcluster_id": "SC095_SUB00",
+    "subcluster_label": "guitar lessons \u2014 song lesson",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC095",
+    "subcluster_id": "SC095_SUB01",
+    "subcluster_label": "guitar lessons \u2014 riffs lesson",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC096",
+    "subcluster_id": "SC096_SUB00",
+    "subcluster_label": "country music \u2014 carlos",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC096",
+    "subcluster_id": "SC096_SUB01",
+    "subcluster_label": "country music \u2014 roach",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC097",
+    "subcluster_id": "SC097_SUB00",
+    "subcluster_label": "mental health \u2014 about",
+    "assigned_video_count": 40,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC097",
+    "subcluster_id": "SC097_SUB01",
+    "subcluster_label": "mental health \u2014 charity",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC098",
+    "subcluster_id": "SC098_SUB00",
+    "subcluster_label": "remote work \u2014 2025",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC098",
+    "subcluster_id": "SC098_SUB01",
+    "subcluster_label": "remote work \u2014 5453889789231104",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC099",
+    "subcluster_id": "SC099_SUB00",
+    "subcluster_label": "credit repair \u2014 podcast",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC099",
+    "subcluster_id": "SC099_SUB01",
+    "subcluster_label": "credit repair \u2014 brown",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC100",
+    "subcluster_id": "SC100_SUB00",
+    "subcluster_label": "real estate \u2014 investing",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.3061516798,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC100",
+    "subcluster_id": "SC100_SUB01",
+    "subcluster_label": "real estate \u2014 canadian",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC101",
+    "subcluster_id": "SC101_SUB00",
+    "subcluster_label": "guitar lessons \u2014 guitar lessons guitar",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.3559029133,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC101",
+    "subcluster_id": "SC101_SUB01",
+    "subcluster_label": "guitar lessons \u2014 lesson play",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC102",
+    "subcluster_id": "SC102_SUB00",
+    "subcluster_label": "real estate \u2014 abc",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.3252044107,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC102",
+    "subcluster_id": "SC102_SUB01",
+    "subcluster_label": "real estate \u2014 mortgage rates",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC103",
+    "subcluster_id": "SC103_SUB01",
+    "subcluster_label": "budget travel",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.3865522963,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC103",
+    "subcluster_id": "SC103_SUB00",
+    "subcluster_label": "real estate",
+    "assigned_video_count": 19,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC104",
+    "subcluster_id": "SC104_SUB00",
+    "subcluster_label": "remote work \u2014 finance",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC104",
+    "subcluster_id": "SC104_SUB01",
+    "subcluster_label": "remote work \u2014 pruitt",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC105",
+    "subcluster_id": "SC105_SUB00",
+    "subcluster_label": "software tutorials \u2014 tutorial advanced",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC105",
+    "subcluster_id": "SC105_SUB01",
+    "subcluster_label": "software tutorials \u2014 tutorial intermediate",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC106",
+    "subcluster_id": "SC106_SUB00",
+    "subcluster_label": "small business \u2014 small business small",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC106",
+    "subcluster_id": "SC106_SUB01",
+    "subcluster_label": "small business \u2014 growth",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC107",
+    "subcluster_id": "SC107_SUB00",
+    "subcluster_label": "credit repair \u2014 mentoring",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC107",
+    "subcluster_id": "SC107_SUB01",
+    "subcluster_label": "credit repair \u2014 free",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC108",
+    "subcluster_id": "SC108_SUB00",
+    "subcluster_label": "small business \u2014 big",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC108",
+    "subcluster_id": "SC108_SUB01",
+    "subcluster_label": "small business \u2014 bringing",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC109",
+    "subcluster_id": "SC109_SUB02",
+    "subcluster_label": "mental health \u2014 america",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC109",
+    "subcluster_id": "SC109_SUB03",
+    "subcluster_label": "mental health \u2014 work",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC109",
+    "subcluster_id": "SC109_SUB01",
+    "subcluster_label": "mental health \u2014 research",
+    "assigned_video_count": 38,
+    "micro_emergence_score": 0.2916277223,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC109",
+    "subcluster_id": "SC109_SUB00",
+    "subcluster_label": "mental health \u2014 illness",
+    "assigned_video_count": 50,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC109",
+    "subcluster_id": "SC109_SUB04",
+    "subcluster_label": "mental health \u2014 treatment",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC110",
+    "subcluster_id": "SC110_SUB00",
+    "subcluster_label": "south africa",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.3687715743,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC110",
+    "subcluster_id": "SC110_SUB01",
+    "subcluster_label": "fitness health",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC111",
+    "subcluster_id": "SC111_SUB00",
+    "subcluster_label": "country music \u2014 jack",
+    "assigned_video_count": 19,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC111",
+    "subcluster_id": "SC111_SUB01",
+    "subcluster_label": "country music \u2014 dice lillian",
+    "assigned_video_count": 1,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC112",
+    "subcluster_id": "SC112_SUB00",
+    "subcluster_label": "student loans \u2014 licensed",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC112",
+    "subcluster_id": "SC112_SUB01",
+    "subcluster_label": "student loans \u2014 about",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC113",
+    "subcluster_id": "SC113_SUB00",
+    "subcluster_label": "student loans",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.39,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC114",
+    "subcluster_id": "SC114_SUB00",
+    "subcluster_label": "guitar lessons \u2014 provide",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC114",
+    "subcluster_id": "SC114_SUB01",
+    "subcluster_label": "guitar lessons \u2014 help",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC115",
+    "subcluster_id": "SC115_SUB01",
+    "subcluster_label": "allocation budget \u2014 usu5ykdcrny",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC115",
+    "subcluster_id": "SC115_SUB00",
+    "subcluster_label": "allocation budget \u2014 help",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.209225265,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC116",
+    "subcluster_id": "SC116_SUB02",
+    "subcluster_label": "country music \u2014 bawn irish",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC116",
+    "subcluster_id": "SC116_SUB04",
+    "subcluster_label": "country music \u2014 sqp",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC116",
+    "subcluster_id": "SC116_SUB00",
+    "subcluster_label": "country music \u2014 soulful",
+    "assigned_video_count": 89,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC116",
+    "subcluster_id": "SC116_SUB01",
+    "subcluster_label": "country music \u2014 classic",
+    "assigned_video_count": 37,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC116",
+    "subcluster_id": "SC116_SUB03",
+    "subcluster_label": "country music \u2014 famous",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC117",
+    "subcluster_id": "SC117_SUB00",
+    "subcluster_label": "body work",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.3712823901,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC117",
+    "subcluster_id": "SC117_SUB01",
+    "subcluster_label": "awesome music",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC118",
+    "subcluster_id": "SC118_SUB01",
+    "subcluster_label": "real estate \u2014 deal",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC118",
+    "subcluster_id": "SC118_SUB00",
+    "subcluster_label": "real estate \u2014 free",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.3441694178,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC119",
+    "subcluster_id": "SC119_SUB01",
+    "subcluster_label": "credit repair \u2014 dispute",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.39,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC119",
+    "subcluster_id": "SC119_SUB00",
+    "subcluster_label": "credit repair \u2014 letters",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.3630234592,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC120",
+    "subcluster_id": "SC120_SUB00",
+    "subcluster_label": "business enquiries",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.3580021239,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC120",
+    "subcluster_id": "SC120_SUB01",
+    "subcluster_label": "isleofmull travel",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC121",
+    "subcluster_id": "SC121_SUB00",
+    "subcluster_label": "student loans",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC122",
+    "subcluster_id": "SC122_SUB00",
+    "subcluster_label": "meal prep \u2014 actually",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC122",
+    "subcluster_id": "SC122_SUB01",
+    "subcluster_label": "meal prep \u2014 beef",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC123",
+    "subcluster_id": "SC123_SUB00",
+    "subcluster_label": "budget travel \u2014 tips",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC123",
+    "subcluster_id": "SC123_SUB01",
+    "subcluster_label": "budget travel \u2014 today visa",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC124",
+    "subcluster_id": "SC124_SUB01",
+    "subcluster_label": "student loans \u2014 loan",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.3750344289,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC124",
+    "subcluster_id": "SC124_SUB00",
+    "subcluster_label": "student loans \u2014 documentaries credit",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC125",
+    "subcluster_id": "SC125_SUB00",
+    "subcluster_label": "ai tools \u2014 more",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC125",
+    "subcluster_id": "SC125_SUB01",
+    "subcluster_label": "ai tools \u2014 about",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC126",
+    "subcluster_id": "SC126_SUB00",
+    "subcluster_label": "organizing ideas",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC126",
+    "subcluster_id": "SC126_SUB01",
+    "subcluster_label": "prep vlog",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC127",
+    "subcluster_id": "SC127_SUB00",
+    "subcluster_label": "tax tips \u2014 tips tax",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC127",
+    "subcluster_id": "SC127_SUB01",
+    "subcluster_label": "tax tips \u2014 free",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC128",
+    "subcluster_id": "SC128_SUB00",
+    "subcluster_label": "health mental",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC128",
+    "subcluster_id": "SC128_SUB01",
+    "subcluster_label": "better work",
+    "assigned_video_count": 1,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC129",
+    "subcluster_id": "SC129_SUB04",
+    "subcluster_label": "remote work \u2014 tiffany",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC129",
+    "subcluster_id": "SC129_SUB00",
+    "subcluster_label": "remote work \u2014 channel",
+    "assigned_video_count": 86,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC129",
+    "subcluster_id": "SC129_SUB01",
+    "subcluster_label": "remote work \u2014 movement",
+    "assigned_video_count": 49,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC129",
+    "subcluster_id": "SC129_SUB02",
+    "subcluster_label": "remote work \u2014 career",
+    "assigned_video_count": 49,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC129",
+    "subcluster_id": "SC129_SUB03",
+    "subcluster_label": "remote work \u2014 ai tools",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC130",
+    "subcluster_id": "SC130_SUB00",
+    "subcluster_label": "small business \u2014 town",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC130",
+    "subcluster_id": "SC130_SUB01",
+    "subcluster_label": "small business \u2014 launch",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC131",
+    "subcluster_id": "SC131_SUB00",
+    "subcluster_label": "country music \u2014 maggie",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC131",
+    "subcluster_id": "SC131_SUB01",
+    "subcluster_label": "country music \u2014 terje",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC132",
+    "subcluster_id": "SC132_SUB00",
+    "subcluster_label": "country music \u2014 rodeo",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC132",
+    "subcluster_id": "SC132_SUB01",
+    "subcluster_label": "country music \u2014 evenings",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC133",
+    "subcluster_id": "SC133_SUB00",
+    "subcluster_label": "mortgage rates \u2014 frio",
+    "assigned_video_count": 32,
+    "micro_emergence_score": 0.39,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC133",
+    "subcluster_id": "SC133_SUB01",
+    "subcluster_label": "mortgage rates \u2014 updates",
+    "assigned_video_count": 19,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC134",
+    "subcluster_id": "SC134_SUB00",
+    "subcluster_label": "credit repair \u2014 student loans",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC134",
+    "subcluster_id": "SC134_SUB01",
+    "subcluster_label": "credit repair \u2014 dispute",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC135",
+    "subcluster_id": "SC135_SUB01",
+    "subcluster_label": "real estate \u2014 small business",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.3592226561,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC135",
+    "subcluster_id": "SC135_SUB00",
+    "subcluster_label": "real estate \u2014 holmes",
+    "assigned_video_count": 30,
+    "micro_emergence_score": 0.3555975702,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC136",
+    "subcluster_id": "SC136_SUB00",
+    "subcluster_label": "budget travel \u2014 ideas",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC136",
+    "subcluster_id": "SC136_SUB01",
+    "subcluster_label": "budget travel \u2014 retired",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC137",
+    "subcluster_id": "SC137_SUB00",
+    "subcluster_label": "budget template \u2014 selar",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC137",
+    "subcluster_id": "SC137_SUB01",
+    "subcluster_label": "budget template \u2014 making",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC138",
+    "subcluster_id": "SC138_SUB00",
+    "subcluster_label": "tax tips \u2014 both",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC138",
+    "subcluster_id": "SC138_SUB01",
+    "subcluster_label": "tax tips \u2014 pros",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC139",
+    "subcluster_id": "SC139_SUB01",
+    "subcluster_label": "music bensound \u2014 hairloss",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC139",
+    "subcluster_id": "SC139_SUB00",
+    "subcluster_label": "music bensound \u2014 diet health",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC140",
+    "subcluster_id": "SC140_SUB00",
+    "subcluster_label": "small business \u2014 marketing tips",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC140",
+    "subcluster_id": "SC140_SUB01",
+    "subcluster_label": "small business \u2014 market",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC141",
+    "subcluster_id": "SC141_SUB00",
+    "subcluster_label": "earn small",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC141",
+    "subcluster_id": "SC141_SUB01",
+    "subcluster_label": "3jnypcx business",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC142",
+    "subcluster_id": "SC142_SUB00",
+    "subcluster_label": "student loans",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC143",
+    "subcluster_id": "SC143_SUB04",
+    "subcluster_label": "3nywta3 business",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.3673302361,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC143",
+    "subcluster_id": "SC143_SUB00",
+    "subcluster_label": "tax tips",
+    "assigned_video_count": 55,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC143",
+    "subcluster_id": "SC143_SUB01",
+    "subcluster_label": "personal finance",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC143",
+    "subcluster_id": "SC143_SUB02",
+    "subcluster_label": "real estate",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC143",
+    "subcluster_id": "SC143_SUB03",
+    "subcluster_label": "ai tools",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC144",
+    "subcluster_id": "SC144_SUB00",
+    "subcluster_label": "ai revolution",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.3696734851,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC144",
+    "subcluster_id": "SC144_SUB01",
+    "subcluster_label": "analysis software",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC145",
+    "subcluster_id": "SC145_SUB00",
+    "subcluster_label": "remote work \u2014 may",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC145",
+    "subcluster_id": "SC145_SUB01",
+    "subcluster_label": "remote work \u2014 home",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC146",
+    "subcluster_id": "SC146_SUB00",
+    "subcluster_label": "guitar lessons",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC146",
+    "subcluster_id": "SC146_SUB01",
+    "subcluster_label": "guitar lesson",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC147",
+    "subcluster_id": "SC147_SUB00",
+    "subcluster_label": "country music \u2014 gospel",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC147",
+    "subcluster_id": "SC147_SUB01",
+    "subcluster_label": "country music \u2014 larry",
+    "assigned_video_count": 2,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC148",
+    "subcluster_id": "SC148_SUB00",
+    "subcluster_label": "real estate \u2014 growing",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.3567173393,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC148",
+    "subcluster_id": "SC148_SUB01",
+    "subcluster_label": "real estate \u2014 discuss",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC149",
+    "subcluster_id": "SC149_SUB00",
+    "subcluster_label": "mortgage doing \u2014 thank tools",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC149",
+    "subcluster_id": "SC149_SUB01",
+    "subcluster_label": "mortgage doing \u2014 shop",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC150",
+    "subcluster_id": "SC150_SUB00",
+    "subcluster_label": "country music",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC151",
+    "subcluster_id": "SC151_SUB00",
+    "subcluster_label": "2nd position",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC151",
+    "subcluster_id": "SC151_SUB01",
+    "subcluster_label": "kaleigh cohen",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC152",
+    "subcluster_id": "SC152_SUB01",
+    "subcluster_label": "bookkeeping tax \u2014 consult cpa",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.3799151461,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC152",
+    "subcluster_id": "SC152_SUB00",
+    "subcluster_label": "bookkeeping tax \u2014 prep sponsored",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.3647117326,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC153",
+    "subcluster_id": "SC153_SUB03",
+    "subcluster_label": "software tutorials \u2014 light",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC153",
+    "subcluster_id": "SC153_SUB04",
+    "subcluster_label": "software tutorials \u2014 part",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC153",
+    "subcluster_id": "SC153_SUB00",
+    "subcluster_label": "software tutorials \u2014 erp",
+    "assigned_video_count": 120,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC153",
+    "subcluster_id": "SC153_SUB01",
+    "subcluster_label": "software tutorials \u2014 view",
+    "assigned_video_count": 34,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC153",
+    "subcluster_id": "SC153_SUB02",
+    "subcluster_label": "software tutorials \u2014 1690",
+    "assigned_video_count": 26,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC154",
+    "subcluster_id": "SC154_SUB01",
+    "subcluster_label": "ai tools \u2014 bites",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC154",
+    "subcluster_id": "SC154_SUB04",
+    "subcluster_label": "ai tools \u2014 2026",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC154",
+    "subcluster_id": "SC154_SUB00",
+    "subcluster_label": "ai tools \u2014 grab",
+    "assigned_video_count": 228,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC154",
+    "subcluster_id": "SC154_SUB02",
+    "subcluster_label": "ai tools \u2014 ai ai tools",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC154",
+    "subcluster_id": "SC154_SUB03",
+    "subcluster_label": "ai tools \u2014 vet",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC155",
+    "subcluster_id": "SC155_SUB00",
+    "subcluster_label": "tax tips \u2014 tips tax",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC155",
+    "subcluster_id": "SC155_SUB01",
+    "subcluster_label": "tax tips \u2014 real estate",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC156",
+    "subcluster_id": "SC156_SUB00",
+    "subcluster_label": "mortgage rates",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC157",
+    "subcluster_id": "SC157_SUB00",
+    "subcluster_label": "parenting tips \u2014 complex",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC157",
+    "subcluster_id": "SC157_SUB01",
+    "subcluster_label": "parenting tips \u2014 accidentally",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC158",
+    "subcluster_id": "SC158_SUB00",
+    "subcluster_label": "credit repair \u2014 dollar",
+    "assigned_video_count": 122,
+    "micro_emergence_score": 0.2904583999,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC158",
+    "subcluster_id": "SC158_SUB01",
+    "subcluster_label": "credit repair \u2014 credit credit repair",
+    "assigned_video_count": 43,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC158",
+    "subcluster_id": "SC158_SUB03",
+    "subcluster_label": "credit repair \u2014 ads",
+    "assigned_video_count": 29,
+    "micro_emergence_score": 0.2055693523,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC158",
+    "subcluster_id": "SC158_SUB02",
+    "subcluster_label": "credit repair \u2014 rosen",
+    "assigned_video_count": 39,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC158",
+    "subcluster_id": "SC158_SUB04",
+    "subcluster_label": "credit repair \u2014 automation",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC159",
+    "subcluster_id": "SC159_SUB01",
+    "subcluster_label": "fitness health",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.39,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC159",
+    "subcluster_id": "SC159_SUB00",
+    "subcluster_label": "pending work",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC160",
+    "subcluster_id": "SC160_SUB00",
+    "subcluster_label": "student loans",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC160",
+    "subcluster_id": "SC160_SUB01",
+    "subcluster_label": "business goo",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC161",
+    "subcluster_id": "SC161_SUB00",
+    "subcluster_label": "mental health \u2014 impact",
+    "assigned_video_count": 211,
+    "micro_emergence_score": 0.2906775836,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC161",
+    "subcluster_id": "SC161_SUB04",
+    "subcluster_label": "business jobs marketing",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC161",
+    "subcluster_id": "SC161_SUB03",
+    "subcluster_label": "career change",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.2048771324,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC161",
+    "subcluster_id": "SC161_SUB01",
+    "subcluster_label": "small business",
+    "assigned_video_count": 89,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC161",
+    "subcluster_id": "SC161_SUB02",
+    "subcluster_label": "mental health \u2014 move",
+    "assigned_video_count": 24,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC162",
+    "subcluster_id": "SC162_SUB00",
+    "subcluster_label": "guitar lessons \u2014 feed music",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC162",
+    "subcluster_id": "SC162_SUB01",
+    "subcluster_label": "guitar lessons \u2014 free",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC163",
+    "subcluster_id": "SC163_SUB00",
+    "subcluster_label": "2022 budget",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC163",
+    "subcluster_id": "SC163_SUB01",
+    "subcluster_label": "budget binder",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC164",
+    "subcluster_id": "SC164_SUB01",
+    "subcluster_label": "credit repair \u2014 secret",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.3724768089,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC164",
+    "subcluster_id": "SC164_SUB00",
+    "subcluster_label": "credit repair \u2014 service",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.3557635153,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC165",
+    "subcluster_id": "SC165_SUB01",
+    "subcluster_label": "real estate \u2014 top",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.39,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC165",
+    "subcluster_id": "SC165_SUB00",
+    "subcluster_label": "real estate \u2014 small business",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.3600618166,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC166",
+    "subcluster_id": "SC166_SUB01",
+    "subcluster_label": "student loans \u2014 international",
+    "assigned_video_count": 23,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC166",
+    "subcluster_id": "SC166_SUB00",
+    "subcluster_label": "student loans \u2014 student loans student",
+    "assigned_video_count": 34,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC166",
+    "subcluster_id": "SC166_SUB02",
+    "subcluster_label": "student loans \u2014 real estate",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC166",
+    "subcluster_id": "SC166_SUB03",
+    "subcluster_label": "student loans \u2014 part",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC167",
+    "subcluster_id": "SC167_SUB00",
+    "subcluster_label": "credit repair \u2014 repair credit",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.3583893941,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC167",
+    "subcluster_id": "SC167_SUB01",
+    "subcluster_label": "credit repair \u2014 ifixcreditfast",
+    "assigned_video_count": 1,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC168",
+    "subcluster_id": "SC168_SUB01",
+    "subcluster_label": "meal prep \u2014 bondi",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC168",
+    "subcluster_id": "SC168_SUB02",
+    "subcluster_label": "meal prep \u2014 king",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC168",
+    "subcluster_id": "SC168_SUB03",
+    "subcluster_label": "meal prep \u2014 mamacita",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC168",
+    "subcluster_id": "SC168_SUB00",
+    "subcluster_label": "meal prep \u2014 mom",
+    "assigned_video_count": 81,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC168",
+    "subcluster_id": "SC168_SUB04",
+    "subcluster_label": "meal prep \u2014 chipotle",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC169",
+    "subcluster_id": "SC169_SUB00",
+    "subcluster_label": "gut health",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC169",
+    "subcluster_id": "SC169_SUB01",
+    "subcluster_label": "stamina mental",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC170",
+    "subcluster_id": "SC170_SUB00",
+    "subcluster_label": "guitar lesson",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC171",
+    "subcluster_id": "SC171_SUB00",
+    "subcluster_label": "ai tools",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC171",
+    "subcluster_id": "SC171_SUB01",
+    "subcluster_label": "ai powered tools",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC172",
+    "subcluster_id": "SC172_SUB00",
+    "subcluster_label": "guitar lessons \u2014 book lesson",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.2085789262,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC172",
+    "subcluster_id": "SC172_SUB01",
+    "subcluster_label": "guitar lessons \u2014 lesson",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC173",
+    "subcluster_id": "SC173_SUB00",
+    "subcluster_label": "student loans \u2014 her",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC173",
+    "subcluster_id": "SC173_SUB01",
+    "subcluster_label": "student loans \u2014 loans student",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC174",
+    "subcluster_id": "SC174_SUB00",
+    "subcluster_label": "1098 tax",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC174",
+    "subcluster_id": "SC174_SUB01",
+    "subcluster_label": "tax filing",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC175",
+    "subcluster_id": "SC175_SUB00",
+    "subcluster_label": "included tutorial",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC175",
+    "subcluster_id": "SC175_SUB01",
+    "subcluster_label": "music copyright",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC176",
+    "subcluster_id": "SC176_SUB00",
+    "subcluster_label": "mental health \u2014 professional",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC176",
+    "subcluster_id": "SC176_SUB01",
+    "subcluster_label": "mental health \u2014 adhd",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC177",
+    "subcluster_id": "SC177_SUB03",
+    "subcluster_label": "mortgage interest rates",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC177",
+    "subcluster_id": "SC177_SUB02",
+    "subcluster_label": "mortgage rates \u2014 today",
+    "assigned_video_count": 22,
+    "micro_emergence_score": 0.2939990459,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC177",
+    "subcluster_id": "SC177_SUB01",
+    "subcluster_label": "mortgage rates \u2014 happening",
+    "assigned_video_count": 28,
+    "micro_emergence_score": 0.2929293231,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC177",
+    "subcluster_id": "SC177_SUB00",
+    "subcluster_label": "mortgage rates \u2014 lower",
+    "assigned_video_count": 205,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC177",
+    "subcluster_id": "SC177_SUB04",
+    "subcluster_label": "mortgage rates \u2014 fish",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC178",
+    "subcluster_id": "SC178_SUB00",
+    "subcluster_label": "small business \u2014 tax tips",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC178",
+    "subcluster_id": "SC178_SUB01",
+    "subcluster_label": "small business \u2014 earn",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.2885866539,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC179",
+    "subcluster_id": "SC179_SUB01",
+    "subcluster_label": "real estate \u2014 australian small",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.3057647111,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC179",
+    "subcluster_id": "SC179_SUB00",
+    "subcluster_label": "real estate \u2014 small business",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.2988333279,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC180",
+    "subcluster_id": "SC180_SUB04",
+    "subcluster_label": "guitar lessons \u2014 minute",
+    "assigned_video_count": 19,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC180",
+    "subcluster_id": "SC180_SUB01",
+    "subcluster_label": "guitar lessons \u2014 lessons guitar",
+    "assigned_video_count": 56,
+    "micro_emergence_score": 0.2009605964,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC180",
+    "subcluster_id": "SC180_SUB00",
+    "subcluster_label": "guitar lessons \u2014 spj",
+    "assigned_video_count": 61,
+    "micro_emergence_score": 0.200830821,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC180",
+    "subcluster_id": "SC180_SUB02",
+    "subcluster_label": "guitar lessons \u2014 acoustic",
+    "assigned_video_count": 23,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC180",
+    "subcluster_id": "SC180_SUB03",
+    "subcluster_label": "guitar lessons \u2014 guitarlessons365song",
+    "assigned_video_count": 23,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC181",
+    "subcluster_id": "SC181_SUB00",
+    "subcluster_label": "business marketing",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC181",
+    "subcluster_id": "SC181_SUB01",
+    "subcluster_label": "small business",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC182",
+    "subcluster_id": "SC182_SUB00",
+    "subcluster_label": "business ideas",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC182",
+    "subcluster_id": "SC182_SUB01",
+    "subcluster_label": "real estate",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC183",
+    "subcluster_id": "SC183_SUB00",
+    "subcluster_label": "work hard",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC183",
+    "subcluster_id": "SC183_SUB01",
+    "subcluster_label": "music dir",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC184",
+    "subcluster_id": "SC184_SUB00",
+    "subcluster_label": "student loans \u2014 2018",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC184",
+    "subcluster_id": "SC184_SUB01",
+    "subcluster_label": "student loans \u2014 federal",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC185",
+    "subcluster_id": "SC185_SUB00",
+    "subcluster_label": "mental health",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC185",
+    "subcluster_id": "SC185_SUB01",
+    "subcluster_label": "inheritance tax",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC186",
+    "subcluster_id": "SC186_SUB00",
+    "subcluster_label": "real estate \u2014 estate real",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.360921208,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC186",
+    "subcluster_id": "SC186_SUB01",
+    "subcluster_label": "real estate \u2014 epic",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC187",
+    "subcluster_id": "SC187_SUB00",
+    "subcluster_label": "country music \u2014 music country",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC187",
+    "subcluster_id": "SC187_SUB01",
+    "subcluster_label": "country music \u2014 square",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC188",
+    "subcluster_id": "SC188_SUB00",
+    "subcluster_label": "credit repair \u2014 business",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC188",
+    "subcluster_id": "SC188_SUB01",
+    "subcluster_label": "credit repair \u2014 repair credit",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC189",
+    "subcluster_id": "SC189_SUB00",
+    "subcluster_label": "mortgage rates \u2014 drop",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC189",
+    "subcluster_id": "SC189_SUB01",
+    "subcluster_label": "mortgage rates \u2014 canadian",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC190",
+    "subcluster_id": "SC190_SUB00",
+    "subcluster_label": "meal prep \u2014 breakfast",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC190",
+    "subcluster_id": "SC190_SUB01",
+    "subcluster_label": "meal prep \u2014 mealpreponfleek",
+    "assigned_video_count": 2,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC191",
+    "subcluster_id": "SC191_SUB00",
+    "subcluster_label": "mortgage rates",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC191",
+    "subcluster_id": "SC191_SUB01",
+    "subcluster_label": "ai tools",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC192",
+    "subcluster_id": "SC192_SUB00",
+    "subcluster_label": "credit repair \u2014 companies",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC192",
+    "subcluster_id": "SC192_SUB01",
+    "subcluster_label": "credit repair \u2014 fix",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC193",
+    "subcluster_id": "SC193_SUB00",
+    "subcluster_label": "guitar lessons",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC193",
+    "subcluster_id": "SC193_SUB01",
+    "subcluster_label": "guitar lesson",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC194",
+    "subcluster_id": "SC194_SUB00",
+    "subcluster_label": "income tax",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.3549283513,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC194",
+    "subcluster_id": "SC194_SUB01",
+    "subcluster_label": "actually work",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC195",
+    "subcluster_id": "SC195_SUB00",
+    "subcluster_label": "mental health \u2014 weight",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC195",
+    "subcluster_id": "SC195_SUB01",
+    "subcluster_label": "mental health \u2014 cheat meal",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC196",
+    "subcluster_id": "SC196_SUB00",
+    "subcluster_label": "country music \u2014 back shaun",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC196",
+    "subcluster_id": "SC196_SUB01",
+    "subcluster_label": "country music \u2014 end shaun",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC197",
+    "subcluster_id": "SC197_SUB00",
+    "subcluster_label": "remote work \u2014 work remote",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC197",
+    "subcluster_id": "SC197_SUB01",
+    "subcluster_label": "remote work \u2014 start",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC198",
+    "subcluster_id": "SC198_SUB00",
+    "subcluster_label": "also work",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.3589843716,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC198",
+    "subcluster_id": "SC198_SUB01",
+    "subcluster_label": "financial inc",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC199",
+    "subcluster_id": "SC199_SUB02",
+    "subcluster_label": "small business \u2014 academy",
+    "assigned_video_count": 25,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC199",
+    "subcluster_id": "SC199_SUB00",
+    "subcluster_label": "small business \u2014 grow",
+    "assigned_video_count": 120,
+    "micro_emergence_score": 0.2904551411,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC199",
+    "subcluster_id": "SC199_SUB03",
+    "subcluster_label": "small business \u2014 marketing queen",
+    "assigned_video_count": 25,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC199",
+    "subcluster_id": "SC199_SUB01",
+    "subcluster_label": "small business \u2014 island",
+    "assigned_video_count": 33,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC199",
+    "subcluster_id": "SC199_SUB04",
+    "subcluster_label": "small business \u2014 owners",
+    "assigned_video_count": 22,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC200",
+    "subcluster_id": "SC200_SUB00",
+    "subcluster_label": "budget travel",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC201",
+    "subcluster_id": "SC201_SUB00",
+    "subcluster_label": "organize flow",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC201",
+    "subcluster_id": "SC201_SUB01",
+    "subcluster_label": "mental digital",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC202",
+    "subcluster_id": "SC202_SUB00",
+    "subcluster_label": "tax returns",
+    "assigned_video_count": 21,
+    "micro_emergence_score": 0.3615269048,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC202",
+    "subcluster_id": "SC202_SUB01",
+    "subcluster_label": "personal finance",
+    "assigned_video_count": 2,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC203",
+    "subcluster_id": "SC203_SUB00",
+    "subcluster_label": "mortgage rates \u2014 real estate",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.3546958315,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC203",
+    "subcluster_id": "SC203_SUB01",
+    "subcluster_label": "mortgage rates \u2014 didn",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.3296675655,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC204",
+    "subcluster_id": "SC204_SUB00",
+    "subcluster_label": "mental health \u2014 about",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC204",
+    "subcluster_id": "SC204_SUB01",
+    "subcluster_label": "mental health \u2014 health mental",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC205",
+    "subcluster_id": "SC205_SUB00",
+    "subcluster_label": "credit repair \u2014 companion",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC205",
+    "subcluster_id": "SC205_SUB01",
+    "subcluster_label": "credit repair \u2014 where",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC206",
+    "subcluster_id": "SC206_SUB00",
+    "subcluster_label": "budget airline travel \u2014 important notices",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC206",
+    "subcluster_id": "SC206_SUB01",
+    "subcluster_label": "budget airline travel \u2014 way",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC207",
+    "subcluster_id": "SC207_SUB00",
+    "subcluster_label": "mental health \u2014 partnership",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC207",
+    "subcluster_id": "SC207_SUB01",
+    "subcluster_label": "mental health \u2014 space",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC208",
+    "subcluster_id": "SC208_SUB00",
+    "subcluster_label": "budget travel",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC209",
+    "subcluster_id": "SC209_SUB00",
+    "subcluster_label": "parenting tips \u2014 tips parenting",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC209",
+    "subcluster_id": "SC209_SUB01",
+    "subcluster_label": "parenting tips \u2014 tummy time",
+    "assigned_video_count": 2,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC210",
+    "subcluster_id": "SC210_SUB00",
+    "subcluster_label": "student loans \u2014 learn",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC210",
+    "subcluster_id": "SC210_SUB01",
+    "subcluster_label": "student loans \u2014 mental health",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC211",
+    "subcluster_id": "SC211_SUB00",
+    "subcluster_label": "meal prep \u2014 containers",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC211",
+    "subcluster_id": "SC211_SUB01",
+    "subcluster_label": "meal prep \u2014 hour",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC212",
+    "subcluster_id": "SC212_SUB00",
+    "subcluster_label": "country music \u2014 made",
+    "assigned_video_count": 30,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC212",
+    "subcluster_id": "SC212_SUB01",
+    "subcluster_label": "country music \u2014 entertainment",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC213",
+    "subcluster_id": "SC213_SUB00",
+    "subcluster_label": "mental health \u2014 autism",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC213",
+    "subcluster_id": "SC213_SUB01",
+    "subcluster_label": "mental health \u2014 about",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC214",
+    "subcluster_id": "SC214_SUB00",
+    "subcluster_label": "guitar lessons \u2014 what",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC214",
+    "subcluster_id": "SC214_SUB01",
+    "subcluster_label": "guitar lessons \u2014 adventure lesson",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC215",
+    "subcluster_id": "SC215_SUB01",
+    "subcluster_label": "ai tools \u2014 news",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC215",
+    "subcluster_id": "SC215_SUB00",
+    "subcluster_label": "ai tools \u2014 jobs",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC216",
+    "subcluster_id": "SC216_SUB00",
+    "subcluster_label": "guitar lessons \u2014 courses",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC216",
+    "subcluster_id": "SC216_SUB01",
+    "subcluster_label": "guitar lessons \u2014 lesson",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC217",
+    "subcluster_id": "SC217_SUB00",
+    "subcluster_label": "mental health \u2014 their",
+    "assigned_video_count": 25,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC217",
+    "subcluster_id": "SC217_SUB01",
+    "subcluster_label": "mental health \u2014 nhscareer",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC218",
+    "subcluster_id": "SC218_SUB00",
+    "subcluster_label": "real transformation \u2014 habits",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC218",
+    "subcluster_id": "SC218_SUB01",
+    "subcluster_label": "real transformation \u2014 better health",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC219",
+    "subcluster_id": "SC219_SUB00",
+    "subcluster_label": "provide tax",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.3712121212,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC220",
+    "subcluster_id": "SC220_SUB01",
+    "subcluster_label": "affiliate marketing",
+    "assigned_video_count": 24,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC220",
+    "subcluster_id": "SC220_SUB02",
+    "subcluster_label": "saree business",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC220",
+    "subcluster_id": "SC220_SUB03",
+    "subcluster_label": "business income",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC220",
+    "subcluster_id": "SC220_SUB00",
+    "subcluster_label": "small business",
+    "assigned_video_count": 79,
+    "micro_emergence_score": 0.2906256986,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC220",
+    "subcluster_id": "SC220_SUB04",
+    "subcluster_label": "personal finance",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC221",
+    "subcluster_id": "SC221_SUB00",
+    "subcluster_label": "real estate \u2014 focused",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC221",
+    "subcluster_id": "SC221_SUB01",
+    "subcluster_label": "real estate \u2014 lawyer",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC222",
+    "subcluster_id": "SC222_SUB00",
+    "subcluster_label": "software tutorials \u2014 tutorial showing",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC222",
+    "subcluster_id": "SC222_SUB01",
+    "subcluster_label": "software tutorials \u2014 music damjan",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC223",
+    "subcluster_id": "SC223_SUB01",
+    "subcluster_label": "student loans \u2014 more",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.3693787137,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC223",
+    "subcluster_id": "SC223_SUB00",
+    "subcluster_label": "student loans \u2014 loan",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.301627623,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC224",
+    "subcluster_id": "SC224_SUB00",
+    "subcluster_label": "parenting tips",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC225",
+    "subcluster_id": "SC225_SUB00",
+    "subcluster_label": "country music \u2014 hit",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC225",
+    "subcluster_id": "SC225_SUB01",
+    "subcluster_label": "country music \u2014 dark",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC226",
+    "subcluster_id": "SC226_SUB00",
+    "subcluster_label": "real estate \u2014 commercial",
+    "assigned_video_count": 17,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC226",
+    "subcluster_id": "SC226_SUB01",
+    "subcluster_label": "real estate \u2014 gabepetersen",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC227",
+    "subcluster_id": "SC227_SUB00",
+    "subcluster_label": "mental health \u2014 support",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC227",
+    "subcluster_id": "SC227_SUB01",
+    "subcluster_label": "mental health \u2014 parent",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC228",
+    "subcluster_id": "SC228_SUB00",
+    "subcluster_label": "small business",
+    "assigned_video_count": 20,
+    "micro_emergence_score": 0.3538256899,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC228",
+    "subcluster_id": "SC228_SUB01",
+    "subcluster_label": "business marketing",
+    "assigned_video_count": 1,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC229",
+    "subcluster_id": "SC229_SUB01",
+    "subcluster_label": "credit card",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC229",
+    "subcluster_id": "SC229_SUB00",
+    "subcluster_label": "credit cards",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC230",
+    "subcluster_id": "SC230_SUB00",
+    "subcluster_label": "mental health",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC230",
+    "subcluster_id": "SC230_SUB01",
+    "subcluster_label": "meal prep",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC231",
+    "subcluster_id": "SC231_SUB00",
+    "subcluster_label": "software tutorials \u2014 tutorials software",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC231",
+    "subcluster_id": "SC231_SUB01",
+    "subcluster_label": "software tutorials \u2014 brightspace",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.319863273,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC232",
+    "subcluster_id": "SC232_SUB00",
+    "subcluster_label": "travel budget",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC233",
+    "subcluster_id": "SC233_SUB00",
+    "subcluster_label": "business femiolaniyan \u2014 about",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC233",
+    "subcluster_id": "SC233_SUB01",
+    "subcluster_label": "business femiolaniyan \u2014 full tutorial",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC234",
+    "subcluster_id": "SC234_SUB00",
+    "subcluster_label": "guitar lessons \u2014 acoustic lesson",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC234",
+    "subcluster_id": "SC234_SUB01",
+    "subcluster_label": "guitar lessons \u2014 stapleton lesson",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC235",
+    "subcluster_id": "SC235_SUB00",
+    "subcluster_label": "finish work",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.3733333333,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC236",
+    "subcluster_id": "SC236_SUB00",
+    "subcluster_label": "mental health \u2014 health mental",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC236",
+    "subcluster_id": "SC236_SUB01",
+    "subcluster_label": "mental health \u2014 action",
+    "assigned_video_count": 2,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC237",
+    "subcluster_id": "SC237_SUB00",
+    "subcluster_label": "fitness beginners",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC238",
+    "subcluster_id": "SC238_SUB00",
+    "subcluster_label": "guitar lessons",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.3791666667,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC239",
+    "subcluster_id": "SC239_SUB01",
+    "subcluster_label": "legal tax",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC239",
+    "subcluster_id": "SC239_SUB00",
+    "subcluster_label": "real wealth",
+    "assigned_video_count": 19,
+    "micro_emergence_score": 0.3456532369,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC240",
+    "subcluster_id": "SC240_SUB00",
+    "subcluster_label": "mental health \u2014 mindset",
+    "assigned_video_count": 11,
+    "micro_emergence_score": 0.361568232,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC240",
+    "subcluster_id": "SC240_SUB01",
+    "subcluster_label": "mental health \u2014 mentalhealthcenterkids",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC241",
+    "subcluster_id": "SC241_SUB00",
+    "subcluster_label": "software tutorials",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC242",
+    "subcluster_id": "SC242_SUB00",
+    "subcluster_label": "software tutorials \u2014 ai copilot",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC242",
+    "subcluster_id": "SC242_SUB01",
+    "subcluster_label": "software tutorials \u2014 ai trial",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC243",
+    "subcluster_id": "SC243_SUB00",
+    "subcluster_label": "budget travelling travel \u2014 budget travel",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.3530215147,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC243",
+    "subcluster_id": "SC243_SUB01",
+    "subcluster_label": "budget travelling travel \u2014 budget travelling",
+    "assigned_video_count": 3,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC244",
+    "subcluster_id": "SC244_SUB00",
+    "subcluster_label": "meal prep \u2014 bake",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC244",
+    "subcluster_id": "SC244_SUB01",
+    "subcluster_label": "meal prep \u2014 mental health",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC245",
+    "subcluster_id": "SC245_SUB01",
+    "subcluster_label": "credit repair \u2014 pinnacle",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.39,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC245",
+    "subcluster_id": "SC245_SUB00",
+    "subcluster_label": "credit repair \u2014 legitimate",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC246",
+    "subcluster_id": "SC246_SUB00",
+    "subcluster_label": "small commission",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.3694444444,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC247",
+    "subcluster_id": "SC247_SUB00",
+    "subcluster_label": "legal tax",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC247",
+    "subcluster_id": "SC247_SUB01",
+    "subcluster_label": "real estate",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC248",
+    "subcluster_id": "SC248_SUB00",
+    "subcluster_label": "personal finance \u2014 whatsapp keqod064fcxfgxypmxvaxe",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC248",
+    "subcluster_id": "SC248_SUB01",
+    "subcluster_label": "personal finance \u2014 100 index",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC249",
+    "subcluster_id": "SC249_SUB00",
+    "subcluster_label": "ai tools \u2014 aivisualeffects",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC249",
+    "subcluster_id": "SC249_SUB01",
+    "subcluster_label": "ai tools \u2014 aishorts bong",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC250",
+    "subcluster_id": "SC250_SUB00",
+    "subcluster_label": "meal prep",
+    "assigned_video_count": 18,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC250",
+    "subcluster_id": "SC250_SUB01",
+    "subcluster_label": "real estate",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC251",
+    "subcluster_id": "SC251_SUB00",
+    "subcluster_label": "mortgage rates \u2014 holding",
+    "assigned_video_count": 15,
+    "micro_emergence_score": 0.3549607349,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC251",
+    "subcluster_id": "SC251_SUB01",
+    "subcluster_label": "mortgage rates \u2014 why",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC252",
+    "subcluster_id": "SC252_SUB00",
+    "subcluster_label": "guitar lessons",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.3694444444,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC253",
+    "subcluster_id": "SC253_SUB00",
+    "subcluster_label": "student loans \u2014 provided",
+    "assigned_video_count": 16,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC253",
+    "subcluster_id": "SC253_SUB01",
+    "subcluster_label": "student loans \u2014 who",
+    "assigned_video_count": 4,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC254",
+    "subcluster_id": "SC254_SUB00",
+    "subcluster_label": "meal prep \u2014 fall",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.29,
+    "stability_label": "moderate",
+    "stability_score": 0.6,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC254",
+    "subcluster_id": "SC254_SUB01",
+    "subcluster_label": "meal prep \u2014 sponsored",
+    "assigned_video_count": 5,
+    "micro_emergence_score": 0.2,
+    "stability_label": "unstable",
+    "stability_score": 0.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC255",
+    "subcluster_id": "SC255_SUB00",
+    "subcluster_label": "student loans \u2014 private",
+    "assigned_video_count": 14,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC255",
+    "subcluster_id": "SC255_SUB01",
+    "subcluster_label": "student loans \u2014 has",
+    "assigned_video_count": 6,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC256",
+    "subcluster_id": "SC256_SUB01",
+    "subcluster_label": "small business \u2014 ai tools",
+    "assigned_video_count": 8,
+    "micro_emergence_score": 0.3639357741,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC256",
+    "subcluster_id": "SC256_SUB00",
+    "subcluster_label": "small business \u2014 business small",
+    "assigned_video_count": 10,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC257",
+    "subcluster_id": "SC257_SUB00",
+    "subcluster_label": "meal prep",
+    "assigned_video_count": 12,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC258",
+    "subcluster_id": "SC258_SUB00",
+    "subcluster_label": "mental health \u2014 story",
+    "assigned_video_count": 13,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC258",
+    "subcluster_id": "SC258_SUB01",
+    "subcluster_label": "mental health \u2014 midwife",
+    "assigned_video_count": 7,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  },
+  {
+    "cluster_id": "SC259",
+    "subcluster_id": "SC259_SUB00",
+    "subcluster_label": "remote work",
+    "assigned_video_count": 9,
+    "micro_emergence_score": 0.35,
+    "stability_label": "stable",
+    "stability_score": 1.0,
+    "snapshot_date": "2026-05-14"
+  }
+]

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from "react";
 import { Lock, Star } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import SiteHeader from "../components/SiteHeader";
 import PageSeo from "../components/seo/PageSeo";
@@ -52,6 +52,8 @@ type UserPlan = "explorer" | "pro" | "advanced";
 type Tone = "neutral" | "positive" | "watch" | "risk";
 type PillFamily = "growth" | "format" | "risk" | "neutral";
 type SignalBriefState = "hot" | "warm" | "cold" | "decay" | "breakout";
+type SnapshotDeltaState = "positive" | "negative" | "neutral" | "unknown";
+type SnapshotDeltaVisual = { label: string; state: SnapshotDeltaState; badgeClassName: string };
 type RawLeaderboardRow = Omit<LeaderboardRow, "topic_subtitle" | "cluster_label">;
 type SignalState = "Emerging" | "Failed breakout" | "Weakening";
 type ClusterInsight = Partial<Insight> & {
@@ -1094,6 +1096,7 @@ function WatchStarButton({
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const requestedClusterId = searchParams.get("cluster")?.trim() || null;
   const requestedSubclusterId = searchParams.get("subcluster")?.trim() || null;
@@ -1162,15 +1165,6 @@ export default function Dashboard() {
     : requestedClusterTopic ?? dashboardLeaderboard.find((topic) => topic.rank === selectedRank) ?? dashboardLeaderboard[0];
   const selectedFromDeepLink = requestedClusterId === selectedTopic.cluster_id;
   const activeSubclusterLabel = selectedFromDeepLink ? selectedSubclusterLabel : null;
-  const selectedTopicId = getTopicId(selectedTopic);
-  const selectedTopicIsWatched = isWatched(selectedTopicId);
-  const selectedInsights = useMemo(
-    () => prioritizeSubclusterInsights(getClusterInsights(selectedTopic), requestedSubclusterId),
-    [requestedSubclusterId, selectedTopic],
-  );
-  const primaryInsight = selectedInsights[0];
-  const visibleInsights = hasPremiumAccess ? selectedInsights.slice(0, 3) : selectedInsights.slice(0, 1);
-  const lockedInsightCount = hasPremiumAccess ? 0 : Math.max(0, 3 - visibleInsights.length);
   const watchedTopics = dashboardLeaderboard.filter((topic) => isWatched(getTopicId(topic)));
   const planLimitedLeaderboard = hasPremiumAccess ? dashboardLeaderboard : dashboardLeaderboard.slice(0, 5);
   const planVisibleLeaderboard = getLeaderboardWithRequestedTopic(planLimitedLeaderboard, selectedTopic, requestedClusterId);
@@ -1187,7 +1181,6 @@ export default function Dashboard() {
     return matchesSearch && matchesCategory && matchesWatchlist;
   });
   const topSignals = useMemo(() => getTopSignals(planVisibleLeaderboard), [planVisibleLeaderboard]);
-  const systemStatus = useMemo(() => getSystemStatus(planVisibleLeaderboard), [planVisibleLeaderboard]);
   const renderEmptyLeaderboard = visibleLeaderboard.length === 0;
 
   const handleAddTopic = (topic: LeaderboardRow) => {
@@ -1212,6 +1205,14 @@ export default function Dashboard() {
     }
 
     handleAddTopic(topic);
+  };
+
+  const handleOpenCluster = (topic: LeaderboardRow) => {
+    setSelectedRank(topic.rank);
+
+    if (topic.cluster_id) {
+      navigate(`/dashboard/cluster/${encodeURIComponent(topic.cluster_id)}`);
+    }
   };
 
   return (
@@ -1245,74 +1246,58 @@ export default function Dashboard() {
             watchedCount={watchedTopics.length}
           />
 
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
-            <section className="min-h-[620px] rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.052),rgba(255,255,255,0.022))] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.3)]">
-              {requestedClusterMissing ? (
-                <DiscoveryFallbackPanel
-                  clusterId={requestedClusterId}
-                  subclusterId={requestedSubclusterId}
-                  subclusterLabel={activeSubclusterLabel}
-                  openedFromDiscovery={openedFromDiscovery}
-                  outcomeStatus={requestedDiscoveryOpportunity?.outcome_status}
-                />
-              ) : (
-                <>
-                  {openedFromDiscovery ? (
-                    <DiscoveryContextBanner outcomeStatus={requestedDiscoveryOpportunity?.outcome_status} />
-                  ) : null}
-                  <TopSignalStrip signals={topSignals} />
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <SignalPill>{!hasPremiumAccess ? "Starter view" : "All tracked topics"}</SignalPill>
-                        <PlanPill plan={userPlan} />
-                        {activeSubclusterLabel ? <SignalPill>{formatSelectedLabel(activeSubclusterLabel)}</SignalPill> : null}
-                      </div>
-                      <h1 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">Signal Explorer</h1>
+          <section className="min-h-[620px] rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.052),rgba(255,255,255,0.022))] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.3)]">
+            {requestedClusterMissing ? (
+              <DiscoveryFallbackPanel
+                clusterId={requestedClusterId}
+                subclusterId={requestedSubclusterId}
+                subclusterLabel={activeSubclusterLabel}
+                openedFromDiscovery={openedFromDiscovery}
+                outcomeStatus={requestedDiscoveryOpportunity?.outcome_status}
+              />
+            ) : (
+              <>
+                {openedFromDiscovery ? (
+                  <DiscoveryContextBanner outcomeStatus={requestedDiscoveryOpportunity?.outcome_status} />
+                ) : null}
+                <TopSignalStrip signals={topSignals} />
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <SignalPill>{!hasPremiumAccess ? "Starter view" : "All tracked topics"}</SignalPill>
+                      <PlanPill plan={userPlan} />
+                      {activeSubclusterLabel ? <SignalPill>{formatSelectedLabel(activeSubclusterLabel)}</SignalPill> : null}
                     </div>
-                    <div className="text-sm text-white/46">
-                      {visibleLeaderboard.length} of {planVisibleLeaderboard.length} topics
-                    </div>
+                    <h1 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">Signal Explorer</h1>
                   </div>
+                  <div className="text-sm text-white/46">
+                    {visibleLeaderboard.length} of {planVisibleLeaderboard.length} topics
+                  </div>
+                </div>
 
-                  {renderEmptyLeaderboard ? (
-                    <EmptyTopicState showWatchlistOnly={showWatchlistOnly} />
-                  ) : (
-                    <div className="mt-4 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
-                      {visibleLeaderboard.map((topic) => (
-                        <TopicCard
-                          key={`${topic.rank}-${getTopicId(topic)}`}
-                          topic={topic}
-                          selected={selectedTopic.rank === topic.rank}
-                          watched={isWatched(getTopicId(topic))}
-                          scanMode={scanMode}
-                          onSelect={() => setSelectedRank(topic.rank)}
-                          onToggleWatch={(event) => {
-                            event.stopPropagation();
-                            handleToggleTopic(topic);
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-            </section>
-
-            <TopicDetail
-              topic={selectedTopic}
-              primaryInsight={primaryInsight}
-              insights={selectedInsights}
-              visibleInsights={visibleInsights}
-              lockedInsightCount={lockedInsightCount}
-              hasPremiumAccess={hasPremiumAccess}
-              watched={selectedTopicIsWatched}
-              systemStatus={systemStatus}
-              onToggleWatch={() =>
-                selectedTopicIsWatched ? removeTopic(selectedTopicId) : handleAddTopic(selectedTopic)
-              }
-            />
-          </div>
+                {renderEmptyLeaderboard ? (
+                  <EmptyTopicState showWatchlistOnly={showWatchlistOnly} />
+                ) : (
+                  <div className="mt-4 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
+                    {visibleLeaderboard.map((topic) => (
+                      <TopicCard
+                        key={`${topic.rank}-${getTopicId(topic)}`}
+                        topic={topic}
+                        selected={selectedTopic.rank === topic.rank}
+                        watched={isWatched(getTopicId(topic))}
+                        scanMode={scanMode}
+                        onSelect={() => handleOpenCluster(topic)}
+                        onToggleWatch={(event) => {
+                          event.stopPropagation();
+                          handleToggleTopic(topic);
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </section>
         </div>
       </main>
     </div>
@@ -1551,6 +1536,12 @@ function SignalSparkline({
   const stroke = visual.stroke;
   const gradientId = `sparkline-gradient-${topic.rank}`;
   const glowId = `sparkline-glow-${topic.rank}`;
+  const markerGlowId = `sparkline-marker-glow-${topic.rank}`;
+  const previousPoint = points[points.length - 2];
+  const currentPoint = points[points.length - 1];
+  const finalSegmentPath = previousPoint && currentPoint ? `M ${previousPoint.x} ${previousPoint.y} L ${currentPoint.x} ${currentPoint.y}` : "";
+  const previousLabelY = previousPoint ? Math.min(92, previousPoint.y + 12) : 0;
+  const currentLabelY = currentPoint ? Math.max(12, currentPoint.y - 10) : 0;
 
   return (
     <div className="relative mt-5 h-[126px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#05090e] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
@@ -1573,6 +1564,13 @@ function SignalSparkline({
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+          <filter id={markerGlowId} x="-180%" y="-180%" width="460%" height="460%">
+            <feGaussianBlur stdDeviation="3.2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
         <path d={areaPath} fill={`url(#${gradientId})`} />
         <path d="M 0 72 L 100 72" stroke="rgba(148,163,184,0.13)" strokeDasharray="3 5" strokeWidth="0.8" />
@@ -1587,6 +1585,75 @@ function SignalSparkline({
           strokeOpacity={state === "decay" ? 0.86 : 1}
           strokeWidth="2.35"
         />
+        {finalSegmentPath ? (
+          <path
+            d={finalSegmentPath}
+            fill="none"
+            filter={`url(#${markerGlowId})`}
+            stroke={stroke}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeOpacity="1"
+            strokeWidth="3.8"
+          />
+        ) : null}
+        {previousPoint ? (
+          <g>
+            <circle
+              cx={previousPoint.x}
+              cy={previousPoint.y}
+              fill="#020617"
+              r="4.2"
+              stroke="rgba(203,213,225,0.72)"
+              strokeWidth="1.55"
+            />
+            <text
+              fill="rgba(226,232,240,0.6)"
+              fontSize="6.2"
+              fontWeight="600"
+              textAnchor="middle"
+              x={previousPoint.x}
+              y={previousLabelY}
+            >
+              prev
+            </text>
+          </g>
+        ) : null}
+        {currentPoint ? (
+          <g filter={`url(#${markerGlowId})`}>
+            <circle cx={currentPoint.x} cy={currentPoint.y} fill={stroke} opacity="0.22" r="10.5" />
+            <circle
+              className="animate-ping"
+              cx={currentPoint.x}
+              cy={currentPoint.y}
+              fill="none"
+              r="7.8"
+              stroke={stroke}
+              strokeOpacity="0.34"
+              strokeWidth="1.1"
+              style={{ transformBox: "fill-box", transformOrigin: "center" }}
+            />
+            <circle cx={currentPoint.x} cy={currentPoint.y} fill="none" r="7.2" stroke={stroke} strokeOpacity="0.72" strokeWidth="1.15" />
+            <circle
+              cx={currentPoint.x}
+              cy={currentPoint.y}
+              fill={stroke}
+              r="5"
+              stroke="rgba(248,250,252,0.94)"
+              strokeWidth="1.55"
+            />
+            <text
+              fill="rgba(248,250,252,0.78)"
+              fontSize="6.8"
+              fontWeight="700"
+              textAnchor="end"
+              x="96"
+              y={currentLabelY}
+            >
+              now
+            </text>
+          </g>
+        ) : null}
       </svg>
       <div className="absolute left-3 top-3 text-[10px] font-medium uppercase tracking-[0.18em] text-slate-200/34">
         Signal curve
@@ -1649,6 +1716,7 @@ function TopicCard({
   const riskTone = getFailureRiskTone(topic);
   const signalState = getSignalBriefState(topic);
   const signalVisual = getSignalBriefVisual(signalState);
+  const snapshotDelta = getSnapshotDelta(topic);
 
   return (
     <button
@@ -1679,8 +1747,18 @@ function TopicCard({
           </h2>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
-          <div className={cn("text-3xl font-semibold leading-none tracking-[-0.045em]", signalVisual.text)}>
-            {formatPercent(growth)}
+          <div className="text-right">
+            <div className={cn("text-3xl font-semibold leading-none tracking-[-0.045em]", signalVisual.text)}>
+              {formatPercent(growth)}
+            </div>
+            <div
+              className={cn(
+                "mt-2 inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]",
+                snapshotDelta.badgeClassName,
+              )}
+            >
+              {snapshotDelta.label}
+            </div>
           </div>
           <WatchStarButton
             ariaLabel={watched ? "Remove from watchlist" : "Add to watchlist"}
@@ -2362,6 +2440,52 @@ function getGrowthFraction(topic: LeaderboardRow) {
   }
 
   return topic.growth_since_freeze_pct / 100;
+}
+
+function getSnapshotDelta(topic: LeaderboardRow): SnapshotDeltaVisual {
+  const direction = topic.trend_direction?.toUpperCase();
+  let state: SnapshotDeltaState = "unknown";
+
+  // TODO: Replace derived/synthetic snapshot delta with backend-provided real previous snapshot metrics once exported.
+  if (topic.liveCluster || direction === "LIVE" || direction === "DISCOVERY") {
+    state = "unknown";
+  } else if (direction === "UP" || direction === "STRENGTHENING") {
+    state = "positive";
+  } else if (direction === "DOWN" || direction === "WEAKENING" || direction === "DECLINING") {
+    state = "negative";
+  } else if (direction === "FLAT" || direction === "STABLE") {
+    state = "neutral";
+  }
+
+  if (state === "positive") {
+    return {
+      label: "↑ Strengthening",
+      state,
+      badgeClassName: "border-emerald-300/28 bg-emerald-300/[0.09] text-emerald-100 shadow-[0_0_18px_rgba(16,185,129,0.08)]",
+    };
+  }
+
+  if (state === "negative") {
+    return {
+      label: "↓ Weakening",
+      state,
+      badgeClassName: "border-rose-300/30 bg-rose-300/[0.09] text-rose-100 shadow-[0_0_18px_rgba(244,63,94,0.08)]",
+    };
+  }
+
+  if (state === "neutral") {
+    return {
+      label: "→ Stable",
+      state,
+      badgeClassName: "border-slate-300/18 bg-slate-300/[0.06] text-slate-200/76",
+    };
+  }
+
+  return {
+    label: "Latest snapshot",
+    state,
+    badgeClassName: "border-slate-300/14 bg-slate-300/[0.045] text-slate-300/62",
+  };
 }
 
 function getSparklinePoints(topic: LeaderboardRow, state: SignalBriefState) {

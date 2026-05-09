@@ -1,0 +1,982 @@
+[
+  {
+    "cluster_id": "SC000",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 4,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC000",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 4,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC001",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 13,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC001",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 15,
+    "topic_growth_pct": 15.3846153846,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 49,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 52,
+    "topic_growth_pct": 6.1224489796,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 99,
+    "topic_growth_pct": 102.0408163265,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 109,
+    "topic_growth_pct": 122.4489795918,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 129,
+    "topic_growth_pct": 163.2653061224,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 131,
+    "topic_growth_pct": 167.3469387755,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 135,
+    "topic_growth_pct": 175.5102040816,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 135,
+    "topic_growth_pct": 175.5102040816,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 139,
+    "topic_growth_pct": 183.6734693878,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC002",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 157,
+    "topic_growth_pct": 220.4081632653,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 87,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 92,
+    "topic_growth_pct": 5.7471264368,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 167,
+    "topic_growth_pct": 91.9540229885,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 191,
+    "topic_growth_pct": 119.5402298851,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 220,
+    "topic_growth_pct": 152.8735632184,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 224,
+    "topic_growth_pct": 157.4712643678,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 236,
+    "topic_growth_pct": 171.2643678161,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 239,
+    "topic_growth_pct": 174.7126436782,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 249,
+    "topic_growth_pct": 186.2068965517,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC003",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 279,
+    "topic_growth_pct": 220.6896551724,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 52,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 56,
+    "topic_growth_pct": 7.6923076923,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 95,
+    "topic_growth_pct": 82.6923076923,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 99,
+    "topic_growth_pct": 90.3846153846,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 112,
+    "topic_growth_pct": 115.3846153846,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 115,
+    "topic_growth_pct": 121.1538461538,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 119,
+    "topic_growth_pct": 128.8461538462,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 121,
+    "topic_growth_pct": 132.6923076923,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 123,
+    "topic_growth_pct": 136.5384615385,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC004",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 133,
+    "topic_growth_pct": 155.7692307692,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC005",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 35,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC005",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 38,
+    "topic_growth_pct": 8.5714285714,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 128,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 132,
+    "topic_growth_pct": 3.125,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 235,
+    "topic_growth_pct": 83.59375,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 263,
+    "topic_growth_pct": 105.46875,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 302,
+    "topic_growth_pct": 135.9375,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 305,
+    "topic_growth_pct": 138.28125,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 311,
+    "topic_growth_pct": 142.96875,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 316,
+    "topic_growth_pct": 146.875,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 320,
+    "topic_growth_pct": 150.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC006",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 357,
+    "topic_growth_pct": 178.90625,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC007",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 1,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC007",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 1,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC008",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 7,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC008",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 7,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC009",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 34,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC009",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 35,
+    "topic_growth_pct": 2.9411764706,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 37,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 41,
+    "topic_growth_pct": 10.8108108108,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 84,
+    "topic_growth_pct": 127.027027027,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 86,
+    "topic_growth_pct": 132.4324324324,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 98,
+    "topic_growth_pct": 164.8648648649,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 101,
+    "topic_growth_pct": 172.972972973,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 105,
+    "topic_growth_pct": 183.7837837838,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 107,
+    "topic_growth_pct": 189.1891891892,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 114,
+    "topic_growth_pct": 208.1081081081,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC010",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 124,
+    "topic_growth_pct": 235.1351351351,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC011",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 7,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC011",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 7,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC012",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 5,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC012",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 5,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC013",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 3,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC013",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 3,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC014",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 8,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC014",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 8,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 19,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 19,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 28,
+    "topic_growth_pct": 47.3684210526,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 29,
+    "topic_growth_pct": 52.6315789474,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 32,
+    "topic_growth_pct": 68.4210526316,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 32,
+    "topic_growth_pct": 68.4210526316,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 32,
+    "topic_growth_pct": 68.4210526316,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 32,
+    "topic_growth_pct": 68.4210526316,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 32,
+    "topic_growth_pct": 68.4210526316,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC015",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 32,
+    "topic_growth_pct": 68.4210526316,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC016",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 3,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC016",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 3,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC017",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 33,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC017",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 35,
+    "topic_growth_pct": 6.0606060606,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC018",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 2,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC018",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 3,
+    "topic_growth_pct": 50.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 40,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 40,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 67,
+    "topic_growth_pct": 67.5,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 73,
+    "topic_growth_pct": 82.5,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 81,
+    "topic_growth_pct": 102.5,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 83,
+    "topic_growth_pct": 107.5,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 83,
+    "topic_growth_pct": 107.5,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 85,
+    "topic_growth_pct": 112.5,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 90,
+    "topic_growth_pct": 125.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC019",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 95,
+    "topic_growth_pct": 137.5,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 37,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 40,
+    "topic_growth_pct": 8.1081081081,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 66,
+    "topic_growth_pct": 78.3783783784,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 72,
+    "topic_growth_pct": 94.5945945946,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 80,
+    "topic_growth_pct": 116.2162162162,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 81,
+    "topic_growth_pct": 118.9189189189,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 83,
+    "topic_growth_pct": 124.3243243243,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 83,
+    "topic_growth_pct": 124.3243243243,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 83,
+    "topic_growth_pct": 124.3243243243,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC020",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 88,
+    "topic_growth_pct": 137.8378378378,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC021",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 11,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC021",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 11,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 10,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 10,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 21,
+    "topic_growth_pct": 110.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 23,
+    "topic_growth_pct": 130.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 28,
+    "topic_growth_pct": 180.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 29,
+    "topic_growth_pct": 190.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 30,
+    "topic_growth_pct": 200.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 32,
+    "topic_growth_pct": 220.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 32,
+    "topic_growth_pct": 220.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC022",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 33,
+    "topic_growth_pct": 230.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC023",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 12,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC023",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 12,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 41,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 44,
+    "topic_growth_pct": 7.3170731707,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-03-11",
+    "n_videos": 72,
+    "topic_growth_pct": 75.6097560976,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-03-16",
+    "n_videos": 75,
+    "topic_growth_pct": 82.9268292683,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-03-23",
+    "n_videos": 83,
+    "topic_growth_pct": 102.4390243902,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-03-25",
+    "n_videos": 84,
+    "topic_growth_pct": 104.8780487805,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-03-26",
+    "n_videos": 85,
+    "topic_growth_pct": 107.3170731707,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-03-27",
+    "n_videos": 86,
+    "topic_growth_pct": 109.756097561,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-03-30",
+    "n_videos": 90,
+    "topic_growth_pct": 119.512195122,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC024",
+    "snapshot_date": "2026-04-06",
+    "n_videos": 97,
+    "topic_growth_pct": 136.5853658537,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC025",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 9,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC025",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 9,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC026",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 15,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC026",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 15,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC027",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 39,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC027",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 41,
+    "topic_growth_pct": 5.1282051282,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC028",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 6,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC028",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 6,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC029",
+    "snapshot_date": "2026-02-17",
+    "n_videos": 1,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  },
+  {
+    "cluster_id": "SC029",
+    "snapshot_date": "2026-02-18",
+    "n_videos": 1,
+    "topic_growth_pct": 0.0,
+    "trend_strength_score": null
+  }
+]
