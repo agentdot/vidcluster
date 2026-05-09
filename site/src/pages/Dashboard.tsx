@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import SiteHeader from "../components/SiteHeader";
 import PageSeo from "../components/seo/PageSeo";
+import clusterTimeseriesRows from "../data/cluster_timeseries_v3_3.json";
 import leaderboardRows from "../data/leaderboard_v3_3.json";
 import clusterInsightRows from "../data/v4_0_cluster_insights.json";
 import { useDiscoveryOpportunities, type DiscoveryOpportunity } from "../hooks/useDiscoveryOpportunities";
@@ -47,6 +48,16 @@ type LeaderboardRow = {
   visual_state_override?: "HOT" | "WARM" | "COLD" | "DECAY" | "BREAKOUT";
   liveCluster?: InsightCluster;
 };
+
+type ClusterTimeseriesRow = {
+  cluster_id?: string;
+  snapshot_date?: string;
+  n_videos?: number | null;
+  topic_growth_pct?: number | null;
+  trend_strength_score?: number | null;
+};
+
+const clusterTimeseries = clusterTimeseriesRows as ClusterTimeseriesRow[];
 
 type UserPlan = "explorer" | "pro" | "advanced";
 type Tone = "neutral" | "positive" | "watch" | "risk";
@@ -1211,6 +1222,7 @@ export default function Dashboard() {
     setSelectedRank(topic.rank);
 
     if (topic.cluster_id) {
+      // TODO: Move to human-readable slug routes, e.g. /dashboard/cluster/recession-risk-market-commentary.
       navigate(`/dashboard/cluster/${encodeURIComponent(topic.cluster_id)}`);
     }
   };
@@ -1523,31 +1535,24 @@ function TopSignalStrip({ signals }: { signals: TopSignal[] }) {
 
 function SignalSparkline({
   topic,
-  state,
   visual,
 }: {
   topic: LeaderboardRow;
-  state: SignalBriefState;
   visual: ReturnType<typeof getSignalBriefVisual>;
 }) {
-  const points = getSparklinePoints(topic, state);
+  const points = getMiniSparklinePoints(topic);
   const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
-  const areaPath = `${path} L 100 100 L 0 100 Z`;
+  const areaPath = `${path} L ${points[points.length - 1]?.x ?? 92} 88 L ${points[0]?.x ?? 8} 88 Z`;
   const stroke = visual.stroke;
   const gradientId = `sparkline-gradient-${topic.rank}`;
-  const glowId = `sparkline-glow-${topic.rank}`;
-  const markerGlowId = `sparkline-marker-glow-${topic.rank}`;
-  const previousPoint = points[points.length - 2];
   const currentPoint = points[points.length - 1];
-  const finalSegmentPath = previousPoint && currentPoint ? `M ${previousPoint.x} ${previousPoint.y} L ${currentPoint.x} ${currentPoint.y}` : "";
-  const previousLabelY = previousPoint ? Math.min(92, previousPoint.y + 12) : 0;
-  const currentLabelY = currentPoint ? Math.max(12, currentPoint.y - 10) : 0;
+  const hasRealSeries = Boolean(topic.cluster_id && getClusterTimeseries(topic.cluster_id).length > 0);
 
   return (
-    <div className="relative mt-5 h-[126px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#05090e] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+    <div className="relative mt-5 h-[138px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#05090e] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.032),transparent_44%),radial-gradient(circle_at_78%_18%,rgba(125,211,252,0.055),transparent_34%)]" />
       <svg
-        className="absolute inset-x-4 bottom-4 top-4 h-[94px] w-[calc(100%-32px)]"
+        className="absolute inset-x-3 bottom-4 top-5 h-[116px] w-[calc(100%-24px)]"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         aria-hidden="true"
@@ -1555,108 +1560,33 @@ function SignalSparkline({
         <defs>
           <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stopColor={stroke} stopOpacity="0.22" />
-            <stop offset="72%" stopColor={stroke} stopOpacity="0.03" />
+            <stop offset="100%" stopColor={stroke} stopOpacity="0.02" />
           </linearGradient>
-          <filter id={glowId} x="-20%" y="-50%" width="140%" height="200%">
-            <feGaussianBlur stdDeviation="1.35" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          <filter id={markerGlowId} x="-180%" y="-180%" width="460%" height="460%">
-            <feGaussianBlur stdDeviation="3.2" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
         </defs>
         <path d={areaPath} fill={`url(#${gradientId})`} />
-        <path d="M 0 72 L 100 72" stroke="rgba(148,163,184,0.13)" strokeDasharray="3 5" strokeWidth="0.8" />
+        <path d="M 8 74 L 92 74" stroke="rgba(148,163,184,0.12)" strokeDasharray="3 5" strokeWidth="1" />
         <path
           d={path}
           fill="none"
-          filter={`url(#${glowId})`}
           stroke={stroke}
-          strokeDasharray={visual.dash}
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeOpacity={state === "decay" ? 0.86 : 1}
-          strokeWidth="2.35"
+          strokeOpacity={hasRealSeries ? 0.96 : 0.5}
+          strokeWidth="1.5"
+          vectorEffect="non-scaling-stroke"
+
         />
-        {finalSegmentPath ? (
-          <path
-            d={finalSegmentPath}
-            fill="none"
-            filter={`url(#${markerGlowId})`}
-            stroke={stroke}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeOpacity="1"
-            strokeWidth="3.8"
-          />
-        ) : null}
-        {previousPoint ? (
-          <g>
-            <circle
-              cx={previousPoint.x}
-              cy={previousPoint.y}
-              fill="#020617"
-              r="4.2"
-              stroke="rgba(203,213,225,0.72)"
-              strokeWidth="1.55"
-            />
-            <text
-              fill="rgba(226,232,240,0.6)"
-              fontSize="6.2"
-              fontWeight="600"
-              textAnchor="middle"
-              x={previousPoint.x}
-              y={previousLabelY}
-            >
-              prev
-            </text>
-          </g>
-        ) : null}
+        <path d={areaPath} fill={`url(#${gradientId})`} vectorEffect="non-scaling-stroke" />
+
         {currentPoint ? (
-          <g filter={`url(#${markerGlowId})`}>
-            <circle cx={currentPoint.x} cy={currentPoint.y} fill={stroke} opacity="0.22" r="10.5" />
-            <circle
-              className="animate-ping"
-              cx={currentPoint.x}
-              cy={currentPoint.y}
-              fill="none"
-              r="7.8"
-              stroke={stroke}
-              strokeOpacity="0.34"
-              strokeWidth="1.1"
-              style={{ transformBox: "fill-box", transformOrigin: "center" }}
-            />
-            <circle cx={currentPoint.x} cy={currentPoint.y} fill="none" r="7.2" stroke={stroke} strokeOpacity="0.72" strokeWidth="1.15" />
-            <circle
-              cx={currentPoint.x}
-              cy={currentPoint.y}
-              fill={stroke}
-              r="5"
-              stroke="rgba(248,250,252,0.94)"
-              strokeWidth="1.55"
-            />
-            <text
-              fill="rgba(248,250,252,0.78)"
-              fontSize="6.8"
-              fontWeight="700"
-              textAnchor="end"
-              x="96"
-              y={currentLabelY}
-            >
-              now
-            </text>
+          <g>
+            <circle cx={currentPoint.x} cy={currentPoint.y} fill={stroke} opacity="0.18" r="2" />
+            <circle cx={currentPoint.x} cy={currentPoint.y} fill={stroke} r="2" stroke="rgba(24, 177, 34, 0.90)" strokeWidth="0.5" />
           </g>
         ) : null}
       </svg>
       <div className="absolute left-3 top-3 text-[10px] font-medium uppercase tracking-[0.18em] text-slate-200/34">
-        Signal curve
+        {hasRealSeries ? "Signal curve" : "Signal preview"}
       </div>
     </div>
   );
@@ -1770,7 +1700,7 @@ function TopicCard({
 
       {!scanMode ? <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-200/46">{topic.topic_subtitle}</p> : null}
 
-      <SignalSparkline topic={topic} state={signalState} visual={signalVisual} />
+      <SignalSparkline topic={topic} visual={signalVisual} />
 
       <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-200/8 pt-4 sm:grid-cols-4">
         <CompactMetric label="Confidence" value={mapConfidence(topic).replace(" Confidence", "")} tone={confidenceTone} />
@@ -2486,6 +2416,40 @@ function getSnapshotDelta(topic: LeaderboardRow): SnapshotDeltaVisual {
     state,
     badgeClassName: "border-slate-300/14 bg-slate-300/[0.045] text-slate-300/62",
   };
+}
+
+function getClusterTimeseries(clusterId?: string) {
+  if (!clusterId) return [];
+
+  return clusterTimeseries
+    .filter((row) => row.cluster_id === clusterId && typeof row.topic_growth_pct === "number")
+    .sort((a, b) => String(a.snapshot_date ?? "").localeCompare(String(b.snapshot_date ?? "")));
+}
+
+function getMiniSparklinePoints(topic: LeaderboardRow) {
+  const rows = getClusterTimeseries(topic.cluster_id);
+  const values = rows.length > 0
+    ? rows.map((row) => row.topic_growth_pct ?? 0)
+    : [0, Math.max(-8, Math.min(18, getGrowthFraction(topic) * 40))];
+
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  
+  // KEY FIX: enforce a minimum visual range so the curve always has shape
+  // Use 15% of the max absolute value, or 10 points minimum
+  const rawRange = maxValue - minValue;
+  const minRange = Math.max(10, Math.abs(maxValue) * 0.15);
+  const range = Math.max(minRange, rawRange);
+  
+  // Center the range around the actual min/max midpoint
+  const midValue = (maxValue + minValue) / 2;
+  const clampedMin = midValue - range / 2;
+
+  return values.map((value, index) => {
+    const x = values.length === 1 ? 50 : 6 + (index / (values.length - 1)) * 88;
+    const y = 79 - ((value - clampedMin) / range) * 62;
+    return { x, y: Math.max(16, Math.min(84, y)) };
+  });
 }
 
 function getSparklinePoints(topic: LeaderboardRow, state: SignalBriefState) {

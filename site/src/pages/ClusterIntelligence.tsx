@@ -149,6 +149,8 @@ function ClusterReport({ cluster }: { cluster: LeaderboardRow }) {
   const clusterAudienceIntents = getClusterAudienceIntents(cluster.cluster_id);
   const snapshotComparison = getSnapshotComparison(cluster, timeseries);
   const trendInterpretation = getTrendInterpretation(cluster, timeseries);
+  const displayTitle = getTopicTitle(cluster);
+  const displaySubtitle = getTopicSubtitle(cluster, displayTitle);
 
   return (
     <>
@@ -160,12 +162,15 @@ function ClusterReport({ cluster }: { cluster: LeaderboardRow }) {
               <Badge>{mapDecisionLabel(cluster.decision_label)}</Badge>
               <Badge>Updated {formatSnapshotDate(cluster.latest_snapshot_date)}</Badge>
             </div>
-            <h1 className="mt-7 max-w-5xl text-4xl font-semibold leading-[0.98] tracking-[-0.045em] text-white md:text-6xl">
-              {getTopicTitle(cluster)}
+            <h1
+              className="mt-7 max-w-5xl text-4xl font-semibold leading-[0.98] tracking-[-0.045em] text-white md:text-6xl"
+              title={getRawTopicTitle(cluster)}
+            >
+              {displayTitle}
             </h1>
-            <p className="mt-5 max-w-3xl text-base leading-7 text-slate-200/64 md:text-lg">
-              {cluster.topic_subtitle || cluster.cluster_label || "Cluster intelligence workspace."}
-            </p>
+            {displaySubtitle ? (
+              <p className="mt-5 max-w-3xl text-base leading-7 text-slate-200/64 md:text-lg">{displaySubtitle}</p>
+            ) : null}
             <div className="mt-7 max-w-4xl rounded-2xl border border-emerald-300/16 bg-emerald-300/[0.05] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-100/48">Intelligence read</p>
               <p className="mt-2 text-sm leading-6 text-emerald-50/80 md:text-base">{getIntelligenceSummary(cluster)}</p>
@@ -173,12 +178,14 @@ function ClusterReport({ cluster }: { cluster: LeaderboardRow }) {
           </div>
 
           <div className="flex min-w-[230px] flex-col justify-between gap-4 rounded-2xl border border-white/10 bg-black/20 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
-            <button
-              type="button"
-              className="rounded-full border border-amber-300/22 bg-amber-300/[0.08] px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.13em] text-amber-100/82 transition hover:border-amber-200/32 hover:bg-amber-300/[0.11]"
-            >
-              Watch placeholder
-            </button>
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_50%_35%,rgba(251,191,36,0.18),rgba(15,23,42,0.22)_42%,rgba(0,0,0,0.34))] p-4">
+              <div className="flex aspect-video items-center justify-center rounded-xl border border-white/10 bg-black/24">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-white/[0.055] text-amber-100/72">
+                  <span className="ml-0.5 text-sm">▶</span>
+                </div>
+              </div>
+              <p className="mt-3 text-xs font-semibold uppercase tracking-[0.13em] text-white/58">Representative video coming soon</p>
+            </div>
             <div className="rounded-2xl border border-emerald-300/18 bg-emerald-300/[0.06] px-5 py-5 text-right shadow-[0_18px_60px_rgba(16,185,129,0.07)]">
               <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-100/56">Current growth</div>
               <div className="mt-3 text-5xl font-semibold leading-none tracking-[-0.055em] text-emerald-100">
@@ -243,7 +250,7 @@ function ClusterReport({ cluster }: { cluster: LeaderboardRow }) {
 
       <section className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">
         <div className="grid gap-4">
-          <NarrativeCard title="Why this trend?" body={cluster.trend_summary || cluster.score_anchor || "Trend explanation is not available in this snapshot yet."} />
+          <NarrativeCard title="Why this trend?" body={getWhyTrendNarrative(cluster)} />
           <NarrativeCard title="Recommended action" body={cluster.opportunity_summary || getRecommendedAction(cluster)} />
           <NarrativeCard title="Failure risk explanation" body={cluster.risk_summary || cluster.failure_risk_reason_label || "Failure risk explanation is not available in this snapshot yet."} />
         </div>
@@ -648,6 +655,7 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
       </div>
 
       <div className="h-[330px]">
+        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/32">Topic growth %</div>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartRows} margin={{ top: 28, right: 34, bottom: 8, left: 8 }}>
             <CartesianGrid stroke="rgba(148,163,184,0.12)" strokeDasharray="3 6" vertical={false} />
@@ -753,7 +761,30 @@ function FormatShare({ label, value }: { label: string; value?: number | null })
 }
 
 function getTopicTitle(topic: LeaderboardRow) {
+  const rawTitle = getRawTopicTitle(topic);
+  const subtitle = topic.topic_subtitle?.trim();
+
+  if (rawTitle.includes(" — ")) {
+    const [first, second] = rawTitle.split(" — ").map((part) => part.trim());
+    if (subtitle && second && subtitle.toLowerCase() === second.toLowerCase()) return first;
+  }
+
+  return truncateTitle(rawTitle);
+}
+
+function getRawTopicTitle(topic: LeaderboardRow) {
   return topic.display_topic_title || topic.cluster_label || "Untitled cluster";
+}
+
+function getTopicSubtitle(topic: LeaderboardRow, title: string) {
+  const subtitle = topic.topic_subtitle?.trim() || topic.cluster_label?.trim();
+  if (!subtitle || subtitle.toLowerCase() === title.toLowerCase()) return "";
+  return subtitle;
+}
+
+function truncateTitle(value: string) {
+  if (value.length <= 72) return value;
+  return `${value.slice(0, 69).trim()}...`;
 }
 
 function mapDecisionLabel(label?: string) {
@@ -840,6 +871,17 @@ function getIntelligenceSummary(topic: LeaderboardRow) {
   if (topic.trend_summary) return topic.trend_summary;
   if (topic.opportunity_summary) return topic.opportunity_summary;
   return "VidCluster is preparing a dedicated intelligence readout for this cluster.";
+}
+
+function getWhyTrendNarrative(topic: LeaderboardRow) {
+  const trendSummary = topic.trend_summary?.trim();
+  const scoreAnchor = topic.score_anchor?.trim();
+  const confidence = mapConfidence(topic).toLowerCase();
+  const risk = formatFailureRiskValue(topic.failure_risk_level).toLowerCase();
+
+  if (scoreAnchor && scoreAnchor !== trendSummary) return scoreAnchor;
+
+  return `The signal is supported by ${confidence}, ${risk} observed failure risk, and ${formatWholePercent(topic.growth_since_freeze_pct)} topic growth in the current export.`;
 }
 
 function getRecommendedAction(topic: LeaderboardRow) {
