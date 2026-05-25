@@ -14,10 +14,12 @@ import {
 import SiteHeader from "../components/SiteHeader";
 import PageSeo from "../components/seo/PageSeo";
 import audienceIntentRows from "../data/cluster_audience_intent_v4_0.json";
-import divergenceRows from "../data/cluster_divergence_v4_0.json";
+import divergenceRows from "../data/cluster_divergence_latest_v4_0.json";
 import microNicheRows from "../data/cluster_micro_niches_v4_0.json";
-import clusterTimeseriesRows from "../data/cluster_timeseries_v3_3.json";
-import leaderboardRows from "../data/leaderboard_v3_3.json";
+import clusterTimeseriesRows from "../data/cluster_timeseries_v4_0.json";
+import leaderboardRows from "../data/dashboard_latest_v4_0.json";
+import fallbackClusterTimeseriesRows from "../data/cluster_timeseries_v3_3.json";
+import fallbackLeaderboardRows from "../data/leaderboard_v3_3.json";
 
 type Tone = "positive" | "watch" | "risk" | "neutral";
 type IntelligenceTab = "Overview" | "Momentum" | "Micro-Niches" | "Divergence" | "Failure Risk" | "Audience Intent";
@@ -59,8 +61,11 @@ type ClusterTimeseriesRow = {
   cluster_id?: string;
   snapshot_date?: string;
   n_videos?: number | null;
+  n_videos_prev?: number | null;
+  wow_abs?: number | null;
   topic_growth_pct?: number | null;
   trend_strength_score?: number | null;
+  normalized_score?: number | null;
 };
 
 type MicroNicheRow = {
@@ -96,8 +101,10 @@ type AudienceIntentRow = {
   source_type?: string | null;
 };
 
-const leaderboard = leaderboardRows as LeaderboardRow[];
-const clusterTimeseries = clusterTimeseriesRows as ClusterTimeseriesRow[];
+const leaderboard = ((leaderboardRows as LeaderboardRow[]).length > 0 ? leaderboardRows : fallbackLeaderboardRows) as LeaderboardRow[];
+const clusterTimeseries = ((clusterTimeseriesRows as ClusterTimeseriesRow[]).length > 0
+  ? clusterTimeseriesRows
+  : fallbackClusterTimeseriesRows) as ClusterTimeseriesRow[];
 const microNiches = microNicheRows as MicroNicheRow[];
 const divergences = divergenceRows as DivergenceRow[];
 const audienceIntents = audienceIntentRows as AudienceIntentRow[];
@@ -113,7 +120,8 @@ const tabs: IntelligenceTab[] = ["Overview", "Momentum", "Micro-Niches", "Diverg
 
 export default function ClusterIntelligence() {
   const { clusterId } = useParams();
-  const cluster = leaderboard.find((row) => row.cluster_id === clusterId);
+  const normalizedRouteClusterId = normalizeClusterId(clusterId);
+  const cluster = leaderboard.find((row) => normalizeClusterId(row.cluster_id) === normalizedRouteClusterId);
 
   return (
     <div className="min-h-screen bg-[#05070a] text-white">
@@ -622,7 +630,9 @@ function EmptyTabPanel({ title }: { title: string }) {
 }
 
 function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
-  const chartRows = rows.filter((row) => typeof row.topic_growth_pct === "number" && row.snapshot_date);
+  const chartRows = rows
+    .filter((row) => row.snapshot_date && finiteNumber(row.n_videos) !== null)
+    .map((row) => ({ ...row, topic_growth_pct: resolveTimeseriesGrowthPct(row) }));
   const previous = chartRows.length >= 2 ? chartRows[chartRows.length - 2] : undefined;
   const current = chartRows[chartRows.length - 1];
 
@@ -633,7 +643,7 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
           <div className="mx-5 max-w-xl rounded-2xl border border-white/10 bg-black/52 px-5 py-4 text-center shadow-[0_18px_60px_rgba(0,0,0,0.42)]">
             <p className="text-sm font-semibold text-white/78">Time-series data not available for this cluster</p>
             <p className="mt-2 text-xs leading-5 text-white/44">
-              Expected cluster_id, snapshot_date, n_videos, topic_growth_pct, and trend_strength_score.
+              Expected cluster_id, snapshot_date, and n_videos.
             </p>
           </div>
         </div>
@@ -650,7 +660,8 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
           <LegendDot color="bg-amber-300" label="Current" />
         </div>
         <div className="text-xs text-white/42">
-          {chartRows.length} snapshots · {current.n_videos?.toLocaleString() ?? "Unknown"} videos now
+          {chartRows.length} {chartRows.length === 1 ? "snapshot" : "snapshots"} ·{" "}
+          {current.n_videos?.toLocaleString() ?? "Unknown"} videos now
         </div>
       </div>
 
@@ -907,8 +918,8 @@ function getTrendInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRo
 
   const videoDelta = current.n_videos - previous.n_videos;
   const videoDeltaPct = previous.n_videos === 0 ? null : (videoDelta / previous.n_videos) * 100;
-  const currentGrowth = typeof current.topic_growth_pct === "number" ? current.topic_growth_pct : null;
-  const previousGrowth = typeof previous.topic_growth_pct === "number" ? previous.topic_growth_pct : null;
+  const currentGrowth = resolveTimeseriesGrowthPct(current);
+  const previousGrowth = resolveTimeseriesGrowthPct(previous);
   const growthDelta = currentGrowth !== null && previousGrowth !== null ? currentGrowth - previousGrowth : null;
   const direction = videoDelta > 0 ? "growing" : videoDelta < 0 ? "declining" : "flat";
   const directionLead =
@@ -942,10 +953,11 @@ function getTrendInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRo
 }
 
 function getClusterTimeseries(clusterId?: string) {
-  if (!clusterId) return [];
+  const normalizedClusterId = normalizeClusterId(clusterId);
+  if (!normalizedClusterId) return [];
 
   return clusterTimeseries
-    .filter((row) => row.cluster_id === clusterId && row.snapshot_date)
+    .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId && row.snapshot_date)
     .sort((a, b) => String(a.snapshot_date).localeCompare(String(b.snapshot_date)));
 }
 
@@ -954,18 +966,20 @@ function formatSignedInteger(value: number) {
 }
 
 function getClusterMicroNiches(clusterId?: string) {
-  if (!clusterId) return [];
+  const normalizedClusterId = normalizeClusterId(clusterId);
+  if (!normalizedClusterId) return [];
 
   return microNiches
-    .filter((row) => row.cluster_id === clusterId)
+    .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
     .sort((a, b) => (b.micro_emergence_score ?? -1) - (a.micro_emergence_score ?? -1));
 }
 
 function getClusterDivergences(clusterId?: string) {
-  if (!clusterId) return [];
+  const normalizedClusterId = normalizeClusterId(clusterId);
+  if (!normalizedClusterId) return [];
 
   return divergences
-    .filter((row) => row.cluster_id === clusterId)
+    .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
     .sort((a, b) => {
       const scoreDelta = (b.divergence_score ?? -1) - (a.divergence_score ?? -1);
       if (scoreDelta !== 0) return scoreDelta;
@@ -974,10 +988,11 @@ function getClusterDivergences(clusterId?: string) {
 }
 
 function getClusterAudienceIntents(clusterId?: string) {
-  if (!clusterId) return [];
+  const normalizedClusterId = normalizeClusterId(clusterId);
+  if (!normalizedClusterId) return [];
 
   return audienceIntents
-    .filter((row) => row.cluster_id === clusterId)
+    .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
     .sort((a, b) => (b.intent_score ?? -1) - (a.intent_score ?? -1));
 }
 
@@ -1005,12 +1020,16 @@ function getSnapshotComparison(topic: LeaderboardRow, rows: ClusterTimeseriesRow
     };
   }
 
-  const currentVideos = typeof topic.latest_n_videos === "number" ? topic.latest_n_videos : null;
+  const currentVideos = finiteNumber(current?.n_videos) ?? finiteNumber(topic.latest_n_videos);
   const currentGrowth = typeof topic.growth_since_freeze_pct === "number" ? topic.growth_since_freeze_pct : null;
 
   return {
     currentValue: currentVideos === null ? "Unavailable" : currentVideos.toLocaleString(),
-    currentLabel: currentGrowth === null ? "Latest snapshot videos" : `${formatWholePercent(currentGrowth)} growth`,
+    currentLabel: current?.snapshot_date
+      ? formatSnapshotDate(current.snapshot_date)
+      : currentGrowth === null
+        ? "Latest snapshot videos"
+        : `${formatWholePercent(currentGrowth)} growth`,
     previousValue: "Unavailable",
     previousLabel: "Need 2 snapshots",
     absoluteDelta: "Unavailable",
@@ -1093,6 +1112,40 @@ function getDivergenceMeaning(row: DivergenceRow) {
   if (spread > 0 || shareDelta > 0) return "What this means: this segment is gaining ground inside the parent topic.";
   if (spread < 0 || shareDelta < 0) return "What this means: this segment is weakening relative to the parent topic.";
   return "What this means: no meaningful internal divergence is visible in this snapshot.";
+}
+
+function finiteNumber(value?: number | null) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function pctToDisplayPercent(value: number) {
+  return Math.abs(value) > 1 ? value : value * 100;
+}
+
+function normalizeClusterId(value?: string | null) {
+  return value?.trim().toUpperCase() ?? "";
+}
+
+function resolveTimeseriesGrowthPct(row: ClusterTimeseriesRow) {
+  const topicGrowth = finiteNumber(row.topic_growth_pct);
+  if (topicGrowth !== null) return pctToDisplayPercent(topicGrowth);
+
+  const wowAbs = finiteNumber(row.wow_abs);
+  if (wowAbs !== null) {
+    const previous = finiteNumber(row.n_videos_prev);
+    if (previous !== null && previous !== 0) return (wowAbs / previous) * 100;
+
+    const current = finiteNumber(row.n_videos);
+    if (current !== null && current !== 0) return (wowAbs / current) * 100;
+  }
+
+  const trendStrength = finiteNumber(row.trend_strength_score);
+  if (trendStrength !== null) return pctToDisplayPercent(trendStrength);
+
+  const normalizedScore = finiteNumber(row.normalized_score);
+  if (normalizedScore !== null) return pctToDisplayPercent(normalizedScore);
+
+  return 0;
 }
 
 function formatWholePercent(value?: number | null) {

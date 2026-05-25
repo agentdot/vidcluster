@@ -4,8 +4,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import SiteHeader from "../components/SiteHeader";
 import PageSeo from "../components/seo/PageSeo";
-import clusterTimeseriesRows from "../data/cluster_timeseries_v3_3.json";
-import leaderboardRows from "../data/leaderboard_v3_3.json";
+import clusterTimeseriesRows from "../data/cluster_timeseries_v4_0.json";
+import leaderboardRows from "../data/dashboard_latest_v4_0.json";
+import observabilityStatus from "../data/observability_status_v4_0.json";
+import fallbackClusterTimeseriesRows from "../data/cluster_timeseries_v3_3.json";
+import fallbackLeaderboardRows from "../data/leaderboard_v3_3.json";
 import clusterInsightRows from "../data/v4_0_cluster_insights.json";
 import { useDiscoveryOpportunities, type DiscoveryOpportunity } from "../hooks/useDiscoveryOpportunities";
 import { useInsightClusters, type Insight, type InsightCluster, type InsightType } from "../hooks/useInsightClusters";
@@ -24,6 +27,9 @@ type LeaderboardRow = {
   opportunity_summary: string;
   risk_summary: string;
   growth_since_freeze_pct: number;
+  topic_growth_pct?: number | null;
+  wow_abs?: number | null;
+  normalized_score?: number | null;
   latest_n_videos: number;
   t60_is_winner: boolean;
   weeks_observed: number | null;
@@ -45,6 +51,9 @@ type LeaderboardRow = {
   format_strategy_confidence?: number | null;
   format_strategy_reason_code?: string;
   format_strategy_summary?: string;
+  health_label?: string;
+  drift_alert?: string;
+  score_method?: string;
   visual_state_override?: "HOT" | "WARM" | "COLD" | "DECAY" | "BREAKOUT";
   liveCluster?: InsightCluster;
 };
@@ -53,11 +62,31 @@ type ClusterTimeseriesRow = {
   cluster_id?: string;
   snapshot_date?: string;
   n_videos?: number | null;
+  n_videos_prev?: number | null;
+  wow_abs?: number | null;
   topic_growth_pct?: number | null;
   trend_strength_score?: number | null;
 };
 
-const clusterTimeseries = clusterTimeseriesRows as ClusterTimeseriesRow[];
+const clusterTimeseriesSource =
+  (clusterTimeseriesRows as ClusterTimeseriesRow[]).length > 0
+    ? clusterTimeseriesRows
+    : fallbackClusterTimeseriesRows;
+const clusterTimeseries = clusterTimeseriesSource as ClusterTimeseriesRow[];
+const latestTimeseriesByClusterId = new Map(
+  clusterTimeseries
+    .filter((row) => row.cluster_id)
+    .sort((a, b) => String(a.snapshot_date ?? "").localeCompare(String(b.snapshot_date ?? "")))
+    .map((row) => [row.cluster_id, row]),
+);
+
+type ObservabilityStatus = {
+  snapshot_date?: string;
+  validation_status?: string;
+  cluster_count?: number;
+  health_label_counts?: Record<string, number>;
+  drift_alert_counts?: Record<string, number>;
+};
 
 type UserPlan = "explorer" | "pro" | "advanced";
 type Tone = "neutral" | "positive" | "watch" | "risk";
@@ -65,7 +94,9 @@ type PillFamily = "growth" | "format" | "risk" | "neutral";
 type SignalBriefState = "hot" | "warm" | "cold" | "decay" | "breakout";
 type SnapshotDeltaState = "positive" | "negative" | "neutral" | "unknown";
 type SnapshotDeltaVisual = { label: string; state: SnapshotDeltaState; badgeClassName: string };
-type RawLeaderboardRow = Omit<LeaderboardRow, "topic_subtitle" | "cluster_label">;
+type RawLeaderboardRow = Partial<LeaderboardRow> & {
+  rank: number;
+};
 type SignalState = "Emerging" | "Failed breakout" | "Weakening";
 type ClusterInsight = Partial<Insight> & {
   cluster_id?: string;
@@ -208,17 +239,46 @@ const topicPresentationByRank: Record<
   },
 };
 
-const leaderboard = (leaderboardRows as unknown as RawLeaderboardRow[]).map((topic) => {
+function normalizeLeaderboardRow(topic: RawLeaderboardRow): LeaderboardRow {
   const presentation = topicPresentationByRank[topic.rank];
+  const displayTitle = topic.display_topic_title || topic.cluster_label || topic.cluster_id || `Cluster ${topic.rank}`;
+  const topicSubtitle = topic.topic_subtitle || presentation?.topic_subtitle || "Canonical v4.0 weekly signal.";
+  const growth = resolveGrowthFraction(topic);
+  const decisionLabel = topic.decision_label || (growth < 0 ? "WEAK_OR_RISK" : "EMERGING");
 
   return {
     ...topic,
-    cluster_label: topic.display_topic_title,
-    topic_subtitle:
-      presentation?.topic_subtitle ?? "Research theme generated from related content movement.",
-    display_topic_title: presentation?.display_topic_title ?? topic.display_topic_title,
+    cluster_label: topic.cluster_label ?? displayTitle,
+    topic_subtitle: topicSubtitle,
+    display_topic_title: presentation?.display_topic_title ?? displayTitle,
+    trend_strength_score: topic.trend_strength_score ?? topic.trend_confidence ?? 0,
+    decision_label: decisionLabel,
+    trend_summary:
+      topic.trend_summary ??
+      `Canonical v4.0 ${topic.trend_direction?.toLowerCase() ?? "weekly"} signal for ${displayTitle}.`,
+    opportunity_summary:
+      topic.opportunity_summary ??
+      `Latest snapshot has ${topic.latest_n_videos?.toLocaleString() ?? "unknown"} tracked videos.`,
+    risk_summary:
+      topic.risk_summary ??
+      (topic.drift_alert && topic.drift_alert !== "NORMAL"
+        ? `Observability drift alert: ${topic.drift_alert}.`
+        : "No model-backed risk summary is available in this export yet."),
+    growth_since_freeze_pct: growth * 100,
+    latest_n_videos: topic.latest_n_videos ?? 0,
+    t60_is_winner: topic.t60_is_winner ?? false,
+    weeks_observed: topic.weeks_observed ?? null,
+    consecutive_up_weeks: topic.consecutive_up_weeks ?? null,
+    score_anchor: topic.score_anchor ?? topic.score_method ?? "v4_0_dashboard_export",
   };
-}) as LeaderboardRow[];
+}
+
+const leaderboardSource =
+  (leaderboardRows as unknown as RawLeaderboardRow[]).length > 0
+    ? leaderboardRows
+    : fallbackLeaderboardRows;
+const leaderboard = (leaderboardSource as unknown as RawLeaderboardRow[]).map(normalizeLeaderboardRow);
+const dashboardObservability = observabilityStatus as ObservabilityStatus;
 
 const failureRiskByClusterId = new Map(
   leaderboard
@@ -707,10 +767,52 @@ function formatScore(score: number) {
   return `${Math.round(score * 100)}`;
 }
 
+function finiteNumber(value?: number | null) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function pctToFraction(value: number) {
+  return Math.abs(value) > 1 ? value / 100 : value;
+}
+
+function resolveGrowthFraction(topic: Partial<LeaderboardRow>) {
+  const timeseries = topic.cluster_id ? latestTimeseriesByClusterId.get(topic.cluster_id) : undefined;
+  const topicGrowthPct = finiteNumber(topic.topic_growth_pct) ?? finiteNumber(timeseries?.topic_growth_pct);
+  if (topicGrowthPct !== null) return pctToFraction(topicGrowthPct);
+
+  const wowAbs = finiteNumber(topic.wow_abs) ?? finiteNumber(timeseries?.wow_abs);
+  if (wowAbs !== null) {
+    const previous = finiteNumber(topic.n_videos_prev) ?? finiteNumber(timeseries?.n_videos_prev);
+    if (previous !== null && previous !== 0) return wowAbs / previous;
+
+    const latest = finiteNumber(topic.latest_n_videos) ?? finiteNumber(timeseries?.n_videos);
+    if (latest !== null && latest !== 0) return wowAbs / latest;
+  }
+
+  const trendStrength = finiteNumber(topic.trend_strength_score);
+  if (trendStrength !== null) return pctToFraction(trendStrength);
+
+  const normalizedScore = finiteNumber(topic.normalized_score);
+  if (normalizedScore !== null) return pctToFraction(normalizedScore);
+
+  return 0;
+}
+
 function formatPercent(value?: number | null) {
   if (value === null || value === undefined) return "—";
   const percent = value * 100;
   return `${percent >= 0 ? "+" : ""}${percent.toFixed(1)}%`;
+}
+
+function formatObservabilityCounts(counts?: Record<string, number>) {
+  if (!counts) return "Unknown";
+  const entries = Object.entries(counts).filter(([, value]) => value > 0);
+  if (entries.length === 0) return "None";
+  return entries
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([label, value]) => `${label} ${value}`)
+    .join(", ");
 }
 
 function formatPP(value?: number | null) {
@@ -1035,10 +1137,12 @@ function SignalPill({ children }: { children: ReactNode }) {
 function MetricCard({
   label,
   value,
+  helper,
   tone = "neutral",
 }: {
   label: string;
   value: string;
+  helper?: string;
   tone?: Tone;
 }) {
   return (
@@ -1055,6 +1159,7 @@ function MetricCard({
       >
         {value}
       </div>
+      {helper ? <div className="mt-1 truncate text-xs text-white/38">{helper}</div> : null}
     </div>
   );
 }
@@ -1244,6 +1349,7 @@ export default function Dashboard() {
             hasPremiumAccess={hasPremiumAccess}
             clustersLoading={clustersLoading}
             clustersError={clustersError}
+            observability={dashboardObservability}
           />
           <CategoryStrip categories={availableCategories} activeCategory={activeCategory} onChange={setActiveCategory} />
           <DashboardControls
@@ -1322,13 +1428,17 @@ function DashboardHeader({
   hasPremiumAccess,
   clustersLoading,
   clustersError,
+  observability,
 }: {
   totalTopics: number;
   watchedTopics: number;
   hasPremiumAccess: boolean;
   clustersLoading: boolean;
   clustersError?: string | null;
+  observability?: ObservabilityStatus;
 }) {
+  const observabilityPass = observability?.validation_status === "PASS";
+
   return (
     <header className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
       <div className="flex flex-wrap items-start justify-between gap-5">
@@ -1351,6 +1461,18 @@ function DashboardHeader({
         <div className="grid w-full grid-cols-2 gap-3 sm:w-auto sm:min-w-[280px]">
           <MetricCard label="Topics" value={totalTopics.toString()} />
           <MetricCard label="Watching" value={watchedTopics.toString()} tone={watchedTopics > 0 ? "positive" : "neutral"} />
+          <MetricCard
+            label="QA Status"
+            value={observability?.validation_status ?? "Unknown"}
+            helper={observability?.snapshot_date ? `Snapshot ${formatSnapshotDate(observability.snapshot_date)}` : undefined}
+            tone={observabilityPass ? "positive" : "watch"}
+          />
+          <MetricCard
+            label="Drift"
+            value={formatObservabilityCounts(observability?.drift_alert_counts)}
+            helper={observability?.cluster_count ? `${observability.cluster_count} clusters observed` : undefined}
+            tone={observabilityPass ? "neutral" : "watch"}
+          />
         </div>
       </div>
     </header>
@@ -2369,7 +2491,7 @@ function getGrowthFraction(topic: LeaderboardRow) {
     return topic.growth_since_freeze_pct;
   }
 
-  return topic.growth_since_freeze_pct / 100;
+  return resolveGrowthFraction(topic);
 }
 
 function getSnapshotDelta(topic: LeaderboardRow): SnapshotDeltaVisual {

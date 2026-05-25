@@ -1,0 +1,42 @@
+{
+  "snapshot_date": "2026-05-11",
+  "experiment_id": "v4_0",
+  "generated_at_utc": "2026-05-25T12:42:49+00:00",
+  "source": "canonical_local_weekly_artifacts",
+  "inputs": {
+    "cluster_refresh": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\snapshots\\cluster_refresh\\2026-05-11\\cluster_refresh_snapshot.csv",
+    "trend_features": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\trend_features\\v4_0_trend_features.csv",
+    "timeseries": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\timeseries\\snapshots\\2026-05-11\\v4_0_parent_cluster_timeseries.csv",
+    "timeseries_manifest": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\timeseries\\snapshots\\2026-05-11\\timeseries_manifest.json",
+    "divergence": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\microstructure\\divergence\\snapshots\\2026-05-11\\v4_0_micro_divergence.csv",
+    "divergence_manifest": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\microstructure\\divergence\\snapshots\\2026-05-11\\divergence_manifest.json",
+    "observability_manifest": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\observability_manifest.json",
+    "cluster_health": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\cluster_health\\cluster_health.parquet",
+    "ambiguity": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\ambiguity\\ambiguity_metrics.parquet",
+    "drift": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\drift\\drift_metrics.parquet",
+    "discovery_diagnostics": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\discovery\\discovery_diagnostics.parquet"
+  },
+  "upstream_validation": {
+    "timeseries": "PASS",
+    "divergence": "PASS",
+    "observability": "PASS"
+  },
+  "outputs": {
+    "dashboard": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\dashboard_latest_v4_0.json",
+    "timeseries": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\cluster_timeseries_v4_0.json",
+    "divergence": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\cluster_divergence_latest_v4_0.json",
+    "observability": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\observability_status_v4_0.json",
+    "manifest": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\dashboard_manifest_v4_0.json"
+  },
+  "row_counts": {
+    "dashboard": 259,
+    "timeseries": 259,
+    "divergence": 566,
+    "observability": 1
+  },
+  "notes": [
+    "Frontend bridge only; React components are not modified by this script.",
+    "R2 upload and deployment are intentionally out of scope.",
+    "Dashboard ranking uses n_videos_normalized_v1 until a product scoring model is wired for v4_0."
+  ]
+}

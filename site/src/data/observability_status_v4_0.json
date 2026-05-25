@@ -1,0 +1,29 @@
+{
+  "snapshot_date": "2026-05-11",
+  "experiment_id": "v4_0",
+  "validation_status": "PASS",
+  "generated_at_utc": "2026-05-25T10:01:59+00:00",
+  "cluster_count": 259,
+  "health_label_counts": {
+    "HEALTHY": 36,
+    "UNSTABLE": 223
+  },
+  "drift_alert_counts": {
+    "NORMAL": 259
+  },
+  "avg_ambiguity_ratio": 0.0,
+  "avg_assignment_confidence": 1.0,
+  "discovery": {
+    "rows": 1,
+    "accepted_videos": 0,
+    "discovered_videos": 0
+  },
+  "artifact_paths": {
+    "ambiguity": "automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\ambiguity\\ambiguity_metrics.parquet",
+    "cluster_health": "automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\cluster_health\\cluster_health.parquet",
+    "discovery": "automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\discovery\\discovery_diagnostics.parquet",
+    "drift": "automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\drift\\drift_metrics.parquet",
+    "manifest": "automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\observability_manifest.json",
+    "report": "automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\reports\\observability_report.md"
+  }
+}
