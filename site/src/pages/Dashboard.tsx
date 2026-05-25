@@ -32,13 +32,16 @@ type LeaderboardRow = {
   topic_growth_pct?: number | null;
   wow_abs?: number | null;
   normalized_score?: number | null;
+  opportunity_score_v3?: number | null;
   latest_n_videos: number;
   t60_is_winner: boolean;
   weeks_observed: number | null;
   consecutive_up_weeks: number | null;
   score_anchor: string;
+  trend_state?: string;
   trend_confidence?: number;
   trend_direction?: string;
+  opportunity_tier?: string;
   latest_snapshot_date?: string;
   t60_actual_rank?: number | null;
   t60_growth_pct?: number | null;
@@ -465,7 +468,19 @@ function getMockUserPlan(): UserPlan {
 const userPlan = getMockUserPlan();
 const hasPremiumAccess = userPlan === "pro" || userPlan === "advanced";
 const EXPLORER_WATCHLIST_LIMIT = 2;
-const ALL_CATEGORIES = "All topics";
+const ALL_SIGNALS_FILTER = "All Signals";
+const STRONGEST_SIGNALS_FILTER = "Strongest Signals";
+const EARLY_SIGNALS_FILTER = "Early Signals";
+const UNDER_OBSERVATION_FILTER = "Under Observation";
+const STABLE_PERSISTENT_FILTER = "Stable / Persistent";
+const SIGNAL_FILTERS = [
+  ALL_SIGNALS_FILTER,
+  STRONGEST_SIGNALS_FILTER,
+  EARLY_SIGNALS_FILTER,
+  UNDER_OBSERVATION_FILTER,
+  STABLE_PERSISTENT_FILTER,
+] as const;
+type SignalFilter = (typeof SIGNAL_FILTERS)[number];
 const DECISION_LABEL_MAP: Record<string, string> = {
   STRONG_TREND: "Sustained Growth",
   EARLY_TREND: "Early Opportunity",
@@ -538,16 +553,109 @@ function mapCompactWillLast(topic: LeaderboardRow) {
   return "Unstable";
 }
 
-function mapCategory(topic: LeaderboardRow) {
-  const title = `${topic.display_topic_title} ${topic.cluster_label ?? ""}`.toLowerCase();
+function normalizeSignalToken(value?: string | null) {
+  return value?.trim().toUpperCase().replace(/[\s-]+/g, "_") ?? "";
+}
 
-  if (title.includes("stock") || title.includes("market") || title.includes("invest")) return "Markets";
-  if (title.includes("retirement") || title.includes("ira") || title.includes("401k")) return "Retirement";
-  if (title.includes("side hustle") || title.includes("income") || title.includes("earning")) return "Income";
-  if (title.includes("housing") || title.includes("mortgage") || title.includes("property")) return "Housing";
-  if (title.includes("tax") || title.includes("budget") || title.includes("policy")) return "Policy";
+function hasSignalToken(fields: string[], tokens: string[]) {
+  return tokens.some((token) => fields.includes(token));
+}
 
-  return "Personal Finance";
+function getSignalFields(topic: LeaderboardRow) {
+  const trendState = normalizeSignalToken(topic.trend_state);
+  const decision = normalizeSignalToken(topic.decision_label);
+  const direction = normalizeSignalToken(topic.trend_direction);
+  const opportunityTier = normalizeSignalToken(topic.opportunity_tier);
+  const health = normalizeSignalToken(topic.health_label);
+  const drift = normalizeSignalToken(topic.drift_alert);
+  const scoreAnchor = normalizeSignalToken(topic.score_anchor);
+  return { trendState, decision, direction, opportunityTier, health, drift, scoreAnchor };
+}
+
+function getSignalScore(topic: LeaderboardRow) {
+  const candidates = [
+    finiteNumber(topic.opportunity_score_v3),
+    finiteNumber(topic.trend_strength_score),
+    finiteNumber(topic.trend_confidence),
+    finiteNumber(topic.normalized_score),
+  ].filter((value): value is number => value !== null);
+
+  if (candidates.length === 0) return null;
+
+  const score = Math.max(...candidates);
+  return score > 1 ? score / 100 : score;
+}
+
+function getStrongestSignalIds(topics: LeaderboardRow[]) {
+  const scoredTopics = topics
+    .map((topic) => ({ id: getTopicId(topic), score: getSignalScore(topic) }))
+    .filter((topic): topic is { id: string; score: number } => topic.score !== null)
+    .sort((a, b) => b.score - a.score);
+
+  const strongestCount = Math.max(1, Math.ceil(scoredTopics.length * 0.2));
+  return new Set(scoredTopics.slice(0, strongestCount).map((topic) => topic.id));
+}
+
+function getSignalFilters(topic: LeaderboardRow, strongestSignalIds: Set<string>) {
+  const filters = new Set<SignalFilter>();
+  const { trendState, decision, direction, opportunityTier, health, drift, scoreAnchor } = getSignalFields(topic);
+  const fields = [trendState, decision, direction, opportunityTier, health, drift, scoreAnchor].filter(Boolean);
+  const score = getSignalScore(topic);
+  const isStrongest =
+    strongestSignalIds.has(getTopicId(topic)) ||
+    hasSignalToken(fields, [
+      "HIGH",
+      "TOP",
+      "STRONG",
+      "TIER_1",
+      "STRONG_OPPORTUNITY",
+      "ACCELERATING",
+      "ACCELERATION",
+      "BREAKOUT",
+      "STRONG_TREND",
+      "INTERNAL_OUTPERFORMER",
+    ]);
+  const isUnderObservation =
+    hasSignalToken(fields, [
+      "WATCHLIST",
+      "WATCHLIST_SIGNAL",
+      "UNDER_OBSERVATION",
+      "INSUFFICIENT_DATA",
+      "NEEDS_REVIEW",
+      "WEAK_OR_RISK",
+      "FAILED_BREAKOUT",
+      "WEAKENING_SEGMENT",
+      "UNSTABLE",
+      "CAUTION",
+      "WARNING",
+      "ALERT",
+    ]) ||
+    (Boolean(drift) && drift !== "NORMAL") ||
+    score === null ||
+    score < 0.48;
+  const isEarly = hasSignalToken(fields, ["EMERGING", "EARLY_TREND", "EARLY_BREAKOUT", "EMERGING_SIGNAL"]);
+  const isStable =
+    hasSignalToken(fields, ["STABLE", "PERSISTENT", "NORMAL", "HEALTHY"]) &&
+    !isStrongest &&
+    direction !== "UP";
+
+  if (isStrongest) {
+    filters.add(STRONGEST_SIGNALS_FILTER);
+  }
+
+  if (isEarly && !isStrongest) {
+    filters.add(EARLY_SIGNALS_FILTER);
+  }
+
+  if (isUnderObservation) {
+    filters.add(UNDER_OBSERVATION_FILTER);
+  }
+
+  if (isStable) {
+    filters.add(STABLE_PERSISTENT_FILTER);
+  }
+
+  return filters;
 }
 
 function getRecommendedActionPlaceholder(topic: LeaderboardRow) {
@@ -1214,7 +1322,7 @@ export default function Dashboard() {
   const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
   const [scanMode, setScanMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES);
+  const [activeSignalFilter, setActiveSignalFilter] = useState<SignalFilter>(ALL_SIGNALS_FILTER);
   const [watchlistLimitMessage, setWatchlistLimitMessage] = useState("");
   const { watchedTopicIds, isWatched, addTopic, removeTopic } = useWatchlist();
   const { clusters: insightClusters, loading: clustersLoading, error: clustersError } = useInsightClusters();
@@ -1277,17 +1385,38 @@ export default function Dashboard() {
   const watchedTopics = dashboardLeaderboard.filter((topic) => isWatched(getTopicId(topic)));
   const planLimitedLeaderboard = hasPremiumAccess ? dashboardLeaderboard : dashboardLeaderboard.slice(0, 5);
   const planVisibleLeaderboard = getLeaderboardWithRequestedTopic(planLimitedLeaderboard, selectedTopic, requestedClusterId);
-  const availableCategories = useMemo(
-    () => [ALL_CATEGORIES, ...Array.from(new Set(planVisibleLeaderboard.map(mapCategory)))],
-    [planVisibleLeaderboard],
+  const monitoredClusterCount = leaderboard.length;
+  const highlightedSignalCount = planVisibleLeaderboard.length;
+  const strongestSignalIds = useMemo(() => getStrongestSignalIds(planVisibleLeaderboard), [planVisibleLeaderboard]);
+  const signalFilterCounts = useMemo(
+    () =>
+      SIGNAL_FILTERS.reduce(
+        (counts, filter) => {
+          counts[filter] =
+            filter === ALL_SIGNALS_FILTER
+              ? planVisibleLeaderboard.length
+              : planVisibleLeaderboard.filter((topic) => getSignalFilters(topic, strongestSignalIds).has(filter)).length;
+          return counts;
+        },
+        {} as Record<SignalFilter, number>,
+      ),
+    [planVisibleLeaderboard, strongestSignalIds],
   );
+
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.info("[Dashboard] signal filter counts", signalFilterCounts);
+    }
+  }, [signalFilterCounts]);
+
   const visibleLeaderboard = planVisibleLeaderboard.filter((topic) => {
     const topicText = `${getTopicTitle(topic)} ${topic.topic_subtitle} ${topic.cluster_label ?? ""}`.toLowerCase();
     const matchesSearch = topicText.includes(searchQuery.trim().toLowerCase());
-    const matchesCategory = activeCategory === ALL_CATEGORIES || mapCategory(topic) === activeCategory;
+    const signalFilters = getSignalFilters(topic, strongestSignalIds);
+    const matchesSignalFilter = activeSignalFilter === ALL_SIGNALS_FILTER || signalFilters.has(activeSignalFilter);
     const matchesWatchlist = !showWatchlistOnly || isWatched(getTopicId(topic)) || topic.cluster_id === requestedClusterId;
 
-    return matchesSearch && matchesCategory && matchesWatchlist;
+    return matchesSearch && matchesSignalFilter && matchesWatchlist;
   });
   const topSignals = useMemo(() => getTopSignals(planVisibleLeaderboard), [planVisibleLeaderboard]);
   const renderEmptyLeaderboard = visibleLeaderboard.length === 0;
@@ -1337,14 +1466,22 @@ export default function Dashboard() {
       <main className="relative bg-[radial-gradient(circle_at_52%_0%,rgba(255,255,255,0.055),transparent_26%),linear-gradient(180deg,#0b0f16_0%,#05070a_100%)] px-4 py-5 lg:px-6">
         <div className="mx-auto flex max-w-[1480px] flex-col gap-4">
           <DashboardHeader
-            totalTopics={planVisibleLeaderboard.length}
-            watchedTopics={watchedTopics.length}
+            monitoredClusterCount={monitoredClusterCount}
+            highlightedSignalCount={highlightedSignalCount}
             hasPremiumAccess={hasPremiumAccess}
             clustersLoading={clustersLoading}
             clustersError={clustersError}
             observability={dashboardObservability}
           />
-          <CategoryStrip categories={availableCategories} activeCategory={activeCategory} onChange={setActiveCategory} />
+          <p className="text-sm text-white/48">
+            Showing {highlightedSignalCount.toLocaleString()} highlighted signals from{" "}
+            {monitoredClusterCount.toLocaleString()} monitored clusters.
+          </p>
+          <CategoryStrip
+            categories={SIGNAL_FILTERS}
+            activeCategory={activeSignalFilter}
+            onChange={setActiveSignalFilter}
+          />
           <DashboardControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -1416,15 +1553,15 @@ export default function Dashboard() {
 }
 
 function DashboardHeader({
-  totalTopics,
-  watchedTopics,
+  monitoredClusterCount,
+  highlightedSignalCount,
   hasPremiumAccess,
   clustersLoading,
   clustersError,
   observability,
 }: {
-  totalTopics: number;
-  watchedTopics: number;
+  monitoredClusterCount: number;
+  highlightedSignalCount: number;
   hasPremiumAccess: boolean;
   clustersLoading: boolean;
   clustersError?: string | null;
@@ -1453,11 +1590,11 @@ function DashboardHeader({
           ) : null}
         </div>
         <div className="grid w-full grid-cols-2 gap-3 sm:w-auto sm:min-w-[320px]">
-          <MetricCard label="Active signals" value={totalTopics.toString()} />
+          <MetricCard label="Monitored clusters" value={monitoredClusterCount.toLocaleString()} />
           <MetricCard
-            label="Under observation"
-            value={watchedTopics.toString()}
-            tone={watchedTopics > 0 ? "positive" : "neutral"}
+            label="Highlighted signals"
+            value={highlightedSignalCount.toLocaleString()}
+            tone="positive"
           />
           <MetricCard
             label="Data quality"
@@ -1482,9 +1619,9 @@ function CategoryStrip({
   activeCategory,
   onChange,
 }: {
-  categories: string[];
-  activeCategory: string;
-  onChange: (category: string) => void;
+  categories: readonly SignalFilter[];
+  activeCategory: SignalFilter;
+  onChange: (category: SignalFilter) => void;
 }) {
   return (
     <div className="flex gap-2 overflow-x-auto pb-1">
