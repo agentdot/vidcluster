@@ -1,13 +1,16 @@
 {
   "snapshot_date": "2026-05-11",
   "experiment_id": "v4_0",
-  "generated_at_utc": "2026-05-25T18:15:30+00:00",
+  "generated_at_utc": "2026-05-25T19:03:19+00:00",
   "source": "canonical_local_weekly_artifacts",
   "inputs": {
     "cluster_refresh": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\snapshots\\cluster_refresh\\2026-05-11\\cluster_refresh_snapshot.csv",
     "trend_features": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\trend_features\\v4_0_trend_features.csv",
     "timeseries": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\timeseries\\snapshots\\2026-05-11\\v4_0_parent_cluster_timeseries.csv",
     "timeseries_manifest": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\timeseries\\snapshots\\2026-05-11\\timeseries_manifest.json",
+    "micro_niches": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\microstructure\\tracking\\snapshots\\2026-05-11\\v4_0_micro_emergence_signals.csv",
+    "tracking_manifest": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\microstructure\\tracking\\snapshots\\2026-05-11\\tracking_manifest.json",
+    "subcluster_profiles": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\microstructure\\v4_0_cluster_subclusters.parquet",
     "divergence": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\microstructure\\divergence\\snapshots\\2026-05-11\\v4_0_micro_divergence.csv",
     "divergence_manifest": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\derived\\microstructure\\divergence\\snapshots\\2026-05-11\\divergence_manifest.json",
     "observability_manifest": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\observability\\snapshots\\2026-05-11\\observability_manifest.json",
@@ -18,12 +21,14 @@
   },
   "upstream_validation": {
     "timeseries": "PASS",
+    "tracking": "PASS",
     "divergence": "PASS",
     "observability": "PASS"
   },
   "outputs": {
     "dashboard": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\dashboard_latest_v4_0.json",
     "timeseries": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\cluster_timeseries_v4_0.json",
+    "micro_niches": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\cluster_micro_niches_latest_v4_0.json",
     "divergence": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\cluster_divergence_latest_v4_0.json",
     "observability": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\observability_status_v4_0.json",
     "manifest": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\dashboard_manifest_v4_0.json"
@@ -31,6 +36,7 @@
   "row_counts": {
     "dashboard": 259,
     "timeseries": 259,
+    "micro_niches": 566,
     "divergence": 566,
     "observability": 1
   },
@@ -38,6 +44,8 @@
     "Frontend bridge only; React components are not modified by this script.",
     "R2 upload and deployment are intentionally out of scope.",
     "Dashboard ranking uses n_videos_normalized_v1 until a product scoring model is wired for v4_0.",
-    "Human-readable labels prefer canonical v4_0 fields when present; legacy v3_3 labels are fallback only."
+    "Human-readable labels prefer canonical v4_0 fields when present, then v4_0 dated micro-niche labels, then cluster_id.",
+    "Micro-niche rows come only from dated canonical tracking snapshots with PASS tracking manifests.",
+    "Clean labels are additive; raw subcluster labels remain in raw_subcluster_label."
   ]
 }

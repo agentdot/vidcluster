@@ -15,7 +15,7 @@ import SiteHeader from "../components/SiteHeader";
 import PageSeo from "../components/seo/PageSeo";
 import audienceIntentRows from "../data/cluster_audience_intent_v4_0.json";
 import divergenceRows from "../data/cluster_divergence_latest_v4_0.json";
-import microNicheRows from "../data/cluster_micro_niches_v4_0.json";
+import microNicheRows from "../data/cluster_micro_niches_latest_v4_0.json";
 import clusterTimeseriesRows from "../data/cluster_timeseries_v4_0.json";
 import leaderboardRows from "../data/dashboard_latest_v4_0.json";
 import fallbackClusterTimeseriesRows from "../data/cluster_timeseries_v3_3.json";
