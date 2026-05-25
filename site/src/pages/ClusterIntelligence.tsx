@@ -28,6 +28,8 @@ type LeaderboardRow = {
   cluster_id?: string;
   rank: number;
   display_topic_title: string;
+  display_title?: string;
+  title?: string;
   topic_subtitle?: string;
   cluster_label?: string;
   trend_strength_score: number;
@@ -632,7 +634,10 @@ function EmptyTabPanel({ title }: { title: string }) {
 function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
   const chartRows = rows
     .filter((row) => row.snapshot_date && finiteNumber(row.n_videos) !== null)
-    .map((row) => ({ ...row, topic_growth_pct: resolveTimeseriesGrowthPct(row) }));
+    .map((row) => {
+      const growth = resolveTimeseriesGrowthPct(row);
+      return { ...row, topic_growth_pct: growth ?? 0, growth_available: growth !== null };
+    });
   const previous = chartRows.length >= 2 ? chartRows[chartRows.length - 2] : undefined;
   const current = chartRows[chartRows.length - 1];
 
@@ -666,7 +671,9 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
       </div>
 
       <div className="h-[330px]">
-        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/32">Topic growth %</div>
+        <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/32">
+          {chartRows.some((row) => row.growth_available) ? "Topic growth %" : "Topic growth % needs 2 snapshots"}
+        </div>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartRows} margin={{ top: 28, right: 34, bottom: 8, left: 8 }}>
             <CartesianGrid stroke="rgba(148,163,184,0.12)" strokeDasharray="3 6" vertical={false} />
@@ -692,7 +699,9 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
                 color: "white",
               }}
               formatter={(value, name, item) => [
-                `${Number(value).toFixed(1)}% growth · ${item.payload.n_videos?.toLocaleString() ?? "Unknown"} videos`,
+                item.payload.growth_available
+                  ? `${Number(value).toFixed(1)}% growth · ${item.payload.n_videos?.toLocaleString() ?? "Unknown"} videos`
+                  : `Growth needs 2 snapshots · ${item.payload.n_videos?.toLocaleString() ?? "Unknown"} videos`,
                 name,
               ]}
               labelFormatter={(label) => formatSnapshotDate(String(label))}
@@ -784,7 +793,7 @@ function getTopicTitle(topic: LeaderboardRow) {
 }
 
 function getRawTopicTitle(topic: LeaderboardRow) {
-  return topic.display_topic_title || topic.cluster_label || "Untitled cluster";
+  return topic.display_topic_title || topic.cluster_label || topic.title || topic.cluster_id || "Untitled cluster";
 }
 
 function getTopicSubtitle(topic: LeaderboardRow, title: string) {
@@ -1139,13 +1148,7 @@ function resolveTimeseriesGrowthPct(row: ClusterTimeseriesRow) {
     if (current !== null && current !== 0) return (wowAbs / current) * 100;
   }
 
-  const trendStrength = finiteNumber(row.trend_strength_score);
-  if (trendStrength !== null) return pctToDisplayPercent(trendStrength);
-
-  const normalizedScore = finiteNumber(row.normalized_score);
-  if (normalizedScore !== null) return pctToDisplayPercent(normalizedScore);
-
-  return 0;
+  return null;
 }
 
 function formatWholePercent(value?: number | null) {

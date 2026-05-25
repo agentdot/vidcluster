@@ -1,7 +1,7 @@
 {
   "snapshot_date": "2026-05-11",
   "experiment_id": "v4_0",
-  "generated_at_utc": "2026-05-25T12:42:49+00:00",
+  "generated_at_utc": "2026-05-25T18:15:30+00:00",
   "source": "canonical_local_weekly_artifacts",
   "inputs": {
     "cluster_refresh": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\snapshots\\cluster_refresh\\2026-05-11\\cluster_refresh_snapshot.csv",
@@ -37,6 +37,7 @@
   "notes": [
     "Frontend bridge only; React components are not modified by this script.",
     "R2 upload and deployment are intentionally out of scope.",
-    "Dashboard ranking uses n_videos_normalized_v1 until a product scoring model is wired for v4_0."
+    "Dashboard ranking uses n_videos_normalized_v1 until a product scoring model is wired for v4_0.",
+    "Human-readable labels prefer canonical v4_0 fields when present; legacy v3_3 labels are fallback only."
   ]
 }

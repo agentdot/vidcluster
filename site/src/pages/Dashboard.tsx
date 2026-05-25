@@ -19,6 +19,8 @@ type LeaderboardRow = {
   cluster_id?: string;
   rank: number;
   display_topic_title: string;
+  display_title?: string;
+  title?: string;
   topic_subtitle: string;
   cluster_label?: string;
   trend_strength_score: number;
@@ -26,7 +28,7 @@ type LeaderboardRow = {
   trend_summary: string;
   opportunity_summary: string;
   risk_summary: string;
-  growth_since_freeze_pct: number;
+  growth_since_freeze_pct: number | null;
   topic_growth_pct?: number | null;
   wow_abs?: number | null;
   normalized_score?: number | null;
@@ -241,16 +243,18 @@ const topicPresentationByRank: Record<
 
 function normalizeLeaderboardRow(topic: RawLeaderboardRow): LeaderboardRow {
   const presentation = topicPresentationByRank[topic.rank];
-  const displayTitle = topic.display_topic_title || topic.cluster_label || topic.cluster_id || `Cluster ${topic.rank}`;
+  const displayTitle = topic.display_topic_title || topic.cluster_label || topic.title || topic.cluster_id || `Cluster ${topic.rank}`;
   const topicSubtitle = topic.topic_subtitle || presentation?.topic_subtitle || "Canonical v4.0 weekly signal.";
   const growth = resolveGrowthFraction(topic);
-  const decisionLabel = topic.decision_label || (growth < 0 ? "WEAK_OR_RISK" : "EMERGING");
+  const decisionLabel = topic.decision_label || (growth !== null && growth < 0 ? "WEAK_OR_RISK" : "EMERGING");
 
   return {
     ...topic,
     cluster_label: topic.cluster_label ?? displayTitle,
     topic_subtitle: topicSubtitle,
-    display_topic_title: presentation?.display_topic_title ?? displayTitle,
+    display_topic_title: displayTitle,
+    display_title: topic.display_title ?? displayTitle,
+    title: topic.title ?? displayTitle,
     trend_strength_score: topic.trend_strength_score ?? topic.trend_confidence ?? 0,
     decision_label: decisionLabel,
     trend_summary:
@@ -264,7 +268,7 @@ function normalizeLeaderboardRow(topic: RawLeaderboardRow): LeaderboardRow {
       (topic.drift_alert && topic.drift_alert !== "NORMAL"
         ? `Observability drift alert: ${topic.drift_alert}.`
         : "No model-backed risk summary is available in this export yet."),
-    growth_since_freeze_pct: growth * 100,
+    growth_since_freeze_pct: growth === null ? null : growth * 100,
     latest_n_videos: topic.latest_n_videos ?? 0,
     t60_is_winner: topic.t60_is_winner ?? false,
     weeks_observed: topic.weeks_observed ?? null,
@@ -498,7 +502,7 @@ function getConfidenceTone(topic: LeaderboardRow): Tone {
 }
 
 function mapOpportunityState(topic: LeaderboardRow) {
-  const growth = getGrowthFraction(topic);
+  const growth = getSortableGrowth(topic);
   const confidence = topic.trend_confidence ?? topic.trend_strength_score;
   const normalizedConfidence = confidence > 1 ? confidence / 100 : confidence;
 
@@ -609,7 +613,7 @@ function getSignalBriefState(topic: LeaderboardRow): SignalBriefState {
   const riskReason = `${topic.failure_risk_reason_code ?? ""} ${topic.risk_summary ?? ""}`.toUpperCase();
   const riskScore = topic.failure_risk_score ?? 0;
   const confidence = getConfidenceValue(topic);
-  const growth = getGrowthFraction(topic);
+  const growth = getSortableGrowth(topic);
   const opportunityState = mapOpportunityState(topic);
 
   if (
@@ -760,7 +764,7 @@ function getSystemStatus(topics: LeaderboardRow[]) {
 }
 
 function getTopicTitle(topic: LeaderboardRow) {
-  return topic.display_topic_title || topic.cluster_label || "Untitled topic";
+  return topic.display_topic_title || topic.cluster_label || topic.title || topic.cluster_id || "Untitled topic";
 }
 
 function formatScore(score: number) {
@@ -789,13 +793,7 @@ function resolveGrowthFraction(topic: Partial<LeaderboardRow>) {
     if (latest !== null && latest !== 0) return wowAbs / latest;
   }
 
-  const trendStrength = finiteNumber(topic.trend_strength_score);
-  if (trendStrength !== null) return pctToFraction(trendStrength);
-
-  const normalizedScore = finiteNumber(topic.normalized_score);
-  if (normalizedScore !== null) return pctToFraction(normalizedScore);
-
-  return 0;
+  return null;
 }
 
 function formatPercent(value?: number | null) {
@@ -967,7 +965,7 @@ function getClusterDisplayTitle(topic: LeaderboardRow, primaryInsight?: ClusterI
     return getInsightTitle(primaryInsight.subcluster_label);
   }
 
-  return topic.display_topic_title;
+  return getTopicTitle(topic);
 }
 
 function getInsightMetric(insight?: ClusterInsight) {
@@ -1642,7 +1640,7 @@ function TopSignalStrip({ signals }: { signals: TopSignal[] }) {
               <span
                 className={cn(
                   "font-semibold",
-                  getGrowthFraction(signal.topic) >= 0 ? "text-emerald-200/82" : "text-rose-200/82",
+                  getSortableGrowth(signal.topic) >= 0 ? "text-emerald-200/82" : "text-rose-200/82",
                 )}
               >
                 {formatPercent(getGrowthFraction(signal.topic))}
@@ -1892,7 +1890,7 @@ function TopicDetail({
               label="Positive weeks"
               value={topic.consecutive_up_weeks === null ? "Unavailable" : topic.consecutive_up_weeks.toString()}
             />
-            <AssessmentRow label="Topic growth" value={formatPercent(growth)} tone={growth >= 0 ? "positive" : "risk"} />
+            <AssessmentRow label="Topic growth" value={formatPercent(growth)} tone={(growth ?? 0) >= 0 ? "positive" : "risk"} />
             <AssessmentRow
               label="Model basis"
               value={hasPremiumAccess ? normalizeAnchor(topic.score_anchor) : "Locked"}
@@ -2006,7 +2004,7 @@ function SystemAssessmentPanel({
       </div>
       <ConfidenceMeter value={systemStatus.confidenceValue} tone={confidenceTone} />
       <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
-        <AssessmentRow label="Topic Growth" value={formatPercent(growth)} tone={growth >= 0 ? "positive" : "risk"} />
+        <AssessmentRow label="Topic Growth" value={formatPercent(growth)} tone={(growth ?? 0) >= 0 ? "positive" : "risk"} />
         <AssessmentRow label="Confidence" value={mapConfidence(topic)} tone={confidenceTone} />
         <AssessmentRow label="Stability" value={mapWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
         <AssessmentRow label="Opportunity" value={mapOpportunityState(topic)} tone={getOpportunityTone(topic)} />
@@ -2352,20 +2350,20 @@ function getLeaderboardWithRequestedTopic(
 function getTopSignals(topics: LeaderboardRow[]): TopSignal[] {
   if (topics.length === 0) return [];
 
-  const byGrowthDesc = [...topics].sort((a, b) => getGrowthFraction(b) - getGrowthFraction(a));
+  const byGrowthDesc = [...topics].sort((a, b) => getSortableGrowth(b) - getSortableGrowth(a));
   const positive = byGrowthDesc[0];
   const decline = [...topics]
-    .filter((topic) => getGrowthFraction(topic) < 0)
-    .sort((a, b) => getGrowthFraction(a) - getGrowthFraction(b))[0] ?? byGrowthDesc[byGrowthDesc.length - 1];
-  const absoluteGrowth = topics.map((topic) => Math.abs(getGrowthFraction(topic))).sort((a, b) => a - b);
+    .filter((topic) => getSortableGrowth(topic) < 0)
+    .sort((a, b) => getSortableGrowth(a) - getSortableGrowth(b))[0] ?? byGrowthDesc[byGrowthDesc.length - 1];
+  const absoluteGrowth = topics.map((topic) => Math.abs(getSortableGrowth(topic))).sort((a, b) => a - b);
   const medianVolatility = absoluteGrowth[Math.floor(absoluteGrowth.length / 2)] ?? 0;
   const watch =
     [...topics]
       .filter((topic) => topic !== positive && topic !== decline)
       .sort(
         (a, b) =>
-          Math.abs(Math.abs(getGrowthFraction(a)) - medianVolatility) -
-          Math.abs(Math.abs(getGrowthFraction(b)) - medianVolatility),
+          Math.abs(Math.abs(getSortableGrowth(a)) - medianVolatility) -
+          Math.abs(Math.abs(getSortableGrowth(b)) - medianVolatility),
       )[0] ?? positive;
 
   return [
@@ -2384,7 +2382,7 @@ function getTopSignals(topics: LeaderboardRow[]): TopSignal[] {
     {
       label: "Negative signal",
       topic: decline,
-      helper: getGrowthFraction(decline) < 0 ? "Decline detected" : "Lowest growth",
+      helper: getSortableGrowth(decline) < 0 ? "Decline detected" : "Lowest growth",
       tone: "risk",
     },
   ];
@@ -2494,6 +2492,10 @@ function getGrowthFraction(topic: LeaderboardRow) {
   return resolveGrowthFraction(topic);
 }
 
+function getSortableGrowth(topic: LeaderboardRow) {
+  return getGrowthFraction(topic) ?? 0;
+}
+
 function getSnapshotDelta(topic: LeaderboardRow): SnapshotDeltaVisual {
   const direction = topic.trend_direction?.toUpperCase();
   let state: SnapshotDeltaState = "unknown";
@@ -2552,7 +2554,7 @@ function getMiniSparklinePoints(topic: LeaderboardRow) {
   const rows = getClusterTimeseries(topic.cluster_id);
   const values = rows.length > 0
     ? rows.map((row) => row.topic_growth_pct ?? 0)
-    : [0, Math.max(-8, Math.min(18, getGrowthFraction(topic) * 40))];
+    : [0, Math.max(-8, Math.min(18, getSortableGrowth(topic) * 40))];
 
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
@@ -2575,7 +2577,7 @@ function getMiniSparklinePoints(topic: LeaderboardRow) {
 }
 
 function getSparklinePoints(topic: LeaderboardRow, state: SignalBriefState) {
-  const growth = Math.max(-0.45, Math.min(0.75, getGrowthFraction(topic)));
+  const growth = Math.max(-0.45, Math.min(0.75, getSortableGrowth(topic)));
   const confidence = getConfidenceValue(topic);
   const isBreakout = state === "hot" && (growth >= 0.32 || topic.rank <= 2);
   const profiles: Record<SignalBriefState, number[]> = {
