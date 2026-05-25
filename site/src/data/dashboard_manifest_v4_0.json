@@ -1,7 +1,7 @@
 {
   "snapshot_date": "2026-05-11",
   "experiment_id": "v4_0",
-  "generated_at_utc": "2026-05-25T21:29:13+00:00",
+  "generated_at_utc": "2026-05-25T23:35:35+00:00",
   "source": "canonical_local_weekly_artifacts",
   "inputs": {
     "cluster_refresh": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\snapshots\\cluster_refresh\\2026-05-11\\cluster_refresh_snapshot.csv",
@@ -35,7 +35,7 @@
   },
   "row_counts": {
     "dashboard": 259,
-    "timeseries": 259,
+    "timeseries": 1036,
     "micro_niches": 566,
     "divergence": 566,
     "observability": 1
