@@ -3,2072 +3,2072 @@
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC000",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC001",
     "n_videos": 12,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 12.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC002",
     "n_videos": 421,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 421.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC003",
     "n_videos": 78,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 78.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC004",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC005",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC006",
     "n_videos": 345,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 345.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC007",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC008",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC009",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC010",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC011",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC012",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC013",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC014",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC015",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC016",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC018",
     "n_videos": 14,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 14.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC019",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC020",
     "n_videos": 26,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 26.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC021",
     "n_videos": 282,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 282.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC022",
     "n_videos": 40,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 40.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC023",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC024",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC025",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC026",
     "n_videos": 16,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 16.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC027",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC028",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC029",
     "n_videos": 63,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 63.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC030",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC031",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC032",
     "n_videos": 65,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 65.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC033",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC034",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC035",
     "n_videos": 15,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 15.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC036",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC037",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC038",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC039",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC040",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC041",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC042",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC043",
     "n_videos": 211,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 211.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC044",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC045",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC046",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC047",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC048",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC049",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC050",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC051",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC052",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC053",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC054",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC055",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC056",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC057",
     "n_videos": 16,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 16.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC058",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC059",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC060",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC061",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC062",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC063",
     "n_videos": 15,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 15.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC064",
     "n_videos": 16,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 16.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC065",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC066",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC067",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC068",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC069",
     "n_videos": 9,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 9.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC070",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC071",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC072",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC073",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC074",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC075",
     "n_videos": 15,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 15.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC076",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC077",
     "n_videos": 14,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 14.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC078",
     "n_videos": 41,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 41.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC079",
     "n_videos": 27,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 27.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC080",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC081",
     "n_videos": 250,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 250.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC082",
     "n_videos": 139,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 139.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC083",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC084",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC085",
     "n_videos": 15,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 15.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC086",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC087",
     "n_videos": 239,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 239.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC088",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC089",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC090",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC091",
     "n_videos": 138,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 138.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC092",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC093",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC094",
     "n_videos": 237,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 237.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC095",
     "n_videos": 17,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 17.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC096",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC097",
     "n_videos": 58,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 58.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC098",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC099",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC100",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC101",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC102",
     "n_videos": 16,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 16.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC103",
     "n_videos": 22,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 22.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC104",
     "n_videos": 35,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 35.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC105",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC106",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC107",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC108",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC109",
     "n_videos": 144,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 144.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC110",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC111",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC112",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC113",
     "n_videos": 9,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 9.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC114",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC115",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC116",
     "n_videos": 156,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 167.0,
+    "wow_abs": -11.0,
+    "topic_growth_pct": -6.5868263473
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC117",
     "n_videos": 16,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 16.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC118",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC119",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC120",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC121",
     "n_videos": 10,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 10.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC122",
     "n_videos": 15,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 15.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC123",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC124",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC125",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC126",
     "n_videos": 40,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 40.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC127",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC128",
     "n_videos": 15,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 15.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC129",
     "n_videos": 224,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 224.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC130",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC131",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC132",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC133",
     "n_videos": 40,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 40.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC134",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC135",
     "n_videos": 40,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 40.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC136",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC137",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC138",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC139",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC140",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC141",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC142",
     "n_videos": 14,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 14.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC143",
     "n_videos": 118,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 118.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC144",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC145",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC146",
     "n_videos": 31,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 31.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC147",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC148",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC149",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC150",
     "n_videos": 14,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 14.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC151",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC152",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC153",
     "n_videos": 209,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 209.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC154",
     "n_videos": 284,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 284.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC155",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC156",
     "n_videos": 12,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 12.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC157",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC158",
     "n_videos": 226,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 240.0,
+    "wow_abs": -14.0,
+    "topic_growth_pct": -5.8333333333
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC159",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC160",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC161",
     "n_videos": 357,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 357.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC162",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC163",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC164",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC165",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC166",
     "n_videos": 89,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 89.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC167",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC168",
     "n_videos": 154,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 154.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC169",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC170",
     "n_videos": 11,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 11.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC171",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC172",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC173",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC174",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC175",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC176",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC177",
     "n_videos": 291,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 291.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC178",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC179",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC180",
     "n_videos": 180,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 180.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC181",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC182",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC183",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC184",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC185",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC186",
     "n_videos": 17,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 17.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC187",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC188",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC189",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC190",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC191",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC192",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC193",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC194",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC195",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC196",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC197",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC198",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC199",
     "n_videos": 224,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 224.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC200",
     "n_videos": 13,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 13.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC201",
     "n_videos": 18,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 18.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC202",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC203",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC204",
     "n_videos": 25,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 25.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC205",
     "n_videos": 17,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 17.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC206",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC207",
     "n_videos": 40,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 40.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC208",
     "n_videos": 13,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 13.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC209",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC210",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC211",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC212",
     "n_videos": 40,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 40.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC213",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC214",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC215",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC216",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC217",
     "n_videos": 40,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 40.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC218",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC219",
     "n_videos": 11,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 11.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC220",
     "n_videos": 130,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 130.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC221",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC222",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC223",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC224",
     "n_videos": 10,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 10.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC225",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC226",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC227",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC228",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC229",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC230",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC231",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC232",
     "n_videos": 10,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 10.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC233",
     "n_videos": 16,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 16.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC234",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC235",
     "n_videos": 10,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 10.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC236",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC237",
     "n_videos": 10,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 10.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC238",
     "n_videos": 8,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 8.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC239",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC240",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC241",
     "n_videos": 12,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 12.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC242",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC243",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC244",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC245",
     "n_videos": 19,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 19.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC246",
     "n_videos": 12,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 12.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC247",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC248",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC249",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC250",
     "n_videos": 31,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 31.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC251",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC252",
     "n_videos": 12,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 12.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC253",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC254",
     "n_videos": 15,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 15.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC255",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC256",
     "n_videos": 17,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 17.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC257",
     "n_videos": 12,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 12.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC258",
     "n_videos": 20,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 20.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   },
   {
     "snapshot_date": "2026-05-11",
     "cluster_id": "SC259",
     "n_videos": 9,
-    "n_videos_prev": null,
-    "wow_abs": null,
-    "topic_growth_pct": null
+    "n_videos_prev": 9.0,
+    "wow_abs": 0.0,
+    "topic_growth_pct": 0.0
   }
 ]

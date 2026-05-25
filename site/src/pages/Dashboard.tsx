@@ -30,6 +30,9 @@ type LeaderboardRow = {
   risk_summary: string;
   growth_since_freeze_pct: number | null;
   topic_growth_pct?: number | null;
+  growth_pct?: number | null;
+  since_first_pct?: number | null;
+  latest_growth_pct?: number | null;
   wow_abs?: number | null;
   normalized_score?: number | null;
   opportunity_score_v3?: number | null;
@@ -70,6 +73,9 @@ type ClusterTimeseriesRow = {
   n_videos_prev?: number | null;
   wow_abs?: number | null;
   topic_growth_pct?: number | null;
+  growth_pct?: number | null;
+  since_first_pct?: number | null;
+  latest_growth_pct?: number | null;
   trend_strength_score?: number | null;
 };
 
@@ -468,6 +474,7 @@ function getMockUserPlan(): UserPlan {
 const userPlan = getMockUserPlan();
 const hasPremiumAccess = userPlan === "pro" || userPlan === "advanced";
 const EXPLORER_WATCHLIST_LIMIT = 2;
+const STABLE_GROWTH_THRESHOLD = 0.0005;
 const ALL_SIGNALS_FILTER = "All Signals";
 const STRONGEST_SIGNALS_FILTER = "Strongest Signals";
 const EARLY_SIGNALS_FILTER = "Early Signals";
@@ -889,8 +896,18 @@ function pctToFraction(value: number) {
 
 function resolveGrowthFraction(topic: Partial<LeaderboardRow>) {
   const timeseries = topic.cluster_id ? latestTimeseriesByClusterId.get(topic.cluster_id) : undefined;
-  const topicGrowthPct = finiteNumber(topic.topic_growth_pct) ?? finiteNumber(timeseries?.topic_growth_pct);
-  if (topicGrowthPct !== null) return pctToFraction(topicGrowthPct);
+  const canonicalGrowth =
+    finiteNumber(topic.topic_growth_pct) ??
+    finiteNumber(timeseries?.topic_growth_pct) ??
+    finiteNumber(topic.growth_pct) ??
+    finiteNumber(timeseries?.growth_pct) ??
+    finiteNumber(topic.since_first_pct) ??
+    finiteNumber(timeseries?.since_first_pct) ??
+    finiteNumber(topic.latest_growth_pct) ??
+    finiteNumber(timeseries?.latest_growth_pct) ??
+    finiteNumber(topic.growth_since_freeze_pct);
+
+  if (canonicalGrowth !== null) return pctToFraction(canonicalGrowth);
 
   const wowAbs = finiteNumber(topic.wow_abs) ?? finiteNumber(timeseries?.wow_abs);
   if (wowAbs !== null) {
@@ -907,7 +924,18 @@ function resolveGrowthFraction(topic: Partial<LeaderboardRow>) {
 function formatPercent(value?: number | null) {
   if (value === null || value === undefined) return "—";
   const percent = value * 100;
-  return `${percent >= 0 ? "+" : ""}${percent.toFixed(1)}%`;
+  if (percent === 0) return "0.0%";
+  return `${percent > 0 ? "+" : "−"}${Math.abs(percent).toFixed(1)}%`;
+}
+
+function isStableGrowth(value?: number | null) {
+  return value !== null && value !== undefined && Math.abs(value) <= STABLE_GROWTH_THRESHOLD;
+}
+
+function formatGrowthPercent(value?: number | null) {
+  if (value === null || value === undefined) return "—";
+  if (isStableGrowth(value)) return "STABLE";
+  return formatPercent(value);
 }
 
 function formatDataQualityStatus(status?: string | null) {
@@ -1741,7 +1769,10 @@ function TopSignalStrip({ signals }: { signals: TopSignal[] }) {
         <div className="text-xs text-white/36">Fast scan summary</div>
       </div>
       <div className="grid gap-3 lg:grid-cols-3">
-        {signals.map((signal) => (
+        {signals.map((signal) => {
+          const growth = getGrowthFraction(signal.topic);
+          const stableGrowth = isStableGrowth(growth);
+          return (
           <div
             key={`${signal.label}-${getTopicId(signal.topic)}`}
             className={cn(
@@ -1777,14 +1808,15 @@ function TopSignalStrip({ signals }: { signals: TopSignal[] }) {
               <span
                 className={cn(
                   "font-semibold",
-                  getSortableGrowth(signal.topic) >= 0 ? "text-emerald-200/82" : "text-rose-200/82",
+                  stableGrowth ? "text-slate-100/66" : getSortableGrowth(signal.topic) >= 0 ? "text-emerald-200/82" : "text-rose-200/82",
                 )}
               >
-                {formatPercent(getGrowthFraction(signal.topic))}
+                {formatGrowthPercent(growth)}
               </span>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -1898,6 +1930,7 @@ function TopicCard({
   onToggleWatch: (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
   const growth = getGrowthFraction(topic);
+  const stableGrowth = isStableGrowth(growth);
   const confidenceTone = getConfidenceTone(topic);
   const isTopRank = topic.rank === 1;
   const riskTone = getFailureRiskTone(topic);
@@ -1935,8 +1968,13 @@ function TopicCard({
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
           <div className="text-right">
-            <div className={cn("text-3xl font-semibold leading-none tracking-[-0.045em]", signalVisual.text)}>
-              {formatPercent(growth)}
+            <div
+              className={cn(
+                "text-3xl font-semibold leading-none tracking-[-0.045em]",
+                stableGrowth ? "text-slate-100/72" : signalVisual.text,
+              )}
+            >
+              {formatGrowthPercent(growth)}
             </div>
             <div
               className={cn(
@@ -2505,21 +2543,21 @@ function getTopSignals(topics: LeaderboardRow[]): TopSignal[] {
 
   return [
     {
-      label: "Top positive signal",
+      label: "Strongest highlight",
       topic: positive,
-      helper: "Highest topic growth",
+      helper: "Highest ranked signal",
       tone: "positive",
     },
     {
-      label: "Watch signal",
+      label: "Needs watching",
       topic: watch,
-      helper: "Mid volatility",
+      helper: "Monitor for movement",
       tone: "watch",
     },
     {
-      label: "Negative signal",
+      label: "Lower priority signal",
       topic: decline,
-      helper: getSortableGrowth(decline) < 0 ? "Decline detected" : "Lowest growth",
+      helper: "Lower-ranked highlighted signal",
       tone: "risk",
     },
   ];
@@ -2622,10 +2660,6 @@ function getDecisionLabelFromInsightType(insightType?: InsightType) {
 }
 
 function getGrowthFraction(topic: LeaderboardRow) {
-  if (topic.liveCluster) {
-    return topic.growth_since_freeze_pct;
-  }
-
   return resolveGrowthFraction(topic);
 }
 
