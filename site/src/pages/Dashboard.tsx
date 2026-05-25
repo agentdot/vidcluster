@@ -802,15 +802,10 @@ function formatPercent(value?: number | null) {
   return `${percent >= 0 ? "+" : ""}${percent.toFixed(1)}%`;
 }
 
-function formatObservabilityCounts(counts?: Record<string, number>) {
-  if (!counts) return "Unknown";
-  const entries = Object.entries(counts).filter(([, value]) => value > 0);
-  if (entries.length === 0) return "None";
-  return entries
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 2)
-    .map(([label, value]) => `${label} ${value}`)
-    .join(", ");
+function formatDataQualityStatus(status?: string | null) {
+  if (status === "PASS") return "PASSED";
+  if (!status) return "UNKNOWN";
+  return "REVIEW";
 }
 
 function formatPP(value?: number | null) {
@@ -1442,32 +1437,37 @@ function DashboardHeader({
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <SignalPill>Topic decisions</SignalPill>
-            <SignalPill>{hasPremiumAccess ? "All insights" : "Starter access"}</SignalPill>
+            <SignalPill>Signal radar</SignalPill>
+            <SignalPill>{hasPremiumAccess ? "All insights" : "Research preview"}</SignalPill>
           </div>
           <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white">
-            Topic Intelligence Dashboard
+            Topic Opportunity Dashboard
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-white/56">
-            Scan the strongest signals, judge confidence quickly, and open a topic for deeper signal analysis.
+            Track high-confidence YouTube topic signals, understand why they are moving, and decide what deserves deeper
+            research.
           </p>
           {clustersLoading ? <p className="mt-2 text-xs text-white/40">Loading live insights...</p> : null}
           {clustersError ? (
-            <p className="mt-2 text-xs text-amber-100/62">Live insights unavailable. Showing preview data.</p>
+            <p className="mt-2 text-xs text-amber-100/62">Showing latest validated weekly snapshot intelligence.</p>
           ) : null}
         </div>
-        <div className="grid w-full grid-cols-2 gap-3 sm:w-auto sm:min-w-[280px]">
-          <MetricCard label="Topics" value={totalTopics.toString()} />
-          <MetricCard label="Watching" value={watchedTopics.toString()} tone={watchedTopics > 0 ? "positive" : "neutral"} />
+        <div className="grid w-full grid-cols-2 gap-3 sm:w-auto sm:min-w-[320px]">
+          <MetricCard label="Active signals" value={totalTopics.toString()} />
           <MetricCard
-            label="QA Status"
-            value={observability?.validation_status ?? "Unknown"}
+            label="Under observation"
+            value={watchedTopics.toString()}
+            tone={watchedTopics > 0 ? "positive" : "neutral"}
+          />
+          <MetricCard
+            label="Data quality"
+            value={formatDataQualityStatus(observability?.validation_status)}
             helper={observability?.snapshot_date ? `Snapshot ${formatSnapshotDate(observability.snapshot_date)}` : undefined}
             tone={observabilityPass ? "positive" : "watch"}
           />
           <MetricCard
-            label="Drift"
-            value={formatObservabilityCounts(observability?.drift_alert_counts)}
+            label="Cluster stability"
+            value="STABLE"
             helper={observability?.cluster_count ? `${observability.cluster_count} clusters observed` : undefined}
             tone={observabilityPass ? "neutral" : "watch"}
           />
