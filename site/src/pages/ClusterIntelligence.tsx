@@ -62,6 +62,7 @@ type LeaderboardRow = {
 type ClusterTimeseriesRow = {
   cluster_id?: string;
   snapshot_date?: string;
+  n_videos_current?: number | null;
   n_videos?: number | null;
   n_videos_prev?: number | null;
   wow_abs?: number | null;
@@ -118,6 +119,8 @@ const DECISION_LABEL_MAP: Record<string, string> = {
   WEAK_OR_RISK: "High Risk",
 };
 
+const STABLE_SNAPSHOT_CHANGE_THRESHOLD = 0.05;
+
 const tabs: IntelligenceTab[] = ["Overview", "Momentum", "Micro-Niches", "Divergence", "Failure Risk", "Audience Intent"];
 
 export default function ClusterIntelligence() {
@@ -159,6 +162,7 @@ function ClusterReport({ cluster }: { cluster: LeaderboardRow }) {
   const clusterAudienceIntents = getClusterAudienceIntents(cluster.cluster_id);
   const snapshotComparison = getSnapshotComparison(cluster, timeseries);
   const trendInterpretation = getTrendInterpretation(cluster, timeseries);
+  const latestSnapshotChange = getLatestSnapshotChange(timeseries);
   const displayTitle = getTopicTitle(cluster);
   const displaySubtitle = getTopicSubtitle(cluster, displayTitle);
 
@@ -210,19 +214,19 @@ function ClusterReport({ cluster }: { cluster: LeaderboardRow }) {
       </section>
 
       <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-        <MetricCard label="Topic growth" value={formatWholePercent(cluster.growth_since_freeze_pct)} tone={getGrowthTone(cluster)} />
+        <MetricCard label="Latest snapshot change" value={latestSnapshotChange.value} helper="vs previous snapshot" tone={latestSnapshotChange.tone} />
         <MetricCard label="Confidence" value={mapConfidence(cluster)} helper={formatScore(confidence)} tone={getConfidenceTone(cluster)} />
         <MetricCard label="Stability" value={mapWillLast(cluster)} tone="neutral" />
         <MetricCard label="Opportunity" value={mapOpportunityState(cluster)} tone={getOpportunityTone(cluster)} />
-        <MetricCard label="Failure risk" value={formatFailureRiskValue(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
-        <MetricCard label="Risk reason" value={formatFailureRiskValue(cluster.failure_risk_reason_code)} tone={getFailureRiskTone(cluster)} />
+        <MetricCard label="Failure risk" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
+        <MetricCard label="Risk reason" value={formatFailureRiskReason(cluster.failure_risk_reason_code)} tone={getFailureRiskTone(cluster)} />
       </section>
 
       <section className="mt-4 rounded-2xl border border-white/10 bg-[#05090e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Trend intelligence</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Signal curve workspace</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Temporal Signal Analysis</h2>
           </div>
           <div className="flex flex-wrap gap-2">
             <Badge>{formatWholePercent(cluster.growth_since_freeze_pct)}</Badge>
@@ -262,7 +266,7 @@ function ClusterReport({ cluster }: { cluster: LeaderboardRow }) {
         <div className="grid gap-4">
           <NarrativeCard title="Why this trend?" body={getWhyTrendNarrative(cluster)} />
           <NarrativeCard title="Recommended action" body={cluster.opportunity_summary || getRecommendedAction(cluster)} />
-          <NarrativeCard title="Failure risk explanation" body={cluster.risk_summary || cluster.failure_risk_reason_label || "Failure risk explanation is not available in this snapshot yet."} />
+          <NarrativeCard title="Failure risk explanation" body={cluster.risk_summary || cluster.failure_risk_reason_label || "Risk evaluation needs more history for this snapshot."} />
         </div>
 
         <section className="rounded-2xl border border-white/10 bg-white/[0.032] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.18)]">
@@ -419,7 +423,7 @@ function TabContentPanel({
             <TabStat label="Growth" value={formatWholePercent(cluster.growth_since_freeze_pct)} tone={getGrowthTone(cluster)} />
             <TabStat label="Confidence" value={mapConfidence(cluster)} tone={getConfidenceTone(cluster)} />
             <TabStat label="Latest videos" value={latest?.n_videos?.toLocaleString() ?? formatNumber(cluster.latest_n_videos)} tone="neutral" />
-            <TabStat label="Risk" value={formatFailureRiskValue(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
+            <TabStat label="Risk" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
           </div>
         </div>
       ) : null}
@@ -450,13 +454,13 @@ function TabContentPanel({
       {activeTab === "Failure Risk" ? (
         <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
           <div className="grid gap-3">
-            <TabStat label="Risk level" value={formatFailureRiskValue(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
-            <TabStat label="Risk reason" value={formatFailureRiskValue(cluster.failure_risk_reason_code)} tone={getFailureRiskTone(cluster)} />
+            <TabStat label="Risk level" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
+            <TabStat label="Risk reason" value={formatFailureRiskReason(cluster.failure_risk_reason_code)} tone={getFailureRiskTone(cluster)} />
             <TabStat label="Risk score" value={formatRiskScore(cluster.failure_risk_score)} tone={getFailureRiskTone(cluster)} />
           </div>
           <NarrativeCard
             title="Risk interpretation"
-            body={cluster.risk_summary || cluster.failure_risk_reason_label || "Failure risk interpretation is not available in this snapshot yet."}
+            body={cluster.risk_summary || cluster.failure_risk_reason_label || "Risk evaluation is still pending while this cluster builds more history."}
           />
         </div>
       ) : null}
@@ -799,6 +803,16 @@ function getRawTopicTitle(topic: LeaderboardRow) {
 function getTopicSubtitle(topic: LeaderboardRow, title: string) {
   const subtitle = topic.topic_subtitle?.trim() || topic.cluster_label?.trim();
   if (!subtitle || subtitle.toLowerCase() === title.toLowerCase()) return "";
+  return formatTopicSubtitleForDisplay(subtitle);
+}
+
+function formatTopicSubtitleForDisplay(subtitle: string) {
+  const microSignalMatch = subtitle.match(/^Derived from (\d+) canonical micro-niche labels$/i);
+  if (microSignalMatch) {
+    const count = Number(microSignalMatch[1]);
+    return `Observed across ${microSignalMatch[1]} related micro-signal${count === 1 ? "" : "s"}`;
+  }
+
   return subtitle;
 }
 
@@ -897,11 +911,11 @@ function getWhyTrendNarrative(topic: LeaderboardRow) {
   const trendSummary = topic.trend_summary?.trim();
   const scoreAnchor = topic.score_anchor?.trim();
   const confidence = mapConfidence(topic).toLowerCase();
-  const risk = formatFailureRiskValue(topic.failure_risk_level).toLowerCase();
+  const risk = formatObservedFailureRisk(topic.failure_risk_level);
 
   if (scoreAnchor && scoreAnchor !== trendSummary) return scoreAnchor;
 
-  return `The signal is supported by ${confidence}, ${risk} observed failure risk, and ${formatWholePercent(topic.growth_since_freeze_pct)} topic growth in the current export.`;
+  return `The signal is supported by ${confidence}, ${risk}, and ${formatWholePercent(topic.growth_since_freeze_pct)} topic growth in the current export.`;
 }
 
 function getRecommendedAction(topic: LeaderboardRow) {
@@ -910,13 +924,70 @@ function getRecommendedAction(topic: LeaderboardRow) {
   return "Run a small validation test and monitor whether the signal strengthens in the next snapshot.";
 }
 
+function getMovementInterpretation(direction: "growing" | "declining" | "flat", videoDeltaPct: number | null, rows: ClusterTimeseriesRow[]) {
+  const priorGrowthValues = rows
+    .slice(0, -1)
+    .map(resolveTimeseriesGrowthPct)
+    .filter((value): value is number => value !== null);
+  const stableBeforeLatest = priorGrowthValues.length > 0 && priorGrowthValues.every((value) => Math.abs(value) <= 0.05);
+  const absMove = Math.abs(videoDeltaPct ?? 0);
+
+  if (direction === "flat") {
+    return "Activity has remained broadly stable across recent observations, with limited expansion detected so far.";
+  }
+
+  if (direction === "declining") {
+    if (videoDeltaPct === null || absMove < 2.5) {
+      return stableBeforeLatest
+        ? "Recent observations show mild contraction after a stable period."
+        : "Recent observations show mild contraction, but the move remains limited.";
+    }
+    return "Recent observations show clearer contraction in activity, so the signal should be watched for further softening.";
+  }
+
+  if (videoDeltaPct === null || absMove < 2.5) {
+    return stableBeforeLatest
+      ? "Recent observations show mild expansion from a stable baseline."
+      : "Recent observations show mild expansion, but the move remains limited.";
+  }
+
+  return "Recent observations show clearer expansion in activity, indicating the signal is strengthening.";
+}
+
+function getConfidenceSentenceLead(topic: LeaderboardRow) {
+  const confidenceLabel = mapConfidence(topic);
+  if (confidenceLabel === "High Confidence") return "Confidence remains high";
+  if (confidenceLabel === "Moderate Confidence") return "Confidence is moderate";
+  return "Confidence remains limited";
+}
+
+function getEvidenceInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRow[]) {
+  const confidenceLead = getConfidenceSentenceLead(topic);
+  const decisionLabel = String(topic.decision_label ?? "").toUpperCase();
+  const historyIsLimited = rows.length < 5;
+  const riskTone = getFailureRiskTone(topic);
+
+  if (riskTone === "risk") {
+    return `${confidenceLead}, but risk signals keep this under review.`;
+  }
+
+  if (decisionLabel.includes("EMERGING") || decisionLabel.includes("EARLY")) {
+    return historyIsLimited
+      ? `${confidenceLead}, but the signal is still forming and needs more history before stronger conclusions can be drawn.`
+      : `${confidenceLead}, and the signal is still forming across the available history.`;
+  }
+
+  if (historyIsLimited) {
+    return `${confidenceLead}, but historical depth is still limited, so the signal remains under observation.`;
+  }
+
+  return `${confidenceLead}; additional snapshots will clarify whether this behavior persists.`;
+}
+
 function getTrendInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRow[]) {
   const current = rows[rows.length - 1];
   const previous = rows.length >= 2 ? rows[rows.length - 2] : undefined;
   const confidenceLabel = mapConfidence(topic);
-  const riskLabel = formatFailureRiskValue(topic.failure_risk_level).toLowerCase();
-  const stabilityLabel = mapWillLast(topic).toLowerCase();
-  const decisionLabel = mapDecisionLabel(topic.decision_label).toLowerCase();
 
   if (!current || !previous || typeof current.n_videos !== "number" || typeof previous.n_videos !== "number") {
     return {
@@ -927,38 +998,34 @@ function getTrendInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRo
 
   const videoDelta = current.n_videos - previous.n_videos;
   const videoDeltaPct = previous.n_videos === 0 ? null : (videoDelta / previous.n_videos) * 100;
-  const currentGrowth = resolveTimeseriesGrowthPct(current);
-  const previousGrowth = resolveTimeseriesGrowthPct(previous);
-  const growthDelta = currentGrowth !== null && previousGrowth !== null ? currentGrowth - previousGrowth : null;
   const direction = videoDelta > 0 ? "growing" : videoDelta < 0 ? "declining" : "flat";
-  const directionLead =
-    direction === "growing"
-      ? "This cluster is still expanding."
-      : direction === "declining"
-        ? "This cluster is contracting versus the previous snapshot."
-        : "This cluster is flat versus the previous snapshot.";
-  const movement =
-    videoDeltaPct === null
-      ? `Latest snapshot changed by ${formatSignedInteger(videoDelta)} videos versus the previous snapshot.`
-      : `Latest snapshot changed by ${formatSignedInteger(videoDelta)} videos versus the previous snapshot, a ${formatWholePercent(videoDeltaPct)} move.`;
-  const growthRead =
-    growthDelta === null
-      ? ""
-      : ` Topic growth ${growthDelta >= 0 ? "improved" : "softened"} by ${formatWholePercent(Math.abs(growthDelta))} points on the curve.`;
-  const actionRead =
-    getFailureRiskTone(topic) === "risk"
-      ? ` ${confidenceLabel} with ${riskLabel} failure risk suggests caution despite the ${decisionLabel} signal.`
-      : ` ${confidenceLabel} and ${riskLabel} failure risk support the current ${decisionLabel} read; stability is ${stabilityLabel}.`;
+  const movement = getMovementInterpretation(direction, videoDeltaPct, rows);
+  const evidence = getEvidenceInterpretation(topic, rows);
 
   return {
-    body: `${directionLead} ${movement}${growthRead}${actionRead}`,
+    body: `${movement} ${evidence}`,
     chips: [
       { label: direction === "growing" ? "Growing" : direction === "declining" ? "Declining" : "Flat", tone: direction === "growing" ? "positive" as Tone : direction === "declining" ? "risk" as Tone : "neutral" as Tone },
       { label: confidenceLabel, tone: getConfidenceTone(topic) },
-      { label: `${formatFailureRiskValue(topic.failure_risk_level)} Risk`, tone: getFailureRiskTone(topic) },
+      { label: formatFailureRiskChip(topic.failure_risk_level), tone: getFailureRiskTone(topic) },
       { label: videoDeltaPct === null ? `Latest ${formatSignedInteger(videoDelta)}` : `Latest ${formatWholePercent(videoDeltaPct)}`, tone: videoDelta > 0 ? "positive" as Tone : videoDelta < 0 ? "risk" as Tone : "neutral" as Tone },
     ],
   };
+}
+
+function getLatestSnapshotChange(rows: ClusterTimeseriesRow[]) {
+  const latest = rows[rows.length - 1];
+  const change = latest ? resolveTimeseriesGrowthPct(latest) : null;
+
+  return {
+    value: formatLatestSnapshotChange(change),
+    tone: getSnapshotChangeTone(change),
+  };
+}
+
+function getSnapshotChangeTone(value: number | null): Tone {
+  if (value === null || Math.abs(value) <= STABLE_SNAPSHOT_CHANGE_THRESHOLD) return "neutral";
+  return value > 0 ? "positive" : "risk";
 }
 
 function getClusterTimeseries(clusterId?: string) {
@@ -1051,8 +1118,27 @@ function getSnapshotComparison(topic: LeaderboardRow, rows: ClusterTimeseriesRow
 }
 
 function formatFailureRiskValue(value?: string | null) {
-  if (!value) return "Unavailable";
+  if (!value) return "Risk pending";
   return titleCase(value.split("_").join(" "));
+}
+
+function formatFailureRiskLevel(value?: string | null) {
+  return formatFailureRiskValue(value);
+}
+
+function formatFailureRiskReason(value?: string | null) {
+  if (!value) return "Needs more history";
+  return formatFailureRiskValue(value);
+}
+
+function formatFailureRiskChip(value?: string | null) {
+  if (!value) return "Risk pending";
+  return `${formatFailureRiskLevel(value)} Risk`;
+}
+
+function formatObservedFailureRisk(value?: string | null) {
+  if (!value) return "risk evaluation is still pending";
+  return `${formatFailureRiskLevel(value).toLowerCase()} observed failure risk`;
 }
 
 function formatSelectedValue(value?: string | null) {
@@ -1154,6 +1240,12 @@ function resolveTimeseriesGrowthPct(row: ClusterTimeseriesRow) {
 function formatWholePercent(value?: number | null) {
   if (value === null || value === undefined) return "Unavailable";
   return `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
+}
+
+function formatLatestSnapshotChange(value: number | null) {
+  if (value === null) return "Needs more history";
+  if (Math.abs(value) <= STABLE_SNAPSHOT_CHANGE_THRESHOLD) return "Stable";
+  return `${value > 0 ? "+" : "−"}${Math.abs(value).toFixed(1)}%`;
 }
 
 function formatScore(value: number) {
