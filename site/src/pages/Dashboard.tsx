@@ -2,14 +2,13 @@ import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from "r
 import { Lock, Star } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+import DashboardDataStatus from "../components/DashboardDataStatus";
 import SiteHeader from "../components/SiteHeader";
 import PageSeo from "../components/seo/PageSeo";
-import clusterTimeseriesRows from "../data/cluster_timeseries_v4_0.json";
-import leaderboardRows from "../data/dashboard_latest_v4_0.json";
-import observabilityStatus from "../data/observability_status_v4_0.json";
 import fallbackClusterTimeseriesRows from "../data/cluster_timeseries_v3_3.json";
 import fallbackLeaderboardRows from "../data/leaderboard_v3_3.json";
 import clusterInsightRows from "../data/v4_0_cluster_insights.json";
+import { useDashboardExportData } from "../hooks/useDashboardExportData";
 import { useDiscoveryOpportunities, type DiscoveryOpportunity } from "../hooks/useDiscoveryOpportunities";
 import { useInsightClusters, type Insight, type InsightCluster, type InsightType } from "../hooks/useInsightClusters";
 import { useWatchlist } from "../hooks/useWatchlist";
@@ -79,17 +78,14 @@ type ClusterTimeseriesRow = {
   trend_strength_score?: number | null;
 };
 
-const clusterTimeseriesSource =
-  (clusterTimeseriesRows as ClusterTimeseriesRow[]).length > 0
-    ? clusterTimeseriesRows
-    : fallbackClusterTimeseriesRows;
-const clusterTimeseries = clusterTimeseriesSource as ClusterTimeseriesRow[];
-const latestTimeseriesByClusterId = new Map(
-  clusterTimeseries
+function buildLatestTimeseriesByClusterId(rows: ClusterTimeseriesRow[]) {
+  return new Map(
+    rows
     .filter((row) => row.cluster_id)
     .sort((a, b) => String(a.snapshot_date ?? "").localeCompare(String(b.snapshot_date ?? "")))
     .map((row) => [row.cluster_id, row]),
-);
+  );
+}
 
 type ObservabilityStatus = {
   snapshot_date?: string;
@@ -114,6 +110,9 @@ type ClusterInsight = Partial<Insight> & {
   cluster_rank?: number;
   cluster_label?: string;
   subcluster_label: string;
+  canonical_subcluster_label?: string | null;
+  semantic_label_status?: string | null;
+  display_label?: string | null;
   insight_text: string;
   insight_score: number;
   insight_type?: InsightType;
@@ -286,15 +285,17 @@ function normalizeLeaderboardRow(topic: RawLeaderboardRow): LeaderboardRow {
   };
 }
 
-const leaderboardSource =
-  (leaderboardRows as unknown as RawLeaderboardRow[]).length > 0
-    ? leaderboardRows
-    : fallbackLeaderboardRows;
-const leaderboard = (leaderboardSource as unknown as RawLeaderboardRow[]).map(normalizeLeaderboardRow);
-const dashboardObservability = observabilityStatus as ObservabilityStatus;
+const fallbackClusterTimeseries = fallbackClusterTimeseriesRows as ClusterTimeseriesRow[];
+let activeClusterTimeseries = fallbackClusterTimeseries;
+let activeLatestTimeseriesByClusterId = buildLatestTimeseriesByClusterId(fallbackClusterTimeseries);
+let activeFailureRiskByClusterId = new Map<
+  string | undefined,
+  Pick<LeaderboardRow, "failure_risk_level" | "failure_risk_reason_code" | "failure_risk_score">
+>();
 
-const failureRiskByClusterId = new Map(
-  leaderboard
+function buildFailureRiskByClusterId(rows: LeaderboardRow[]) {
+  return new Map(
+    rows
     .filter((topic) => topic.cluster_id)
     .map((topic) => [
       topic.cluster_id,
@@ -304,7 +305,8 @@ const failureRiskByClusterId = new Map(
         failure_risk_score: topic.failure_risk_score,
       },
     ]),
-);
+  );
+}
 
 const clusterInsights = clusterInsightRows as ClusterInsight[];
 const SHOW_STATE_QA_CARDS = false;
@@ -895,7 +897,7 @@ function pctToFraction(value: number) {
 }
 
 function resolveGrowthFraction(topic: Partial<LeaderboardRow>) {
-  const timeseries = topic.cluster_id ? latestTimeseriesByClusterId.get(topic.cluster_id) : undefined;
+  const timeseries = topic.cluster_id ? activeLatestTimeseriesByClusterId.get(topic.cluster_id) : undefined;
   const canonicalGrowth =
     finiteNumber(topic.topic_growth_pct) ??
     finiteNumber(timeseries?.topic_growth_pct) ??
@@ -1091,9 +1093,27 @@ function getInsightTitle(label?: string) {
   return `${titleCase(label)} Signals`;
 }
 
+type SemanticLabelLike = {
+  subcluster_label?: string | null;
+  canonical_subcluster_label?: string | null;
+  display_label?: string | null;
+};
+
+function hasUsableLabel(value?: string | null) {
+  return Boolean(value?.trim() && value.trim().toLowerCase() !== "needs review");
+}
+
+function getVisibleSubclusterLabel(row?: SemanticLabelLike) {
+  if (!row) return undefined;
+  if (hasUsableLabel(row.display_label)) return row.display_label?.trim();
+  if (hasUsableLabel(row.canonical_subcluster_label)) return row.canonical_subcluster_label?.trim();
+  return row.subcluster_label?.trim() || undefined;
+}
+
 function getClusterDisplayTitle(topic: LeaderboardRow, primaryInsight?: ClusterInsight) {
-  if (primaryInsight?.subcluster_label) {
-    return getInsightTitle(primaryInsight.subcluster_label);
+  const label = getVisibleSubclusterLabel(primaryInsight);
+  if (label) {
+    return getInsightTitle(label);
   }
 
   return getTopicTitle(topic);
@@ -1343,10 +1363,28 @@ function WatchStarButton({
 export default function Dashboard() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const dashboardData = useDashboardExportData();
+  const dashboardLeaderboardStatic = useMemo(() => {
+    const timeseriesSource =
+      (dashboardData.data.timeseries as ClusterTimeseriesRow[]).length > 0
+        ? (dashboardData.data.timeseries as ClusterTimeseriesRow[])
+        : fallbackClusterTimeseries;
+    activeClusterTimeseries = timeseriesSource;
+    activeLatestTimeseriesByClusterId = buildLatestTimeseriesByClusterId(timeseriesSource);
+
+    const leaderboardSource =
+      (dashboardData.data.dashboard as RawLeaderboardRow[]).length > 0
+        ? (dashboardData.data.dashboard as RawLeaderboardRow[])
+        : (fallbackLeaderboardRows as unknown as RawLeaderboardRow[]);
+    const normalized = leaderboardSource.map(normalizeLeaderboardRow);
+    activeFailureRiskByClusterId = buildFailureRiskByClusterId(normalized);
+    return normalized;
+  }, [dashboardData.data.dashboard, dashboardData.data.timeseries]);
+  const dashboardObservability = dashboardData.data.observability as ObservabilityStatus;
   const requestedClusterId = searchParams.get("cluster")?.trim() || null;
   const requestedSubclusterId = searchParams.get("subcluster")?.trim() || null;
   const openedFromDiscovery = searchParams.get("from") === "discovery";
-  const [selectedRank, setSelectedRank] = useState(leaderboard[0]?.rank ?? 1);
+  const [selectedRank, setSelectedRank] = useState(dashboardLeaderboardStatic[0]?.rank ?? 1);
   const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
   const [scanMode, setScanMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -1359,9 +1397,9 @@ export default function Dashboard() {
   const dashboardLeaderboard = useMemo(
     () => {
       if (SHOW_STATE_QA_CARDS) return signalBriefQaFixtures;
-      return hasLiveClusters ? mapClustersToLeaderboard(insightClusters) : leaderboard;
+      return hasLiveClusters ? mapClustersToLeaderboard(insightClusters) : dashboardLeaderboardStatic;
     },
-    [hasLiveClusters, insightClusters],
+    [dashboardLeaderboardStatic, hasLiveClusters, insightClusters],
   );
   const requestedDiscoveryOpportunity = useMemo(
     () => {
@@ -1390,8 +1428,8 @@ export default function Dashboard() {
   );
   const requestedClusterMissing = Boolean(requestedClusterId && !requestedClusterTopic);
   const selectedSubclusterLabel =
+    getVisibleSubclusterLabel(requestedDiscoveryOpportunity) ||
     requestedDiscoveryOpportunity?.intent_label ||
-    requestedDiscoveryOpportunity?.subcluster_label ||
     requestedSubclusterId;
 
   useEffect(() => {
@@ -1413,7 +1451,7 @@ export default function Dashboard() {
   const watchedTopics = dashboardLeaderboard.filter((topic) => isWatched(getTopicId(topic)));
   const planLimitedLeaderboard = hasPremiumAccess ? dashboardLeaderboard : dashboardLeaderboard.slice(0, 5);
   const planVisibleLeaderboard = getLeaderboardWithRequestedTopic(planLimitedLeaderboard, selectedTopic, requestedClusterId);
-  const monitoredClusterCount = leaderboard.length;
+  const monitoredClusterCount = dashboardLeaderboardStatic.length;
   const highlightedSignalCount = planVisibleLeaderboard.length;
   const strongestSignalIds = useMemo(() => getStrongestSignalIds(planVisibleLeaderboard), [planVisibleLeaderboard]);
   const signalFilterCounts = useMemo(
@@ -1505,6 +1543,7 @@ export default function Dashboard() {
             Showing {highlightedSignalCount.toLocaleString()} highlighted signals from{" "}
             {monitoredClusterCount.toLocaleString()} monitored clusters.
           </p>
+          <DashboardDataStatus state={dashboardData} />
           <CategoryStrip
             categories={SIGNAL_FILTERS}
             activeCategory={activeSignalFilter}
@@ -2091,7 +2130,11 @@ function TopicDetail({
           <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Evidence readout</div>
           <div className="mt-3 space-y-3">
             {visibleInsights.map((insight) => (
-              <InsightRow key={`${insight.subcluster_label}-${insight.insight_score}`} insight={insight} locked={false} />
+              <InsightRow
+                key={`${getVisibleSubclusterLabel(insight) ?? insight.subcluster_label}-${insight.insight_score}`}
+                insight={insight}
+                locked={false}
+              />
             ))}
             {Array.from({ length: lockedInsightCount }).map((_, index) => (
               <InsightRow key={`locked-${index}`} insight={insights[index + 1]} locked />
@@ -2384,7 +2427,7 @@ function InsightRow({ insight, locked }: { insight?: ClusterInsight; locked: boo
         </span>
       </div>
       <div className="mt-2 font-medium text-white/84">
-        {locked ? "Locked" : insight?.subcluster_label ?? "Insight unavailable"}
+        {locked ? "Locked" : getVisibleSubclusterLabel(insight) ?? "Insight unavailable"}
       </div>
       <div className="mt-1 text-xs text-white/42">
         {locked ? "Upgrade to unlock this signal" : metric.compact}
@@ -2578,7 +2621,12 @@ function getDiscoveryFallbackTopic(
   subclusterId: string | null,
   opportunity?: DiscoveryOpportunity,
 ): LeaderboardRow {
-  const label = opportunity?.intent_label || opportunity?.subcluster_label || subclusterId || clusterId || "Discovery signal";
+  const label =
+    getVisibleSubclusterLabel(opportunity) ||
+    opportunity?.intent_label ||
+    subclusterId ||
+    clusterId ||
+    "Discovery signal";
   const score = opportunity?.discovery_score ?? 0;
 
   return {
@@ -2613,13 +2661,13 @@ function mapClustersToLeaderboard(clusters: InsightCluster[]): LeaderboardRow[] 
       primary?.insight_type === "WEAKENING_SEGMENT" || primary?.insight_type === "FAILED_BREAKOUT"
         ? primary?.share_delta
         : primary?.relative_growth_spread;
-    const staticFailureRisk = failureRiskByClusterId.get(cluster.clusterId);
+    const staticFailureRisk = activeFailureRiskByClusterId.get(cluster.clusterId);
 
     return {
       rank: index + 1,
       cluster_id: cluster.clusterId,
       cluster_label: cluster.clusterName,
-      display_topic_title: getInsightTitle(primary?.subcluster_label ?? cluster.clusterName),
+      display_topic_title: getInsightTitle(getVisibleSubclusterLabel(primary) ?? cluster.clusterName),
       topic_subtitle: cluster.topInsightLabel
         ? `Latest ${getInsightVisual(cluster.topInsightType).label.toLowerCase()} signal: ${cluster.topInsightLabel}.`
         : "Live v4.0 cluster insight.",
@@ -2716,7 +2764,7 @@ function getSnapshotDelta(topic: LeaderboardRow): SnapshotDeltaVisual {
 function getClusterTimeseries(clusterId?: string) {
   if (!clusterId) return [];
 
-  return clusterTimeseries
+  return activeClusterTimeseries
     .filter((row) => row.cluster_id === clusterId && typeof row.topic_growth_pct === "number")
     .sort((a, b) => String(a.snapshot_date ?? "").localeCompare(String(b.snapshot_date ?? "")));
 }
@@ -2850,7 +2898,7 @@ function getInsightTimeline(insights: ClusterInsight[]) {
 
     return {
       label: `${formatSnapshotDate(insight.snapshot_date ?? insight.observed_at)} · ${visual.label}`,
-      helper: `${insight.subcluster_label} · ${formatPP(metric)}`,
+      helper: `${getVisibleSubclusterLabel(insight) ?? insight.subcluster_label} · ${formatPP(metric)}`,
       tone: visual.tone,
     };
   });
@@ -2862,7 +2910,8 @@ function getMeaningfulInsightTimeline(insights: ClusterInsight[]) {
   return insights
     .filter((insight) => {
       const metric = getInsightMetric(insight).value;
-      const key = `${insight.snapshot_date ?? insight.observed_at}-${insight.insight_type ?? insight.signal_state}-${insight.subcluster_label}-${metric}`;
+      const insightLabel = getVisibleSubclusterLabel(insight) ?? insight.subcluster_label;
+      const key = `${insight.snapshot_date ?? insight.observed_at}-${insight.insight_type ?? insight.signal_state}-${insightLabel}-${metric}`;
 
       if (metric === "—" || seen.has(key)) {
         return false;
@@ -2878,7 +2927,7 @@ function getMeaningfulInsightTimeline(insights: ClusterInsight[]) {
 
       return {
         label: `${formatSnapshotDate(insight.snapshot_date ?? insight.observed_at)} -> ${visual.label} (${metric})`,
-        helper: insight.subcluster_label,
+        helper: getVisibleSubclusterLabel(insight) ?? insight.subcluster_label,
         tone: visual.tone,
       };
     });

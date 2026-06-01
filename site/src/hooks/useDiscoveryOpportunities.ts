@@ -10,6 +10,9 @@ export type DiscoveryOpportunity = {
   cluster_id: string;
   subcluster_id: string;
   subcluster_label: string;
+  canonical_subcluster_label?: string | null;
+  semantic_label_status?: string | null;
+  display_label?: string | null;
   intent_label: string;
   raw_label: string;
   intent_type: string;

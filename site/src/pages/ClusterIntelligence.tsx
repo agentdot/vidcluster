@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   CartesianGrid,
@@ -11,15 +11,13 @@ import {
   YAxis,
 } from "recharts";
 
+import DashboardDataStatus from "../components/DashboardDataStatus";
 import SiteHeader from "../components/SiteHeader";
 import PageSeo from "../components/seo/PageSeo";
 import audienceIntentRows from "../data/cluster_audience_intent_v4_0.json";
-import divergenceRows from "../data/cluster_divergence_latest_v4_0.json";
-import microNicheRows from "../data/cluster_micro_niches_latest_v4_0.json";
-import clusterTimeseriesRows from "../data/cluster_timeseries_v4_0.json";
-import leaderboardRows from "../data/dashboard_latest_v4_0.json";
 import fallbackClusterTimeseriesRows from "../data/cluster_timeseries_v3_3.json";
 import fallbackLeaderboardRows from "../data/leaderboard_v3_3.json";
+import { useDashboardExportData } from "../hooks/useDashboardExportData";
 
 type Tone = "positive" | "watch" | "risk" | "neutral";
 type IntelligenceTab = "Overview" | "Momentum" | "Micro-Niches" | "Divergence" | "Failure Risk" | "Audience Intent";
@@ -75,6 +73,9 @@ type MicroNicheRow = {
   cluster_id?: string;
   subcluster_id?: string;
   subcluster_label?: string;
+  canonical_subcluster_label?: string | null;
+  semantic_label_status?: string | null;
+  display_label?: string | null;
   assigned_video_count?: number | null;
   micro_emergence_score?: number | null;
   stability_label?: string | null;
@@ -104,12 +105,8 @@ type AudienceIntentRow = {
   source_type?: string | null;
 };
 
-const leaderboard = ((leaderboardRows as LeaderboardRow[]).length > 0 ? leaderboardRows : fallbackLeaderboardRows) as LeaderboardRow[];
-const clusterTimeseries = ((clusterTimeseriesRows as ClusterTimeseriesRow[]).length > 0
-  ? clusterTimeseriesRows
-  : fallbackClusterTimeseriesRows) as ClusterTimeseriesRow[];
-const microNiches = microNicheRows as MicroNicheRow[];
-const divergences = divergenceRows as DivergenceRow[];
+const fallbackLeaderboard = fallbackLeaderboardRows as LeaderboardRow[];
+const fallbackClusterTimeseries = fallbackClusterTimeseriesRows as ClusterTimeseriesRow[];
 const audienceIntents = audienceIntentRows as AudienceIntentRow[];
 
 const DECISION_LABEL_MAP: Record<string, string> = {
@@ -125,6 +122,17 @@ const tabs: IntelligenceTab[] = ["Overview", "Momentum", "Micro-Niches", "Diverg
 
 export default function ClusterIntelligence() {
   const { clusterId } = useParams();
+  const dashboardData = useDashboardExportData();
+  const leaderboard = useMemo(() => {
+    const rows = dashboardData.data.dashboard as LeaderboardRow[];
+    return rows.length > 0 ? rows : fallbackLeaderboard;
+  }, [dashboardData.data.dashboard]);
+  const clusterTimeseries = useMemo(() => {
+    const rows = dashboardData.data.timeseries as ClusterTimeseriesRow[];
+    return rows.length > 0 ? rows : fallbackClusterTimeseries;
+  }, [dashboardData.data.timeseries]);
+  const microNiches = dashboardData.data.microNiches as MicroNicheRow[];
+  const divergences = dashboardData.data.divergence as DivergenceRow[];
   const normalizedRouteClusterId = normalizeClusterId(clusterId);
   const cluster = leaderboard.find((row) => normalizeClusterId(row.cluster_id) === normalizedRouteClusterId);
 
@@ -146,19 +154,42 @@ export default function ClusterIntelligence() {
             Back to Dashboard
           </Link>
 
-          {!cluster ? <ClusterNotFound /> : <ClusterReport cluster={cluster} />}
+          <div className="mt-4">
+            <DashboardDataStatus state={dashboardData} />
+          </div>
+
+          {!cluster ? (
+            <ClusterNotFound />
+          ) : (
+            <ClusterReport
+              cluster={cluster}
+              clusterTimeseries={clusterTimeseries}
+              microNiches={microNiches}
+              divergences={divergences}
+            />
+          )}
         </div>
       </main>
     </div>
   );
 }
 
-function ClusterReport({ cluster }: { cluster: LeaderboardRow }) {
+function ClusterReport({
+  cluster,
+  clusterTimeseries,
+  microNiches,
+  divergences,
+}: {
+  cluster: LeaderboardRow;
+  clusterTimeseries: ClusterTimeseriesRow[];
+  microNiches: MicroNicheRow[];
+  divergences: DivergenceRow[];
+}) {
   const [activeTab, setActiveTab] = useState<IntelligenceTab>("Overview");
   const confidence = getConfidenceValue(cluster);
-  const timeseries = getClusterTimeseries(cluster.cluster_id);
-  const clusterMicroNiches = getClusterMicroNiches(cluster.cluster_id);
-  const clusterDivergences = getClusterDivergences(cluster.cluster_id);
+  const timeseries = getClusterTimeseries(clusterTimeseries, cluster.cluster_id);
+  const clusterMicroNiches = getClusterMicroNiches(microNiches, cluster.cluster_id);
+  const clusterDivergences = getClusterDivergences(divergences, cluster.cluster_id);
   const clusterAudienceIntents = getClusterAudienceIntents(cluster.cluster_id);
   const snapshotComparison = getSnapshotComparison(cluster, timeseries);
   const trendInterpretation = getTrendInterpretation(cluster, timeseries);
@@ -488,6 +519,7 @@ function MicroNichesPanel({ rows }: { rows: MicroNicheRow[] }) {
   }
 
   const [leader, ...supportingRows] = rows;
+  const leaderLabel = getVisibleMicroNicheLabel(leader) || leader.subcluster_id || "Unnamed sub-niche";
 
   return (
     <div className="space-y-5">
@@ -496,7 +528,7 @@ function MicroNichesPanel({ rows }: { rows: MicroNicheRow[] }) {
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/52">Leading emerging micro-niche</p>
         <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h3 className="text-2xl font-semibold tracking-[-0.04em] text-white">{leader.subcluster_label || leader.subcluster_id || "Unnamed sub-niche"}</h3>
+            <h3 className="text-2xl font-semibold tracking-[-0.04em] text-white">{leaderLabel}</h3>
             <p className="mt-2 text-sm text-white/44">{leader.subcluster_id}</p>
           </div>
           <div className="grid grid-cols-3 gap-3">
@@ -506,22 +538,26 @@ function MicroNichesPanel({ rows }: { rows: MicroNicheRow[] }) {
           </div>
         </div>
         <p className="mt-5 rounded-xl border border-white/10 bg-black/18 px-4 py-3 text-sm leading-6 text-white/62">
-          Why this matters: {leader.subcluster_label || "this sub-niche"} has {formatNumber(leader.assigned_video_count)} assigned videos,
+          Why this matters: {leaderLabel} has {formatNumber(leader.assigned_video_count)} assigned videos,
           an emergence score of {formatDecimal(leader.micro_emergence_score)}, and {formatSelectedValue(leader.stability_label).toLowerCase()} stability.
         </p>
       </div>
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {supportingRows.slice(0, 8).map((row) => (
-          <div key={row.subcluster_id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-            <p className="text-lg font-semibold text-white/84">{row.subcluster_label || row.subcluster_id || "Unnamed sub-niche"}</p>
-            <p className="mt-1 text-xs text-white/34">{row.subcluster_id}</p>
-            <div className="mt-4 grid grid-cols-3 gap-3">
-              <MiniStat label="Emergence" value={formatDecimal(row.micro_emergence_score)} />
-              <MiniStat label="Videos" value={formatNumber(row.assigned_video_count)} />
-              <MiniStat label="Stability" value={formatSelectedValue(row.stability_label)} />
+        {supportingRows.slice(0, 8).map((row) => {
+          const rowLabel = getVisibleMicroNicheLabel(row) || row.subcluster_id || "Unnamed sub-niche";
+
+          return (
+            <div key={row.subcluster_id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+              <p className="text-lg font-semibold text-white/84">{rowLabel}</p>
+              <p className="mt-1 text-xs text-white/34">{row.subcluster_id}</p>
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                <MiniStat label="Emergence" value={formatDecimal(row.micro_emergence_score)} />
+                <MiniStat label="Videos" value={formatNumber(row.assigned_video_count)} />
+                <MiniStat label="Stability" value={formatSelectedValue(row.stability_label)} />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -784,6 +820,19 @@ function FormatShare({ label, value }: { label: string; value?: number | null })
   );
 }
 
+function isUsableSemanticLabel(value?: string | null) {
+  return Boolean(value?.trim() && value.trim().toLowerCase() !== "needs review");
+}
+
+function getVisibleMicroNicheLabel(row?: MicroNicheRow | DivergenceRow) {
+  if (!row) return undefined;
+  if ("display_label" in row && isUsableSemanticLabel(row.display_label)) return row.display_label?.trim();
+  if ("canonical_subcluster_label" in row && isUsableSemanticLabel(row.canonical_subcluster_label)) {
+    return row.canonical_subcluster_label?.trim();
+  }
+  return row.subcluster_label?.trim() || undefined;
+}
+
 function getTopicTitle(topic: LeaderboardRow) {
   const rawTitle = getRawTopicTitle(topic);
   const subtitle = topic.topic_subtitle?.trim();
@@ -1028,11 +1077,11 @@ function getSnapshotChangeTone(value: number | null): Tone {
   return value > 0 ? "positive" : "risk";
 }
 
-function getClusterTimeseries(clusterId?: string) {
+function getClusterTimeseries(rows: ClusterTimeseriesRow[], clusterId?: string) {
   const normalizedClusterId = normalizeClusterId(clusterId);
   if (!normalizedClusterId) return [];
 
-  return clusterTimeseries
+  return rows
     .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId && row.snapshot_date)
     .sort((a, b) => String(a.snapshot_date).localeCompare(String(b.snapshot_date)));
 }
@@ -1041,20 +1090,20 @@ function formatSignedInteger(value: number) {
   return `${value >= 0 ? "+" : ""}${value.toLocaleString()}`;
 }
 
-function getClusterMicroNiches(clusterId?: string) {
+function getClusterMicroNiches(rows: MicroNicheRow[], clusterId?: string) {
   const normalizedClusterId = normalizeClusterId(clusterId);
   if (!normalizedClusterId) return [];
 
-  return microNiches
+  return rows
     .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
     .sort((a, b) => (b.micro_emergence_score ?? -1) - (a.micro_emergence_score ?? -1));
 }
 
-function getClusterDivergences(clusterId?: string) {
+function getClusterDivergences(rows: DivergenceRow[], clusterId?: string) {
   const normalizedClusterId = normalizeClusterId(clusterId);
   if (!normalizedClusterId) return [];
 
-  return divergences
+  return rows
     .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
     .sort((a, b) => {
       const scoreDelta = (b.divergence_score ?? -1) - (a.divergence_score ?? -1);

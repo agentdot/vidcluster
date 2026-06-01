@@ -14,6 +14,9 @@ export type Insight = {
   insight_text: string;
   subcluster_id: string;
   subcluster_label: string;
+  canonical_subcluster_label?: string | null;
+  semantic_label_status?: string | null;
+  display_label?: string | null;
   divergence_label?: string;
   divergence_score?: number;
   micro_emergence_score?: number;
@@ -31,6 +34,7 @@ export type InsightCluster = {
   snapshotDate: string;
   topInsightType?: InsightType;
   topInsightLabel?: string;
+  displayLabel?: string;
   topInsightScore?: number;
   insights: Insight[];
 };
