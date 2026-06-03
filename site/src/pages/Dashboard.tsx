@@ -68,6 +68,8 @@ type LeaderboardRow = {
 type ClusterTimeseriesRow = {
   cluster_id?: string;
   snapshot_date?: string;
+  tracked_video_count?: number | null;
+  n_videos_current?: number | null;
   n_videos?: number | null;
   n_videos_prev?: number | null;
   wow_abs?: number | null;
@@ -83,7 +85,7 @@ function buildLatestTimeseriesByClusterId(rows: ClusterTimeseriesRow[]) {
     rows
     .filter((row) => row.cluster_id)
     .sort((a, b) => String(a.snapshot_date ?? "").localeCompare(String(b.snapshot_date ?? "")))
-    .map((row) => [row.cluster_id, row]),
+    .map((row) => [normalizeClusterId(row.cluster_id), row]),
   );
 }
 
@@ -92,6 +94,8 @@ type Tone = "neutral" | "positive" | "watch" | "risk";
 type PillFamily = "growth" | "format" | "risk" | "neutral";
 type SignalBriefState = "hot" | "warm" | "cold" | "decay" | "breakout";
 type SnapshotDeltaState = "positive" | "negative" | "neutral" | "unknown";
+type InterestPreviewStatus = "no_history" | "needs_history" | "steady" | "rising" | "cooling" | "mixed";
+type InterestPreviewMetricKind = "topic_growth_pct" | "wow_abs" | "video_count";
 type SnapshotDeltaVisual = { label: string; state: SnapshotDeltaState; badgeClassName: string };
 type RawLeaderboardRow = Partial<LeaderboardRow> & {
   rank: number;
@@ -833,7 +837,7 @@ function getSignalBriefVisual(state: SignalBriefState) {
 
   if (state === "cold") {
     return {
-      label: "Low Movement",
+      label: "Steady Interest",
       accent: "bg-violet-300",
       border: "border-violet-300/20",
       bg: "bg-violet-300/[0.028]",
@@ -911,7 +915,7 @@ function pctToFraction(value: number) {
 }
 
 function resolveGrowthFraction(topic: Partial<LeaderboardRow>) {
-  const timeseries = topic.cluster_id ? activeLatestTimeseriesByClusterId.get(topic.cluster_id) : undefined;
+  const timeseries = topic.cluster_id ? activeLatestTimeseriesByClusterId.get(normalizeClusterId(topic.cluster_id)) : undefined;
   const canonicalGrowth =
     finiteNumber(topic.topic_growth_pct) ??
     finiteNumber(timeseries?.topic_growth_pct) ??
@@ -1875,13 +1879,15 @@ function SignalSparkline({
   topic: LeaderboardRow;
   visual: ReturnType<typeof getSignalBriefVisual>;
 }) {
-  const points = getMiniSparklinePoints(topic);
+  const preview = getInterestPreview(topic);
+  const points = preview.points;
   const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
-  const areaPath = `${path} L ${points[points.length - 1]?.x ?? 92} 88 L ${points[0]?.x ?? 8} 88 Z`;
+  const hasTrendLine = points.length >= 2;
+  const areaPath = hasTrendLine ? `${path} L ${points[points.length - 1]?.x ?? 92} 88 L ${points[0]?.x ?? 8} 88 Z` : "";
   const stroke = visual.stroke;
   const gradientId = `sparkline-gradient-${topic.rank}`;
   const currentPoint = points[points.length - 1];
-  const hasRealSeries = Boolean(topic.cluster_id && getClusterTimeseries(topic.cluster_id).length > 0);
+  const hasHistory = preview.values.length > 0;
 
   return (
     <div className="relative mt-5 h-[138px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#05090e] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
@@ -1898,31 +1904,44 @@ function SignalSparkline({
             <stop offset="100%" stopColor={stroke} stopOpacity="0.02" />
           </linearGradient>
         </defs>
-        <path d={areaPath} fill={`url(#${gradientId})`} />
+        {areaPath ? <path d={areaPath} fill={`url(#${gradientId})`} /> : null}
         <path d="M 8 74 L 92 74" stroke="rgba(148,163,184,0.12)" strokeDasharray="3 5" strokeWidth="1" />
-        <path
-          d={path}
-          fill="none"
-          stroke={stroke}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeOpacity={hasRealSeries ? 0.96 : 0.5}
-          strokeWidth="1.5"
-          vectorEffect="non-scaling-stroke"
-
-        />
-        <path d={areaPath} fill={`url(#${gradientId})`} vectorEffect="non-scaling-stroke" />
+        {hasTrendLine ? (
+          <path
+            d={path}
+            fill="none"
+            stroke={stroke}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeOpacity="0.96"
+            strokeWidth="1.5"
+            vectorEffect="non-scaling-stroke"
+          />
+        ) : null}
+        {areaPath ? <path d={areaPath} fill={`url(#${gradientId})`} vectorEffect="non-scaling-stroke" /> : null}
 
         {currentPoint ? (
           <g>
-            <circle cx={currentPoint.x} cy={currentPoint.y} fill={stroke} opacity="0.18" r="2" />
+            <circle cx={currentPoint.x} cy={currentPoint.y} fill={stroke} opacity="0.18" r={hasTrendLine ? "2" : "3.5"} />
             <circle cx={currentPoint.x} cy={currentPoint.y} fill={stroke} r="2" stroke="rgba(24, 177, 34, 0.90)" strokeWidth="0.5" />
           </g>
         ) : null}
       </svg>
       <div className="absolute left-3 top-3 text-[10px] font-medium uppercase tracking-[0.18em] text-slate-200/34">
-        {hasRealSeries ? "Interest Trend" : "Interest Preview"}
+        {hasTrendLine ? preview.metric.label : "Recent Movement"}
       </div>
+      <div className="absolute left-3 top-7 max-w-[78%] truncate text-[10px] text-slate-200/28">
+        Based on recent topic growth where available.
+      </div>
+      <div
+        className={cn(
+          "absolute bottom-3 left-3 rounded-full border px-2.5 py-1 text-[10px] font-semibold",
+          getInterestPreviewBadgeClass(preview.status),
+        )}
+      >
+        {preview.label}
+      </div>
+      {!hasHistory ? <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-white/42">No history yet</div> : null}
     </div>
   );
 }
@@ -1982,6 +2001,7 @@ function TopicCard({
   const riskTone = getFailureRiskTone(topic);
   const signalState = getSignalBriefState(topic);
   const signalVisual = getSignalBriefVisual(signalState);
+  const interestPreview = getInterestPreview(topic);
   const snapshotDelta = getSnapshotDelta(topic);
 
   return (
@@ -2004,7 +2024,7 @@ function TopicCard({
           <div className="flex flex-wrap items-center gap-2">
             <span className="shrink-0 text-xs font-semibold text-slate-200/42">#{topic.rank}</span>
             <span className={cn("rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]", signalVisual.badge)}>
-              {signalVisual.label}
+              {interestPreview.label}
             </span>
             {isTopRank ? <PillFrame family="neutral" className="px-2 py-0.5">#1</PillFrame> : null}
           </div>
@@ -2768,68 +2788,138 @@ function getSnapshotDelta(topic: LeaderboardRow): SnapshotDeltaVisual {
   };
 }
 
+function normalizeClusterId(value?: string | null) {
+  return value?.trim().toUpperCase() ?? "";
+}
+
 function getClusterTimeseries(clusterId?: string) {
-  if (!clusterId) return [];
+  const normalizedClusterId = normalizeClusterId(clusterId);
+  if (!normalizedClusterId) return [];
 
   return activeClusterTimeseries
-    .filter((row) => row.cluster_id === clusterId && typeof row.topic_growth_pct === "number")
+    .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId && row.snapshot_date)
     .sort((a, b) => String(a.snapshot_date ?? "").localeCompare(String(b.snapshot_date ?? "")));
 }
 
-function getMiniSparklinePoints(topic: LeaderboardRow) {
+function getTimeseriesVideoCount(row: ClusterTimeseriesRow) {
+  return finiteNumber(row.n_videos) ?? finiteNumber(row.n_videos_current) ?? finiteNumber(row.tracked_video_count);
+}
+
+function getInterestPreviewMetric(rows: ClusterTimeseriesRow[]) {
+  // Preview metric order: weekly topic growth first, raw weekly change second, topic coverage last.
+  // This keeps the card focused on movement when the export supports it, without inventing motion.
+  const growthValues = rows.map((row) => finiteNumber(row.topic_growth_pct));
+  if (growthValues.filter((value) => value !== null).length >= 2) {
+    return {
+      kind: "topic_growth_pct" as InterestPreviewMetricKind,
+      label: "Recent Movement",
+      values: growthValues.map((value) => value ?? 0),
+    };
+  }
+
+  const absoluteChangeValues = rows.map((row) => finiteNumber(row.wow_abs));
+  if (absoluteChangeValues.filter((value) => value !== null).length >= 2) {
+    return {
+      kind: "wow_abs" as InterestPreviewMetricKind,
+      label: "Recent Movement",
+      values: absoluteChangeValues.map((value) => value ?? 0),
+    };
+  }
+
+  return {
+    kind: "video_count" as InterestPreviewMetricKind,
+    label: "Topic Coverage",
+    values: rows.map(getTimeseriesVideoCount).filter((value): value is number => value !== null),
+  };
+}
+
+function getInterestPreviewStatus(values: number[]): InterestPreviewStatus {
+  if (values.length === 0) return "no_history";
+  if (values.length === 1) return "needs_history";
+
+  const deltas = values.slice(1).map((value, index) => value - values[index]);
+  const hasIncrease = deltas.some((delta) => delta > 0);
+  const hasDecrease = deltas.some((delta) => delta < 0);
+
+  if (!hasIncrease && !hasDecrease) return "steady";
+  if (hasIncrease && hasDecrease) return "mixed";
+  return hasIncrease ? "rising" : "cooling";
+}
+
+function getInterestPreviewLabel(status: InterestPreviewStatus) {
+  if (status === "no_history") return "No history yet";
+  if (status === "needs_history") return "Needs History";
+  if (status === "rising") return "Interest Rising";
+  if (status === "cooling") return "Interest Cooling";
+  if (status === "mixed") return "Mixed Movement";
+  return "Steady Interest";
+}
+
+function getInterestPreviewTone(status: InterestPreviewStatus): Tone {
+  if (status === "rising") return "positive";
+  if (status === "cooling") return "risk";
+  if (status === "mixed" || status === "needs_history") return "watch";
+  return "neutral";
+}
+
+function getInterestPreviewBadgeClass(status: InterestPreviewStatus) {
+  const tone = getInterestPreviewTone(status);
+  if (tone === "positive") return "border-emerald-300/28 bg-emerald-300/[0.09] text-emerald-100";
+  if (tone === "risk") return "border-rose-300/30 bg-rose-300/[0.09] text-rose-100";
+  if (tone === "watch") return "border-amber-300/28 bg-amber-300/[0.08] text-amber-100";
+  return "border-slate-300/18 bg-slate-300/[0.06] text-slate-200/76";
+}
+
+function getInterestPreview(topic: LeaderboardRow) {
   const rows = getClusterTimeseries(topic.cluster_id);
-  const values = rows.length > 0
-    ? rows.map((row) => row.topic_growth_pct ?? 0)
-    : [0, Math.max(-8, Math.min(18, getSortableGrowth(topic) * 40))];
+  const metric = getInterestPreviewMetric(rows);
+  const values = metric.values;
+  const status = getInterestPreviewStatus(values);
+  const label = getInterestPreviewLabel(status);
+
+  if (values.length === 0) {
+    return { rows, values, points: [], status, label, metric };
+  }
+
+  if (values.length === 1) {
+    return {
+      rows,
+      values,
+      status,
+      label,
+      metric,
+      points: [{ x: 50, y: 54 }],
+    };
+  }
 
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
-  
-  // KEY FIX: enforce a minimum visual range so the curve always has shape
-  // Use 15% of the max absolute value, or 10 points minimum
-  const rawRange = maxValue - minValue;
-  const minRange = Math.max(10, Math.abs(maxValue) * 0.15);
-  const range = Math.max(minRange, rawRange);
-  
-  // Center the range around the actual min/max midpoint
-  const midValue = (maxValue + minValue) / 2;
-  const clampedMin = midValue - range / 2;
 
-  return values.map((value, index) => {
-    const x = values.length === 1 ? 50 : 6 + (index / (values.length - 1)) * 88;
-    const y = 79 - ((value - clampedMin) / range) * 62;
-    return { x, y: Math.max(16, Math.min(84, y)) };
-  });
-}
-
-function getSparklinePoints(topic: LeaderboardRow, state: SignalBriefState) {
-  const growth = Math.max(-0.45, Math.min(0.75, getSortableGrowth(topic)));
-  const confidence = getConfidenceValue(topic);
-  const isBreakout = state === "hot" && (growth >= 0.32 || topic.rank <= 2);
-  const profiles: Record<SignalBriefState, number[]> = {
-    hot: isBreakout ? [70, 70, 69, 67, 58, 40, 20] : [76, 69, 61, 53, 44, 34, 23],
-    breakout: [72, 72, 71, 70, 58, 38, 18],
-    warm: [72, 73, 72, 69, 64, 56, 45],
-    cold: [52, 51, 52, 51, 50, 50, 49],
-    decay: [70, 42, 24, 34, 50, 64, 76],
-  };
-  const amplitude =
-    state === "hot" || state === "breakout" ? Math.min(7, Math.max(2, growth * 10)) :
-    state === "warm" ? 4 :
-    state === "cold" ? 2.2 :
-    5;
-
-  return profiles[state].map((baseY, index) => {
-    const x = Math.round((index / (profiles[state].length - 1)) * 100);
-    const wobble = Math.sin(index * 1.7 + topic.rank) * amplitude * (state === "cold" ? 0.65 : 1);
-    const confidenceLift = state === "hot" || state === "warm" ? confidence * 4 : 0;
-    const y = baseY + wobble - confidenceLift;
-
+  if (minValue === maxValue) {
     return {
-      x,
-      y: Math.max(14, Math.min(86, y)),
+      rows,
+      values,
+      status,
+      label,
+      metric,
+      points: values.map((_, index) => ({
+        x: values.length === 1 ? 50 : 6 + (index / (values.length - 1)) * 88,
+        y: 56,
+      })),
     };
+  }
+
+  const range = maxValue - minValue;
+  const topPadding = 18;
+  const bottomPadding = 78;
+
+  const points = values.map((value, index) => {
+    const x = values.length === 1 ? 50 : 6 + (index / (values.length - 1)) * 88;
+    const y = bottomPadding - ((value - minValue) / range) * (bottomPadding - topPadding);
+    return { x, y };
   });
+
+  return { rows, values, points, status, label, metric };
 }
 
 function normalizeAnchor(anchor: string) {
