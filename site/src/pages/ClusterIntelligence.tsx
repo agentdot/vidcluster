@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Area,
-  AreaChart,
   CartesianGrid,
+  ComposedChart,
   Line,
   ReferenceDot,
   ResponsiveContainer,
@@ -61,6 +61,7 @@ type LeaderboardRow = {
 type ClusterTimeseriesRow = {
   cluster_id?: string;
   snapshot_date?: string;
+  tracked_video_count?: number | null;
   n_videos_current?: number | null;
   n_videos?: number | null;
   n_videos_prev?: number | null;
@@ -147,8 +148,8 @@ export default function ClusterIntelligence() {
   return (
     <div className="min-h-screen bg-[#05070a] text-white">
       <PageSeo
-        title={cluster ? `${getTopicTitle(cluster)} | VidCluster` : "Cluster Intelligence | VidCluster"}
-        description="Dedicated VidCluster topic intelligence workspace."
+        title={cluster ? `${getTopicTitle(cluster)} | VidCluster` : "Topic Details | VidCluster"}
+        description="A closer look at this topic's recent movement and content opportunity."
         url={clusterId ? `/dashboard/cluster/${clusterId}` : "/dashboard"}
       />
       <SiteHeader />
@@ -225,7 +226,7 @@ function ClusterReport({
               <p className="mt-5 max-w-3xl text-base leading-7 text-slate-200/64 md:text-lg">{displaySubtitle}</p>
             ) : null}
             <div className="mt-7 max-w-4xl rounded-2xl border border-emerald-300/16 bg-emerald-300/[0.05] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-100/48">Intelligence read</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-100/48">Quick read</p>
               <p className="mt-2 text-sm leading-6 text-emerald-50/80 md:text-base">{getIntelligenceSummary(cluster)}</p>
             </div>
           </div>
@@ -245,7 +246,7 @@ function ClusterReport({
                 {formatWholePercent(cluster.growth_since_freeze_pct)}
               </div>
               <div className="mt-3 text-xs leading-5 text-emerald-50/46">
-                {cluster.latest_n_videos ? `${cluster.latest_n_videos.toLocaleString()} latest videos` : "Latest volume unavailable"}
+                {cluster.latest_n_videos ? `${cluster.latest_n_videos.toLocaleString()} latest videos` : "Latest volume not available yet"}
               </div>
             </div>
           </div>
@@ -253,19 +254,19 @@ function ClusterReport({
       </section>
 
       <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-        <MetricCard label="Latest snapshot change" value={latestSnapshotChange.value} helper="vs previous snapshot" tone={latestSnapshotChange.tone} />
-        <MetricCard label="Confidence" value={mapConfidence(cluster)} helper={formatScore(confidence)} tone={getConfidenceTone(cluster)} />
-        <MetricCard label="Stability" value={mapWillLast(cluster)} tone="neutral" />
+        <MetricCard label="Latest change" value={latestSnapshotChange.value} helper="since last update" tone={latestSnapshotChange.tone} />
+        <MetricCard label="Evidence" value={mapConfidence(cluster)} helper={formatScore(confidence)} tone={getConfidenceTone(cluster)} />
+        <MetricCard label="Stage" value={mapWillLast(cluster)} tone="neutral" />
         <MetricCard label="Opportunity" value={mapOpportunityState(cluster)} tone={getOpportunityTone(cluster)} />
-        <MetricCard label="Failure risk" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
-        <MetricCard label="Risk reason" value={formatFailureRiskReason(cluster.failure_risk_reason_code)} tone={getFailureRiskTone(cluster)} />
+        <MetricCard label="Trend Risk" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
+        <MetricCard label="Risk note" value={formatFailureRiskReason(cluster.failure_risk_reason_code)} tone={getFailureRiskTone(cluster)} />
       </section>
 
       <section className="mt-4 rounded-2xl border border-white/10 bg-[#05090e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Trend intelligence</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Temporal Signal Analysis</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Recent movement</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Recent Topic Movement</h2>
           </div>
           <div className="flex flex-wrap gap-2">
             <Badge>{formatWholePercent(cluster.growth_since_freeze_pct)}</Badge>
@@ -283,20 +284,20 @@ function ClusterReport({
       <section className="mt-4 rounded-2xl border border-white/10 bg-white/[0.032] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.18)] md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Snapshot comparison</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Current vs previous snapshot</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Latest update</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">This update vs last update</h2>
           </div>
           <DirectionBadge direction={snapshotComparison.direction} />
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard label="Current value" value={snapshotComparison.currentValue} helper={snapshotComparison.currentLabel} tone={getGrowthTone(cluster)} />
-          <MetricCard label="Previous snapshot" value={snapshotComparison.previousValue} helper={snapshotComparison.previousLabel} tone="neutral" />
-          <MetricCard label="Absolute delta" value={snapshotComparison.absoluteDelta} helper={snapshotComparison.deltaLabel} tone={snapshotComparison.tone} />
-          <MetricCard label="Percentage delta" value={snapshotComparison.percentDelta} helper={snapshotComparison.deltaLabel} tone={snapshotComparison.tone} />
+          <MetricCard label="Previous update" value={snapshotComparison.previousValue} helper={snapshotComparison.previousLabel} tone="neutral" />
+          <MetricCard label="Change in videos" value={snapshotComparison.absoluteDelta} helper={snapshotComparison.deltaLabel} tone={snapshotComparison.tone} />
+          <MetricCard label="Percent change" value={snapshotComparison.percentDelta} helper={snapshotComparison.deltaLabel} tone={snapshotComparison.tone} />
         </div>
         {snapshotComparison.isReal ? null : (
           <p className="mt-4 rounded-xl border border-amber-300/14 bg-amber-300/[0.045] px-4 py-3 text-xs leading-5 text-amber-50/62">
-            Previous snapshot comparison needs at least two time-series rows for this cluster.
+            We need one more update before comparing this topic over time.
           </p>
         )}
       </section>
@@ -305,14 +306,14 @@ function ClusterReport({
         <div className="grid gap-4">
           <NarrativeCard title="Why this trend?" body={getWhyTrendNarrative(cluster)} />
           <NarrativeCard title="Recommended action" body={cluster.opportunity_summary || getRecommendedAction(cluster)} />
-          <NarrativeCard title="Failure risk explanation" body={cluster.risk_summary || cluster.failure_risk_reason_label || "Risk evaluation needs more history for this snapshot."} />
+          <NarrativeCard title="Trend Risk explanation" body={cluster.risk_summary || cluster.failure_risk_reason_label || "Risk evaluation needs more history for this update."} />
         </div>
 
         <section className="rounded-2xl border border-white/10 bg-white/[0.032] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.18)]">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Format fit</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">{formatStrategyLabel(cluster.format_strategy_label)}</h2>
           <p className="mt-3 text-base leading-7 text-white/62">
-            {cluster.format_strategy_summary || "Format share data is not available for this cluster yet."}
+            {cluster.format_strategy_summary || "Format share data is not available for this topic yet."}
           </p>
           <p className="mt-4 rounded-xl border border-emerald-300/14 bg-emerald-300/[0.045] px-3 py-2 text-sm leading-6 text-emerald-50/68">
             {getFormatImplication(cluster)}
@@ -360,10 +361,10 @@ function ClusterReport({
 function ClusterNotFound() {
   return (
     <section className="mt-5 rounded-2xl border border-white/10 bg-white/[0.035] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-rose-200/78">Cluster not found</p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-white">No matching cluster found</h1>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-rose-200/78">Topic not found</p>
+      <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-white">No matching topic found</h1>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-white/58">
-        This intelligence workspace is ready, but the requested cluster is not present in the current leaderboard snapshot.
+        This topic is not available in the latest dashboard data.
       </p>
     </section>
   );
@@ -388,7 +389,7 @@ function MetricCard({ label, value, helper, tone }: { label: string; value: stri
 }
 
 function DirectionBadge({ direction }: { direction: "up" | "down" | "flat" | "unknown" }) {
-  const label = direction === "up" ? "Up" : direction === "down" ? "Down" : direction === "flat" ? "Flat" : "Previous unavailable";
+  const label = direction === "up" ? "Up" : direction === "down" ? "Down" : direction === "flat" ? "Flat" : "Previous update not available";
   const className =
     direction === "up"
       ? "border-emerald-300/24 bg-emerald-300/[0.08] text-emerald-100"
@@ -412,7 +413,7 @@ function TrendInterpretationPanel({
     <section className="mt-5 rounded-2xl border border-white/10 bg-white/[0.032] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.16)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-4xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Trend interpretation</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">What changed</p>
           <p className="mt-3 text-sm leading-6 text-white/70 md:text-base">{interpretation.body}</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -455,14 +456,14 @@ function TabContentPanel({
       {activeTab === "Overview" ? (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Current signal</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Current read</p>
             <p className="mt-3 text-sm leading-6 text-white/68">{getIntelligenceSummary(cluster)}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
             <TabStat label="Growth" value={formatWholePercent(cluster.growth_since_freeze_pct)} tone={getGrowthTone(cluster)} />
-            <TabStat label="Confidence" value={mapConfidence(cluster)} tone={getConfidenceTone(cluster)} />
+            <TabStat label="Evidence" value={mapConfidence(cluster)} tone={getConfidenceTone(cluster)} />
             <TabStat label="Latest videos" value={latest?.n_videos?.toLocaleString() ?? formatNumber(cluster.latest_n_videos)} tone="neutral" />
-            <TabStat label="Risk" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
+            <TabStat label="Trend Risk" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
           </div>
         </div>
       ) : null}
@@ -470,12 +471,12 @@ function TabContentPanel({
       {activeTab === "Momentum" ? (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <TabStat label="Latest delta" value={snapshotComparison.absoluteDelta} helper={snapshotComparison.deltaLabel} tone={snapshotComparison.tone} />
-          <TabStat label="Percent delta" value={snapshotComparison.percentDelta} helper="vs previous snapshot" tone={snapshotComparison.tone} />
+          <TabStat label="Percent change" value={snapshotComparison.percentDelta} helper="since last update" tone={snapshotComparison.tone} />
           <TabStat label="Direction" value={titleCase(snapshotComparison.direction)} tone={snapshotComparison.tone} />
-          <TabStat label="Snapshots" value={timeseries.length.toString()} tone="neutral" />
+          <TabStat label="Updates tracked" value={timeseries.length.toString()} tone="neutral" />
           <TabStat
             label="First to latest"
-            value={first && latest ? `${formatNumber(first.n_videos)} → ${formatNumber(latest.n_videos)}` : "Unavailable"}
+            value={first && latest ? `${formatNumber(first.n_videos)} → ${formatNumber(latest.n_videos)}` : "Not enough data yet"}
             helper={first?.snapshot_date && latest?.snapshot_date ? `${formatShortDate(first.snapshot_date)} to ${formatShortDate(latest.snapshot_date)}` : undefined}
             tone="neutral"
           />
@@ -494,12 +495,12 @@ function TabContentPanel({
         <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
           <div className="grid gap-3">
             <TabStat label="Risk level" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
-            <TabStat label="Risk reason" value={formatFailureRiskReason(cluster.failure_risk_reason_code)} tone={getFailureRiskTone(cluster)} />
+            <TabStat label="Risk note" value={formatFailureRiskReason(cluster.failure_risk_reason_code)} tone={getFailureRiskTone(cluster)} />
             <TabStat label="Risk score" value={formatRiskScore(cluster.failure_risk_score)} tone={getFailureRiskTone(cluster)} />
           </div>
           <NarrativeCard
-            title="Risk interpretation"
-            body={cluster.risk_summary || cluster.failure_risk_reason_label || "Risk evaluation is still pending while this cluster builds more history."}
+            title="Risk note"
+            body={cluster.risk_summary || cluster.failure_risk_reason_label || "Risk evaluation is still pending while this topic builds more history."}
           />
         </div>
       ) : null}
@@ -523,7 +524,7 @@ function TabStat({ label, value, helper, tone }: { label: string; value: string;
 
 function MicroNichesPanel({ rows }: { rows: MicroNicheRow[] }) {
   if (rows.length === 0) {
-    return <EmptyTabPanel title="No micro-niche rows are available for this cluster yet." />;
+    return <EmptyTabPanel title="No micro-niche rows are available for this topic yet." />;
   }
 
   const [leader, ...supportingRows] = rows;
@@ -542,12 +543,12 @@ function MicroNichesPanel({ rows }: { rows: MicroNicheRow[] }) {
           <div className="grid grid-cols-3 gap-3">
             <MiniStat label="Emergence" value={formatDecimal(leader.micro_emergence_score)} strong />
             <MiniStat label="Videos" value={formatNumber(leader.assigned_video_count)} strong />
-            <MiniStat label="Stability" value={formatSelectedValue(leader.stability_label)} strong />
+            <MiniStat label="Stage" value={formatSelectedValue(leader.stability_label)} strong />
           </div>
         </div>
         <p className="mt-5 rounded-xl border border-white/10 bg-black/18 px-4 py-3 text-sm leading-6 text-white/62">
           Why this matters: {leaderLabel} has {formatNumber(leader.assigned_video_count)} assigned videos,
-          an emergence score of {formatDecimal(leader.micro_emergence_score)}, and {formatSelectedValue(leader.stability_label).toLowerCase()} stability.
+          an emergence score of {formatDecimal(leader.micro_emergence_score)}, and a {formatSelectedValue(leader.stability_label).toLowerCase()} stage.
         </p>
       </div>
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -561,7 +562,7 @@ function MicroNichesPanel({ rows }: { rows: MicroNicheRow[] }) {
               <div className="mt-4 grid grid-cols-3 gap-3">
                 <MiniStat label="Emergence" value={formatDecimal(row.micro_emergence_score)} />
                 <MiniStat label="Videos" value={formatNumber(row.assigned_video_count)} />
-                <MiniStat label="Stability" value={formatSelectedValue(row.stability_label)} />
+                <MiniStat label="Stage" value={formatSelectedValue(row.stability_label)} />
               </div>
             </div>
           );
@@ -573,7 +574,7 @@ function MicroNichesPanel({ rows }: { rows: MicroNicheRow[] }) {
 
 function DivergencePanel({ rows, microNiches }: { rows: DivergenceRow[]; microNiches: MicroNicheRow[] }) {
   if (rows.length === 0) {
-    return <EmptyTabPanel title="No divergence rows are available for this cluster yet." />;
+    return <EmptyTabPanel title="No divergence rows are available for this topic yet." />;
   }
 
   const labelsBySubclusterId = new Map(microNiches.map((row) => [row.subcluster_id, row.subcluster_label]));
@@ -591,14 +592,14 @@ function DivergencePanel({ rows, microNiches }: { rows: DivergenceRow[]; microNi
       </p>
       <DivergenceGroup title="Outperforming" rows={outperformingRows} tone="positive" />
       <DivergenceGroup title="Weakening" rows={weakeningRows} tone="risk" />
-      <DivergenceGroup title="Stable / no signal" rows={[...neutralUsefulRows, ...stableRows].slice(0, 6)} tone="neutral" compact />
+      <DivergenceGroup title="Little change" rows={[...neutralUsefulRows, ...stableRows].slice(0, 6)} tone="neutral" compact />
     </div>
   );
 }
 
 function AudienceIntentPanel({ rows }: { rows: AudienceIntentRow[] }) {
   if (rows.length === 0) {
-    return <EmptyTabPanel title="No audience intent rows are available for this cluster yet." />;
+    return <EmptyTabPanel title="No audience intent rows are available for this topic yet." />;
   }
 
   return (
@@ -649,7 +650,7 @@ function DivergenceGroup({ title, rows, tone, compact = false }: { title: string
               <MiniStat label="Score" value={formatDecimal(row.divergence_score)} />
               <MiniStat label="Share delta" value={formatPP(row.share_delta)} />
               <MiniStat label="Spread" value={formatPercentRatio(row.relative_growth_spread)} />
-              <MiniStat label="Snapshot" value={formatShortDate(row.snapshot_date)} />
+              <MiniStat label="Update" value={formatShortDate(row.snapshot_date)} />
             </div>
             <p className="mt-4 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm leading-6 text-white/54">
               Micro {formatPercentRatio(row.micro_wow_pct)} vs parent {formatPercentRatio(row.parent_wow_pct)}
@@ -681,22 +682,39 @@ function EmptyTabPanel({ title }: { title: string }) {
 
 function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
   const chartRows = rows
-    .filter((row) => row.snapshot_date && finiteNumber(row.n_videos) !== null)
+    .filter((row) => row.snapshot_date)
     .map((row) => {
       const growth = resolveTimeseriesGrowthPct(row);
-      return { ...row, topic_growth_pct: growth ?? 0, growth_available: growth !== null };
+      const videoCount = resolveTimeseriesVideoCount(row);
+      return {
+        ...row,
+        chart_growth_pct: growth ?? 0,
+        growth_available: growth !== null,
+        chart_video_count: videoCount,
+      };
     });
-  const previous = chartRows.length >= 2 ? chartRows[chartRows.length - 2] : undefined;
   const current = chartRows[chartRows.length - 1];
+  const yDomain = getTrendChartDomain(chartRows.map((row) => row.chart_growth_pct));
+  const lineType = chartRows.length >= 5 ? "monotone" : "linear";
+
+  if (import.meta.env.DEV) {
+    console.table(
+      chartRows.map((row) => ({
+        date: row.snapshot_date,
+        raw: row.topic_growth_pct,
+        chart: row.chart_growth_pct,
+      })),
+    );
+  }
 
   if (!current) {
     return (
       <div className="relative min-h-[270px] overflow-hidden rounded-xl border border-dashed border-white/12 bg-[#03060a]">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="mx-5 max-w-xl rounded-2xl border border-white/10 bg-black/52 px-5 py-4 text-center shadow-[0_18px_60px_rgba(0,0,0,0.42)]">
-            <p className="text-sm font-semibold text-white/78">Time-series data not available for this cluster</p>
+            <p className="text-sm font-semibold text-white/78">History is not available for this topic yet</p>
             <p className="mt-2 text-xs leading-5 text-white/44">
-              Expected cluster_id, snapshot_date, and n_videos.
+              We could not load enough history for this topic.
             </p>
           </div>
         </div>
@@ -713,17 +731,17 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
           <LegendDot color="bg-amber-300" label="Current" />
         </div>
         <div className="text-xs text-white/42">
-          {chartRows.length} {chartRows.length === 1 ? "snapshot" : "snapshots"} ·{" "}
-          {current.n_videos?.toLocaleString() ?? "Unknown"} videos now
+          {chartRows.length} {chartRows.length === 1 ? "update" : "updates"} ·{" "}
+          {current.chart_video_count?.toLocaleString() ?? "Video count unavailable"} videos now
         </div>
       </div>
 
       <div className="h-[330px]">
         <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/32">
-          {chartRows.some((row) => row.growth_available) ? "Topic growth %" : "Topic growth % needs 2 snapshots"}
+          {chartRows.some((row) => row.growth_available) ? "Topic growth %" : "Needs one more update"}
         </div>
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartRows} margin={{ top: 28, right: 34, bottom: 8, left: 8 }}>
+          <ComposedChart data={chartRows} margin={{ top: 36, right: 34, bottom: 8, left: 8 }}>
             <defs>
               <linearGradient id="detailTrendAreaGradient" x1="0" x2="0" y1="0" y2="1">
                 <stop offset="0%" stopColor="rgb(110 231 183)" stopOpacity="0.20" />
@@ -746,6 +764,7 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
               axisLine={{ stroke: "rgba(148,163,184,0.18)" }}
             />
             <YAxis
+              domain={yDomain}
               tick={{ fill: "rgba(226,232,240,0.55)", fontSize: 12 }}
               tickFormatter={(value) => `${Number(value).toFixed(0)}%`}
               tickLine={false}
@@ -761,46 +780,57 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
               }}
               formatter={(value, name, item) => [
                 item.payload.growth_available
-                  ? `${Number(value).toFixed(1)}% growth · ${item.payload.n_videos?.toLocaleString() ?? "Unknown"} videos`
-                  : `Growth needs 2 snapshots · ${item.payload.n_videos?.toLocaleString() ?? "Unknown"} videos`,
+                  ? `${Number(value).toFixed(1)}% growth · ${item.payload.chart_video_count?.toLocaleString() ?? "Video count unavailable"} videos`
+                  : `Baseline · ${item.payload.chart_video_count?.toLocaleString() ?? "Video count unavailable"} videos`,
                 name,
               ]}
               labelFormatter={(label) => formatSnapshotDate(String(label))}
             />
             <Area
-              type={chartRows.length >= 3 ? "monotone" : "linear"}
-              dataKey="topic_growth_pct"
+              type={lineType}
+              dataKey="chart_growth_pct"
               fill="url(#detailTrendAreaGradient)"
               stroke="none"
+              fillOpacity={0.82}
               activeDot={false}
               dot={false}
               isAnimationActive={false}
             />
             <Line
-              type={chartRows.length >= 3 ? "monotone" : "linear"}
-              dataKey="topic_growth_pct"
+              type={lineType}
+              dataKey="chart_growth_pct"
               name="Growth"
               stroke="rgb(110 231 183)"
-              strokeWidth={7}
-              strokeOpacity={0.16}
+              strokeWidth={8}
+              strokeOpacity={0.22}
               dot={false}
               activeDot={false}
               filter="url(#detailTrendLineGlow)"
               isAnimationActive={false}
             />
             <Line
-              type={chartRows.length >= 3 ? "monotone" : "linear"}
-              dataKey="topic_growth_pct"
+              type={lineType}
+              dataKey="chart_growth_pct"
               name="Growth"
-              stroke="rgb(110 231 183)"
-              strokeWidth={3}
-              dot={false}
+              stroke="#f8fafc"
+              strokeWidth={4.5}
+              strokeOpacity={1}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              dot={{
+                r: 3.5,
+                strokeWidth: 1.5,
+                fill: "#03060a",
+                stroke: "rgba(110,231,183,0.88)",
+              }}
+              connectNulls
+              isAnimationActive={false}
               activeDot={{ r: 7, strokeWidth: 2, fill: "rgb(110 231 183)", stroke: "rgba(248,250,252,0.95)" }}
             />
             {chartRows[0] ? (
               <ReferenceDot
                 x={chartRows[0].snapshot_date}
-                y={chartRows[0].topic_growth_pct ?? 0}
+                y={chartRows[0].chart_growth_pct}
                 r={7}
                 fill="#03060a"
                 stroke="rgba(110,231,183,0.82)"
@@ -809,18 +839,34 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
             ) : null}
             <ReferenceDot
               x={current.snapshot_date}
-              y={current.topic_growth_pct ?? 0}
+              y={current.chart_growth_pct}
               r={10}
               fill="rgb(251 191 36)"
               stroke="rgba(248,250,252,0.96)"
               strokeWidth={3}
               label={{ value: "Current", position: "top", fill: "rgba(254,243,199,0.9)", fontSize: 12 }}
             />
-          </AreaChart>
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
     </div>
   );
+}
+
+function getTrendChartDomain(values: Array<number | null | undefined>): [number, number] {
+  const finiteValues = values.filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  if (finiteValues.length === 0) return [-1, 1];
+
+  const min = Math.min(...finiteValues);
+  const max = Math.max(...finiteValues);
+  if (min === max) {
+    const padding = Math.max(1, Math.abs(min) * 0.35);
+    return [min - padding, max + padding];
+  }
+
+  const range = max - min;
+  const padding = Math.max(0.75, range * 0.22);
+  return [min - padding, max + padding];
 }
 
 function LegendDot({ color, label }: { color: string; label: string }) {
@@ -849,7 +895,7 @@ function FormatShare({ label, value }: { label: string; value?: number | null })
     <div>
       <div className="flex items-center justify-between gap-3 text-sm">
         <span className="text-base font-semibold text-white/72">{label}</span>
-        <span className={hasValue ? "text-sm font-semibold text-white/78" : "text-sm text-white/32"}>{hasValue ? `${percent.toFixed(1)}%` : "Unavailable"}</span>
+        <span className={hasValue ? "text-sm font-semibold text-white/78" : "text-sm text-white/32"}>{hasValue ? `${percent.toFixed(1)}%` : "Not available yet"}</span>
       </div>
       <div className="mt-2 h-3 rounded-full bg-white/[0.065]">
         <div
@@ -887,7 +933,7 @@ function getTopicTitle(topic: LeaderboardRow) {
 }
 
 function getRawTopicTitle(topic: LeaderboardRow) {
-  return topic.display_topic_title || topic.cluster_label || topic.title || topic.cluster_id || "Untitled cluster";
+  return topic.display_topic_title || topic.cluster_label || topic.title || topic.cluster_id || "Untitled topic";
 }
 
 function getTopicSubtitle(topic: LeaderboardRow, title: string) {
@@ -900,7 +946,7 @@ function formatTopicSubtitleForDisplay(subtitle: string) {
   const microSignalMatch = subtitle.match(/^Derived from (\d+) canonical micro-niche labels$/i);
   if (microSignalMatch) {
     const count = Number(microSignalMatch[1]);
-    return `Observed across ${microSignalMatch[1]} related micro-signal${count === 1 ? "" : "s"}`;
+    return `Based on ${microSignalMatch[1]} related topic example${count === 1 ? "" : "s"}.`;
   }
 
   return subtitle;
@@ -912,7 +958,7 @@ function truncateTitle(value: string) {
 }
 
 function mapDecisionLabel(label?: string) {
-  if (!label) return "Signal Unknown";
+  if (!label) return "Status not available yet";
   return DECISION_LABEL_MAP[label] ?? titleCase(label);
 }
 
@@ -924,9 +970,9 @@ function getConfidenceValue(topic: LeaderboardRow) {
 
 function mapConfidence(topic: LeaderboardRow) {
   const normalized = getConfidenceValue(topic);
-  if (normalized >= 0.72) return "High Confidence";
-  if (normalized >= 0.48) return "Moderate Confidence";
-  return "Low Confidence";
+  if (normalized >= 0.72) return "Strong Evidence";
+  if (normalized >= 0.48) return "Moderate Evidence";
+  return "Limited Evidence";
 }
 
 function mapWillLast(topic: LeaderboardRow) {
@@ -934,7 +980,7 @@ function mapWillLast(topic: LeaderboardRow) {
   if (topic.decision_label === "EARLY_TREND") return "Promising, validate";
   if (topic.decision_label === "EMERGING") return "Too early to call";
   if (Boolean(topic.t60_is_winner)) return "Held up before";
-  return "Not stable yet";
+  return "Still forming";
 }
 
 function mapOpportunityState(topic: LeaderboardRow) {
@@ -994,7 +1040,7 @@ function getChipClass(tone: Tone) {
 function getIntelligenceSummary(topic: LeaderboardRow) {
   if (topic.trend_summary) return topic.trend_summary;
   if (topic.opportunity_summary) return topic.opportunity_summary;
-  return "VidCluster is preparing a dedicated intelligence readout for this cluster.";
+  return "VidCluster is preparing a dedicated readout for this topic.";
 }
 
 function getWhyTrendNarrative(topic: LeaderboardRow) {
@@ -1005,13 +1051,13 @@ function getWhyTrendNarrative(topic: LeaderboardRow) {
 
   if (scoreAnchor && scoreAnchor !== trendSummary) return scoreAnchor;
 
-  return `The signal is supported by ${confidence}, ${risk}, and ${formatWholePercent(topic.growth_since_freeze_pct)} topic growth in the current export.`;
+  return `This topic is supported by ${confidence}, ${risk}, and ${formatWholePercent(topic.growth_since_freeze_pct)} topic growth in the current export.`;
 }
 
 function getRecommendedAction(topic: LeaderboardRow) {
-  if (topic.decision_label === "STRONG_TREND") return "Scale this topic into a repeatable series while the signal remains strong.";
-  if (topic.decision_label === "WEAK_OR_RISK") return "Hold new production until a cleaner signal appears.";
-  return "Run a small validation test and monitor whether the signal strengthens in the next snapshot.";
+  if (topic.decision_label === "STRONG_TREND") return "Scale this topic into a repeatable series while the topic remains strong.";
+  if (topic.decision_label === "WEAK_OR_RISK") return "Hold new production until a clearer opportunity appears.";
+  return "Run a small validation test and watch whether the topic strengthens in the next update.";
 }
 
 function getMovementInterpretation(direction: "growing" | "declining" | "flat", videoDeltaPct: number | null, rows: ClusterTimeseriesRow[]) {
@@ -1032,7 +1078,7 @@ function getMovementInterpretation(direction: "growing" | "declining" | "flat", 
         ? "Recent observations show mild contraction after a stable period."
         : "Recent observations show mild contraction, but the move remains limited.";
     }
-    return "Recent observations show clearer contraction in activity, so the signal should be watched for further softening.";
+    return "Recent observations show clearer contraction in activity, so this topic should be watched for further softening.";
   }
 
   if (videoDeltaPct === null || absMove < 2.5) {
@@ -1041,14 +1087,14 @@ function getMovementInterpretation(direction: "growing" | "declining" | "flat", 
       : "Recent observations show mild expansion, but the move remains limited.";
   }
 
-  return "Recent observations show clearer expansion in activity, indicating the signal is strengthening.";
+  return "Recent observations show clearer expansion in activity, indicating the topic is strengthening.";
 }
 
 function getConfidenceSentenceLead(topic: LeaderboardRow) {
   const confidenceLabel = mapConfidence(topic);
-  if (confidenceLabel === "High Confidence") return "Confidence remains high";
-  if (confidenceLabel === "Moderate Confidence") return "Confidence is moderate";
-  return "Confidence remains limited";
+  if (confidenceLabel === "Strong Evidence") return "Evidence is strong";
+  if (confidenceLabel === "Moderate Evidence") return "Evidence is moderate";
+  return "Evidence is limited";
 }
 
 function getEvidenceInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRow[]) {
@@ -1058,20 +1104,20 @@ function getEvidenceInterpretation(topic: LeaderboardRow, rows: ClusterTimeserie
   const riskTone = getFailureRiskTone(topic);
 
   if (riskTone === "risk") {
-    return `${confidenceLead}, but risk signals keep this under review.`;
+    return `${confidenceLead}, but risk indicators keep this under review.`;
   }
 
   if (decisionLabel.includes("EMERGING") || decisionLabel.includes("EARLY")) {
     return historyIsLimited
-      ? `${confidenceLead}, but the signal is still forming and needs more history before stronger conclusions can be drawn.`
-      : `${confidenceLead}, and the signal is still forming across the available history.`;
+      ? `${confidenceLead}, but the topic is still forming and needs more history before stronger conclusions can be drawn.`
+      : `${confidenceLead}, and the topic is still forming across the available history.`;
   }
 
   if (historyIsLimited) {
-    return `${confidenceLead}, but historical depth is still limited, so the signal remains under observation.`;
+    return `${confidenceLead}, but historical depth is still limited, so the topic remains under observation.`;
   }
 
-  return `${confidenceLead}; additional snapshots will clarify whether this behavior persists.`;
+  return `${confidenceLead}; additional updates will clarify whether this behavior persists.`;
 }
 
 function getTrendInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRow[]) {
@@ -1083,7 +1129,7 @@ function getTrendInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRo
 
   if (!current || !previous || currentVideos === null || previousVideos === null) {
     return {
-      body: "Trend interpretation requires at least two snapshots.",
+      body: "We need one more update before comparing this topic over time.",
       chips: [{ label: "Needs history", tone: "neutral" as Tone }],
     };
   }
@@ -1203,8 +1249,8 @@ function getSnapshotComparison(topic: LeaderboardRow, rows: ClusterTimeseriesRow
       previousValue: previous.n_videos.toLocaleString(),
       previousLabel: formatSnapshotDate(previous.snapshot_date),
       absoluteDelta: `${absoluteDelta >= 0 ? "+" : ""}${absoluteDelta.toLocaleString()}`,
-      percentDelta: percentDelta === null ? "Unavailable" : formatWholePercent(percentDelta),
-      deltaLabel: "vs previous snapshot",
+      percentDelta: percentDelta === null ? "Not enough data yet" : formatWholePercent(percentDelta),
+      deltaLabel: "since last update",
       direction,
       tone,
       isReal: true,
@@ -1215,17 +1261,17 @@ function getSnapshotComparison(topic: LeaderboardRow, rows: ClusterTimeseriesRow
   const currentGrowth = typeof topic.growth_since_freeze_pct === "number" ? topic.growth_since_freeze_pct : null;
 
   return {
-    currentValue: currentVideos === null ? "Unavailable" : currentVideos.toLocaleString(),
+    currentValue: currentVideos === null ? "Not enough data yet" : currentVideos.toLocaleString(),
     currentLabel: current?.snapshot_date
       ? formatSnapshotDate(current.snapshot_date)
       : currentGrowth === null
-        ? "Latest snapshot videos"
+        ? "Latest update videos"
         : `${formatWholePercent(currentGrowth)} growth`,
-    previousValue: "Unavailable",
-    previousLabel: "Need 2 snapshots",
-    absoluteDelta: "Unavailable",
-    percentDelta: "Unavailable",
-    deltaLabel: "Previous unavailable",
+    previousValue: "Not enough data yet",
+    previousLabel: "Needs another update",
+    absoluteDelta: "Not enough data yet",
+    percentDelta: "Not enough data yet",
+    deltaLabel: "Previous update not available",
     direction: "unknown" as const,
     tone: "neutral" as Tone,
     isReal: false,
@@ -1233,7 +1279,7 @@ function getSnapshotComparison(topic: LeaderboardRow, rows: ClusterTimeseriesRow
 }
 
 function formatFailureRiskValue(value?: string | null) {
-  if (!value) return "Risk pending";
+  if (!value) return "Coming soon";
   return titleCase(value.split("_").join(" "));
 }
 
@@ -1247,7 +1293,7 @@ function formatFailureRiskReason(value?: string | null) {
 }
 
 function formatFailureRiskChip(value?: string | null) {
-  if (!value) return "Risk pending";
+  if (!value) return "Coming soon";
   return `${formatFailureRiskLevel(value)} Risk`;
 }
 
@@ -1257,28 +1303,28 @@ function formatObservedFailureRisk(value?: string | null) {
 }
 
 function formatSelectedValue(value?: string | null) {
-  if (!value) return "Unavailable";
+  if (!value) return "Not available yet";
   return titleCase(value);
 }
 
 function formatNumber(value?: number | null) {
-  if (value === null || value === undefined) return "Unavailable";
+  if (value === null || value === undefined) return "Not available yet";
   return value.toLocaleString();
 }
 
 function formatDecimal(value?: number | null) {
-  if (value === null || value === undefined) return "Unavailable";
+  if (value === null || value === undefined) return "Not available yet";
   return value.toFixed(2);
 }
 
 function formatPP(value?: number | null) {
-  if (value === null || value === undefined) return "Unavailable";
+  if (value === null || value === undefined) return "Not available yet";
   const points = value * 100;
   return `${points >= 0 ? "+" : ""}${points.toFixed(1)}pp`;
 }
 
 function formatPercentRatio(value?: number | null) {
-  if (value === null || value === undefined) return "Unavailable";
+  if (value === null || value === undefined) return "Not available yet";
   const percent = Math.abs(value) <= 10 ? value * 100 : value;
   return `${percent >= 0 ? "+" : ""}${percent.toFixed(1)}%`;
 }
@@ -1293,12 +1339,12 @@ function formatContentAngles(value?: string[] | string | null, intentLabel?: str
 }
 
 function formatRiskScore(value?: number | null) {
-  if (value === null || value === undefined) return "Unavailable";
+  if (value === null || value === undefined) return "Not enough data yet";
   return `${Math.round(value * 100)}%`;
 }
 
 function formatStrategyLabel(value?: string | null) {
-  if (!value) return "Format data pending";
+  if (!value) return "Format not available yet";
   return titleCase(value);
 }
 
@@ -1309,7 +1355,7 @@ function getFormatImplication(topic: LeaderboardRow) {
     { label: "long-form", value: topic.long_video_share },
   ].filter((item): item is { label: string; value: number } => typeof item.value === "number");
 
-  if (shares.length === 0) return "Creator implication is unavailable until format share data is exported.";
+  if (shares.length === 0) return "Creator implication is not available until format share data is ready.";
 
   const leader = shares.sort((a, b) => b.value - a.value)[0];
   return `Creator implication: prioritize ${leader.label} packaging first, then use the other formats as supporting tests if production capacity allows.`;
@@ -1321,7 +1367,7 @@ function getDivergenceMeaning(row: DivergenceRow) {
 
   if (spread > 0 || shareDelta > 0) return "What this means: this segment is gaining ground inside the parent topic.";
   if (spread < 0 || shareDelta < 0) return "What this means: this segment is weakening relative to the parent topic.";
-  return "What this means: no meaningful internal divergence is visible in this snapshot.";
+  return "What this means: no meaningful internal divergence is visible in this update.";
 }
 
 function finiteNumber(value?: unknown) {
@@ -1363,8 +1409,12 @@ function resolveTimeseriesGrowthPct(row: ClusterTimeseriesRow) {
   return null;
 }
 
+function resolveTimeseriesVideoCount(row: ClusterTimeseriesRow) {
+  return finiteNumber(row.n_videos) ?? finiteNumber(row.n_videos_current) ?? finiteNumber(row.tracked_video_count);
+}
+
 function formatWholePercent(value?: number | null) {
-  if (value === null || value === undefined) return "Unavailable";
+  if (value === null || value === undefined) return "Not enough data yet";
   return `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
 }
 
@@ -1379,7 +1429,7 @@ function formatScore(value: number) {
 }
 
 function formatSnapshotDate(value?: string) {
-  if (!value) return "Preview snapshot";
+  if (!value) return "Preview update";
   const date = new Date(`${value}T00:00:00`);
   if (Number.isNaN(date.getTime())) return value;
   return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(date);
