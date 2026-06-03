@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
   Line,
-  LineChart,
   ReferenceDot,
   ResponsiveContainer,
   Tooltip,
@@ -117,6 +118,7 @@ const DECISION_LABEL_MAP: Record<string, string> = {
 };
 
 const STABLE_SNAPSHOT_CHANGE_THRESHOLD = 0.05;
+const TEMPORAL_DEBUG_CLUSTER_IDS = ["SC002", "SC161", "SC006"];
 
 const tabs: IntelligenceTab[] = ["Overview", "Momentum", "Micro-Niches", "Divergence", "Failure Risk", "Audience Intent"];
 
@@ -131,6 +133,12 @@ export default function ClusterIntelligence() {
     const rows = dashboardData.data.timeseries as ClusterTimeseriesRow[];
     return rows.length > 0 ? rows : fallbackClusterTimeseries;
   }, [dashboardData.data.timeseries]);
+  useEffect(() => {
+    logTemporalDebugChecks(clusterTimeseries, {
+      phase: "detail-data-resolved",
+      source: dashboardData.source,
+    });
+  }, [clusterTimeseries, dashboardData.source]);
   const microNiches = dashboardData.data.microNiches as MicroNicheRow[];
   const divergences = dashboardData.data.divergence as DivergenceRow[];
   const normalizedRouteClusterId = normalizeClusterId(clusterId);
@@ -715,7 +723,20 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
           {chartRows.some((row) => row.growth_available) ? "Topic growth %" : "Topic growth % needs 2 snapshots"}
         </div>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartRows} margin={{ top: 28, right: 34, bottom: 8, left: 8 }}>
+          <AreaChart data={chartRows} margin={{ top: 28, right: 34, bottom: 8, left: 8 }}>
+            <defs>
+              <linearGradient id="detailTrendAreaGradient" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor="rgb(110 231 183)" stopOpacity="0.20" />
+                <stop offset="100%" stopColor="rgb(110 231 183)" stopOpacity="0.02" />
+              </linearGradient>
+              <filter id="detailTrendLineGlow" x="-20%" y="-30%" width="140%" height="160%">
+                <feGaussianBlur stdDeviation="2.4" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
             <CartesianGrid stroke="rgba(148,163,184,0.12)" strokeDasharray="3 6" vertical={false} />
             <XAxis
               dataKey="snapshot_date"
@@ -746,24 +767,44 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
               ]}
               labelFormatter={(label) => formatSnapshotDate(String(label))}
             />
+            <Area
+              type={chartRows.length >= 3 ? "monotone" : "linear"}
+              dataKey="topic_growth_pct"
+              fill="url(#detailTrendAreaGradient)"
+              stroke="none"
+              activeDot={false}
+              dot={false}
+              isAnimationActive={false}
+            />
             <Line
-              type="monotone"
+              type={chartRows.length >= 3 ? "monotone" : "linear"}
+              dataKey="topic_growth_pct"
+              name="Growth"
+              stroke="rgb(110 231 183)"
+              strokeWidth={7}
+              strokeOpacity={0.16}
+              dot={false}
+              activeDot={false}
+              filter="url(#detailTrendLineGlow)"
+              isAnimationActive={false}
+            />
+            <Line
+              type={chartRows.length >= 3 ? "monotone" : "linear"}
               dataKey="topic_growth_pct"
               name="Growth"
               stroke="rgb(110 231 183)"
               strokeWidth={3}
-              dot={{ r: 4, strokeWidth: 2, fill: "#03060a", stroke: "rgba(110,231,183,0.78)" }}
+              dot={false}
               activeDot={{ r: 7, strokeWidth: 2, fill: "rgb(110 231 183)", stroke: "rgba(248,250,252,0.95)" }}
             />
-            {previous ? (
+            {chartRows[0] ? (
               <ReferenceDot
-                x={previous.snapshot_date}
-                y={previous.topic_growth_pct ?? 0}
-                r={9}
+                x={chartRows[0].snapshot_date}
+                y={chartRows[0].topic_growth_pct ?? 0}
+                r={7}
                 fill="#03060a"
-                stroke="rgba(203,213,225,0.95)"
-                strokeWidth={3}
-                label={{ value: "Previous", position: "top", fill: "rgba(226,232,240,0.82)", fontSize: 12 }}
+                stroke="rgba(110,231,183,0.82)"
+                strokeWidth={2}
               />
             ) : null}
             <ReferenceDot
@@ -775,7 +816,7 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
               strokeWidth={3}
               label={{ value: "Current", position: "top", fill: "rgba(254,243,199,0.9)", fontSize: 12 }}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>
@@ -1036,17 +1077,19 @@ function getEvidenceInterpretation(topic: LeaderboardRow, rows: ClusterTimeserie
 function getTrendInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRow[]) {
   const current = rows[rows.length - 1];
   const previous = rows.length >= 2 ? rows[rows.length - 2] : undefined;
+  const currentVideos = current ? finiteNumber(current.n_videos) : null;
+  const previousVideos = previous ? finiteNumber(previous.n_videos) : null;
   const confidenceLabel = mapConfidence(topic);
 
-  if (!current || !previous || typeof current.n_videos !== "number" || typeof previous.n_videos !== "number") {
+  if (!current || !previous || currentVideos === null || previousVideos === null) {
     return {
       body: "Trend interpretation requires at least two snapshots.",
       chips: [{ label: "Needs history", tone: "neutral" as Tone }],
     };
   }
 
-  const videoDelta = current.n_videos - previous.n_videos;
-  const videoDeltaPct = previous.n_videos === 0 ? null : (videoDelta / previous.n_videos) * 100;
+  const videoDelta = currentVideos - previousVideos;
+  const videoDeltaPct = previousVideos === 0 ? null : (videoDelta / previousVideos) * 100;
   const direction = videoDelta > 0 ? "growing" : videoDelta < 0 ? "declining" : "flat";
   const movement = getMovementInterpretation(direction, videoDeltaPct, rows);
   const evidence = getEvidenceInterpretation(topic, rows);
@@ -1084,6 +1127,29 @@ function getClusterTimeseries(rows: ClusterTimeseriesRow[], clusterId?: string) 
   return rows
     .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId && row.snapshot_date)
     .sort((a, b) => String(a.snapshot_date).localeCompare(String(b.snapshot_date)));
+}
+
+function logTemporalDebugChecks(
+  rows: ClusterTimeseriesRow[],
+  context: { phase: string; source: string },
+) {
+  if (!import.meta.env.DEV) return;
+
+  const summaries = TEMPORAL_DEBUG_CLUSTER_IDS.map((clusterId) => {
+    const clusterRows = getClusterTimeseries(rows, clusterId);
+    const values = clusterRows.map((row) => resolveTimeseriesGrowthPct(row) ?? 0);
+    return {
+      clusterId,
+      phase: context.phase,
+      source: context.source,
+      matchedRows: clusterRows.length,
+      metric: "topic_growth_pct",
+      values,
+      label: values.length < 2 ? "Needs history" : "History available",
+    };
+  });
+
+  console.debug("Temporal trend validation", summaries);
 }
 
 function formatSignedInteger(value: number) {
@@ -1258,8 +1324,19 @@ function getDivergenceMeaning(row: DivergenceRow) {
   return "What this means: no meaningful internal divergence is visible in this snapshot.";
 }
 
-function finiteNumber(value?: number | null) {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
+function finiteNumber(value?: unknown) {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const parsed = Number(trimmed);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
 }
 
 function pctToDisplayPercent(value: number) {

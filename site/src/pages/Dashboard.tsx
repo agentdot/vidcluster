@@ -96,6 +96,7 @@ type SignalBriefState = "hot" | "warm" | "cold" | "decay" | "breakout";
 type SnapshotDeltaState = "positive" | "negative" | "neutral" | "unknown";
 type InterestPreviewStatus = "no_history" | "needs_history" | "steady" | "rising" | "cooling" | "mixed";
 type InterestPreviewMetricKind = "topic_growth_pct" | "wow_abs" | "video_count";
+type SparklinePoint = { x: number; y: number };
 type SnapshotDeltaVisual = { label: string; state: SnapshotDeltaState; badgeClassName: string };
 type RawLeaderboardRow = Partial<LeaderboardRow> & {
   rank: number;
@@ -287,7 +288,7 @@ function getHumanTopicSubtitle(value: string) {
   const canonicalMatch = value.trim().match(/^Derived from (\d+) canonical micro-niche labels$/i);
   if (canonicalMatch) {
     const count = canonicalMatch[1];
-    return `Seen across ${count} related topic example${count === "1" ? "" : "s"}.`;
+    return `Based on ${count} related topic example${count === "1" ? "" : "s"}.`;
   }
 
   return value;
@@ -1237,6 +1238,22 @@ function formatRiskAssessment(topic: LeaderboardRow) {
   return `${formatFailureRiskValue(topic.failure_risk_level)} / ${formatFailureRiskScore(topic.failure_risk_score)}`;
 }
 
+function getCompactRiskMetric(topic: LeaderboardRow) {
+  if (!hasFailureRiskSignal(topic)) {
+    return {
+      label: "Trend Risk",
+      value: "Coming Soon",
+      tone: "neutral" as Tone,
+    };
+  }
+
+  return {
+    label: "Trend Risk",
+    value: formatCompactFailureRiskValue(topic.failure_risk_level),
+    tone: getFailureRiskTone(topic),
+  };
+}
+
 function PillFrame({
   children,
   family = "neutral",
@@ -1401,7 +1418,10 @@ export default function Dashboard() {
         : fallbackClusterTimeseries;
     activeClusterTimeseries = timeseriesSource;
     activeLatestTimeseriesByClusterId = buildLatestTimeseriesByClusterId(timeseriesSource);
-    logInterestPreviewDebugChecks(timeseriesSource);
+    logInterestPreviewDebugChecks(timeseriesSource, {
+      phase: "dashboard-data-resolved",
+      source: dashboardData.source,
+    });
 
     const leaderboardSource =
       (dashboardData.data.dashboard as RawLeaderboardRow[]).length > 0
@@ -1410,7 +1430,7 @@ export default function Dashboard() {
     const normalized = leaderboardSource.map(normalizeLeaderboardRow);
     activeFailureRiskByClusterId = buildFailureRiskByClusterId(normalized);
     return normalized;
-  }, [dashboardData.data.dashboard, dashboardData.data.timeseries]);
+  }, [dashboardData.data.dashboard, dashboardData.data.timeseries, dashboardData.source]);
   const requestedClusterId = searchParams.get("cluster")?.trim() || null;
   const requestedSubclusterId = searchParams.get("subcluster")?.trim() || null;
   const openedFromDiscovery = searchParams.get("from") === "discovery";
@@ -1894,19 +1914,21 @@ function SignalSparkline({
 }) {
   const preview = getInterestPreview(topic);
   const points = preview.points;
-  const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
   const hasTrendLine = points.length >= 2;
-  const areaPath = hasTrendLine ? `${path} L ${points[points.length - 1]?.x ?? 92} 88 L ${points[0]?.x ?? 8} 88 Z` : "";
+  const path = buildSparklinePath(points);
+  const areaPath = hasTrendLine ? buildSparklineAreaPath(points, path, 88) : "";
   const stroke = visual.stroke;
   const gradientId = `sparkline-gradient-${topic.rank}`;
+  const glowId = `sparkline-glow-${topic.rank}`;
+  const startPoint = points[0];
   const currentPoint = points[points.length - 1];
   const hasHistory = preview.values.length > 0;
 
   return (
-    <div className="relative mt-5 h-[138px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#05090e] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+    <div className="relative mt-5 h-[148px] overflow-hidden rounded-xl border border-slate-200/10 bg-[#05090e] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.032),transparent_44%),radial-gradient(circle_at_78%_18%,rgba(125,211,252,0.055),transparent_34%)]" />
       <svg
-        className="absolute inset-x-3 bottom-4 top-5 h-[116px] w-[calc(100%-24px)]"
+        className="absolute inset-x-3 bottom-9 top-11 h-[86px] w-[calc(100%-24px)]"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         aria-hidden="true"
@@ -1916,23 +1938,48 @@ function SignalSparkline({
             <stop offset="0%" stopColor={stroke} stopOpacity="0.22" />
             <stop offset="100%" stopColor={stroke} stopOpacity="0.02" />
           </linearGradient>
+          <filter id={glowId} x="-20%" y="-30%" width="140%" height="160%">
+            <feGaussianBlur stdDeviation="1.8" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
         {areaPath ? <path d={areaPath} fill={`url(#${gradientId})`} /> : null}
         <path d="M 8 74 L 92 74" stroke="rgba(148,163,184,0.12)" strokeDasharray="3 5" strokeWidth="1" />
         {hasTrendLine ? (
-          <path
-            d={path}
-            fill="none"
-            stroke={stroke}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeOpacity="0.96"
-            strokeWidth="1.5"
-            vectorEffect="non-scaling-stroke"
-          />
+          <>
+            <path
+              d={path}
+              fill="none"
+              stroke={stroke}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeOpacity="0.30"
+              strokeWidth="4"
+              vectorEffect="non-scaling-stroke"
+              filter={`url(#${glowId})`}
+            />
+            <path
+              d={path}
+              fill="none"
+              stroke={stroke}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeOpacity="0.96"
+              strokeWidth="1.6"
+              vectorEffect="non-scaling-stroke"
+            />
+          </>
         ) : null}
-        {areaPath ? <path d={areaPath} fill={`url(#${gradientId})`} vectorEffect="non-scaling-stroke" /> : null}
 
+        {startPoint && hasTrendLine ? (
+          <g>
+            <circle cx={startPoint.x} cy={startPoint.y} fill={stroke} opacity="0.14" r="2" />
+            <circle cx={startPoint.x} cy={startPoint.y} fill="#05090e" r="1.6" stroke={stroke} strokeOpacity="0.72" strokeWidth="0.65" />
+          </g>
+        ) : null}
         {currentPoint ? (
           <g>
             <circle cx={currentPoint.x} cy={currentPoint.y} fill={stroke} opacity="0.18" r={hasTrendLine ? "2" : "3.5"} />
@@ -1943,7 +1990,7 @@ function SignalSparkline({
       <div className="absolute left-3 top-3 text-[10px] font-medium uppercase tracking-[0.18em] text-slate-200/34">
         {hasTrendLine ? preview.metric.label : "Recent Movement"}
       </div>
-      <div className="absolute left-3 top-7 max-w-[78%] truncate text-[10px] text-slate-200/28">
+      <div className="absolute left-3 right-3 top-7 text-[11px] leading-4 text-slate-200/40">
         Based on recent topic growth where available.
       </div>
       <div
@@ -1957,6 +2004,70 @@ function SignalSparkline({
       {!hasHistory ? <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-white/42">No history yet</div> : null}
     </div>
   );
+}
+
+function buildLinearPath(points: SparklinePoint[]) {
+  return points.map((point, index) => `${index === 0 ? "M" : "L"} ${roundPathNumber(point.x)} ${roundPathNumber(point.y)}`).join(" ");
+}
+
+function buildSparklinePath(points: SparklinePoint[]) {
+  if (points.length < 3) return buildLinearPath(points);
+
+  const slopes = points.slice(0, -1).map((point, index) => {
+    const next = points[index + 1];
+    const dx = next.x - point.x;
+    return dx === 0 ? 0 : (next.y - point.y) / dx;
+  });
+  const tangents = points.map((_, index) => {
+    if (index === 0) return slopes[0] ?? 0;
+    if (index === points.length - 1) return slopes[slopes.length - 1] ?? 0;
+
+    const previousSlope = slopes[index - 1] ?? 0;
+    const nextSlope = slopes[index] ?? 0;
+    if (previousSlope === 0 || nextSlope === 0 || Math.sign(previousSlope) !== Math.sign(nextSlope)) {
+      return 0;
+    }
+    return (2 * previousSlope * nextSlope) / (previousSlope + nextSlope);
+  });
+
+  slopes.forEach((slope, index) => {
+    if (slope === 0) {
+      tangents[index] = 0;
+      tangents[index + 1] = 0;
+      return;
+    }
+
+    const a = tangents[index] / slope;
+    const b = tangents[index + 1] / slope;
+    const sum = a * a + b * b;
+    if (sum > 9) {
+      const scale = 3 / Math.sqrt(sum);
+      tangents[index] = scale * a * slope;
+      tangents[index + 1] = scale * b * slope;
+    }
+  });
+
+  let path = `M ${roundPathNumber(points[0].x)} ${roundPathNumber(points[0].y)}`;
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const point = points[index];
+    const next = points[index + 1];
+    const dx = next.x - point.x;
+    const cp1 = { x: point.x + dx / 3, y: point.y + (tangents[index] * dx) / 3 };
+    const cp2 = { x: next.x - dx / 3, y: next.y - (tangents[index + 1] * dx) / 3 };
+    path += ` C ${roundPathNumber(cp1.x)} ${roundPathNumber(cp1.y)}, ${roundPathNumber(cp2.x)} ${roundPathNumber(cp2.y)}, ${roundPathNumber(next.x)} ${roundPathNumber(next.y)}`;
+  }
+  return path;
+}
+
+function buildSparklineAreaPath(points: SparklinePoint[], linePath: string, baselineY: number) {
+  if (points.length < 2) return "";
+  const first = points[0];
+  const last = points[points.length - 1];
+  return `${linePath} L ${roundPathNumber(last.x)} ${baselineY} L ${roundPathNumber(first.x)} ${baselineY} Z`;
+}
+
+function roundPathNumber(value: number) {
+  return Number(value.toFixed(2));
 }
 
 function CompactMetric({ label, value, tone = "neutral" }: { label: string; value: string; tone?: Tone }) {
@@ -1983,7 +2094,7 @@ function FormatCompactMetric({ topic }: { topic: LeaderboardRow }) {
 
   return (
     <div className="min-w-0">
-      <div className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-300/34">Video Length</div>
+      <div className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-300/34">Popular Format</div>
       <div className={cn("mt-1 flex min-w-0 items-center gap-1.5 truncate text-[13px] font-semibold leading-4", visual.text)}>
         <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", visual.dot)} />
         <span className="truncate">{visual.value}</span>
@@ -2007,15 +2118,12 @@ function TopicCard({
   onSelect: () => void;
   onToggleWatch: (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
-  const growth = getGrowthFraction(topic);
-  const stableGrowth = isStableGrowth(growth);
   const confidenceTone = getConfidenceTone(topic);
   const isTopRank = topic.rank === 1;
-  const riskTone = getFailureRiskTone(topic);
   const signalState = getSignalBriefState(topic);
   const signalVisual = getSignalBriefVisual(signalState);
   const interestPreview = getInterestPreview(topic);
-  const snapshotDelta = getSnapshotDelta(topic);
+  const riskMetric = getCompactRiskMetric(topic);
 
   return (
     <button
@@ -2045,25 +2153,7 @@ function TopicCard({
             {getTopicTitle(topic)}
           </h2>
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-2">
-          <div className="text-right">
-            <div
-              className={cn(
-                "text-3xl font-semibold leading-none tracking-[-0.045em]",
-                stableGrowth ? "text-slate-100/72" : signalVisual.text,
-              )}
-            >
-              {formatGrowthPercent(growth)}
-            </div>
-            <div
-              className={cn(
-                "mt-2 inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]",
-                snapshotDelta.badgeClassName,
-              )}
-            >
-              {snapshotDelta.label}
-            </div>
-          </div>
+        <div className="shrink-0">
           <WatchStarButton
             ariaLabel={watched ? "Remove from watchlist" : "Add to watchlist"}
             active={watched}
@@ -2079,7 +2169,7 @@ function TopicCard({
       <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-200/8 pt-4 sm:grid-cols-4">
         <CompactMetric label="Evidence" value={mapEvidenceLabel(topic)} tone={confidenceTone} />
         <CompactMetric label="Stage" value={mapCompactWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
-        <CompactMetric label="Risk" value={formatCompactFailureRiskValue(topic.failure_risk_level)} tone={riskTone} />
+        <CompactMetric label={riskMetric.label} value={riskMetric.value} tone={riskMetric.tone} />
         <FormatCompactMetric topic={topic} />
       </div>
 
@@ -2286,7 +2376,7 @@ function FormatFitPanel({ topic }: { topic: LeaderboardRow }) {
     <section className="mt-3 rounded-2xl bg-[linear-gradient(180deg,rgba(125,211,252,0.046),rgba(255,255,255,0.016))] p-4 ring-1 ring-cyan-300/12">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-100/50">Video Length</div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-100/50">Popular Format</div>
           <div className="mt-1 text-lg font-semibold tracking-[-0.03em] text-white">{getFormatStrategyLabel(topic)}</div>
         </div>
         <FormatStrategyPill topic={topic} />
@@ -2883,7 +2973,10 @@ function getInterestPreviewBadgeClass(status: InterestPreviewStatus) {
   return "border-slate-300/18 bg-slate-300/[0.06] text-slate-200/76";
 }
 
-function logInterestPreviewDebugChecks(rows: ClusterTimeseriesRow[]) {
+function logInterestPreviewDebugChecks(
+  rows: ClusterTimeseriesRow[],
+  context: { phase: string; source: string },
+) {
   if (!import.meta.env.DEV) return;
 
   const summaries = INTEREST_PREVIEW_DEBUG_CLUSTER_IDS.map((clusterId) => {
@@ -2894,6 +2987,9 @@ function logInterestPreviewDebugChecks(rows: ClusterTimeseriesRow[]) {
     const status = getInterestPreviewStatus(metric.values);
     return {
       clusterId,
+      phase: context.phase,
+      source: context.source,
+      matchedRows: clusterRows.length,
       snapshots: metric.values.length,
       metric: metric.kind,
       values: metric.values,
@@ -2922,7 +3018,7 @@ function getInterestPreview(topic: LeaderboardRow) {
       status,
       label,
       metric,
-      points: [{ x: 50, y: 54 }],
+      points: [{ x: 50, y: 56 }],
     };
   }
 
@@ -2944,8 +3040,8 @@ function getInterestPreview(topic: LeaderboardRow) {
   }
 
   const range = maxValue - minValue;
-  const topPadding = 18;
-  const bottomPadding = 78;
+  const topPadding = 24;
+  const bottomPadding = 74;
 
   const points = values.map((value, index) => {
     const x = values.length === 1 ? 50 : 6 + (index / (values.length - 1)) * 88;

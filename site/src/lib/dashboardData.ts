@@ -48,6 +48,75 @@ export const bundledDashboardData: DashboardExportBundle = {
   manifest: bundledManifest as DashboardManifest,
 };
 
+type TimeseriesLikeRow = {
+  cluster_id?: unknown;
+  snapshot_date?: unknown;
+};
+
+function normalizeClusterId(value: unknown) {
+  return typeof value === "string" ? value.trim().toUpperCase() : "";
+}
+
+function normalizeSnapshotDate(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function getTimeseriesKey(row: unknown) {
+  if (!row || typeof row !== "object") return null;
+  const candidate = row as TimeseriesLikeRow;
+  const clusterId = normalizeClusterId(candidate.cluster_id);
+  const snapshotDate = normalizeSnapshotDate(candidate.snapshot_date);
+  if (!clusterId || !snapshotDate) return null;
+  return `${clusterId}::${snapshotDate}`;
+}
+
+function getSnapshotCountByCluster(rows: unknown[]) {
+  const counts = new Map<string, Set<string>>();
+  for (const row of rows) {
+    if (!row || typeof row !== "object") continue;
+    const candidate = row as TimeseriesLikeRow;
+    const clusterId = normalizeClusterId(candidate.cluster_id);
+    const snapshotDate = normalizeSnapshotDate(candidate.snapshot_date);
+    if (!clusterId || !snapshotDate) continue;
+    const dates = counts.get(clusterId) ?? new Set<string>();
+    dates.add(snapshotDate);
+    counts.set(clusterId, dates);
+  }
+  return counts;
+}
+
+function hasAnyMultiSnapshotCluster(rows: unknown[]) {
+  return Array.from(getSnapshotCountByCluster(rows).values()).some((dates) => dates.size >= 2);
+}
+
+export function mergeDashboardTimeseriesRows(remoteRows: unknown[], fallbackRows = bundledDashboardData.timeseries) {
+  if (remoteRows.length === 0) return fallbackRows;
+
+  const fallbackHasHistory = hasAnyMultiSnapshotCluster(fallbackRows);
+  const remoteHasHistory = hasAnyMultiSnapshotCluster(remoteRows);
+  if (fallbackHasHistory && !remoteHasHistory) {
+    return fallbackRows;
+  }
+
+  const merged = new Map<string, unknown>();
+  for (const row of fallbackRows) {
+    const key = getTimeseriesKey(row);
+    if (key) merged.set(key, row);
+  }
+  for (const row of remoteRows) {
+    const key = getTimeseriesKey(row);
+    if (key) merged.set(key, row);
+  }
+
+  return Array.from(merged.values()).sort((a, b) => {
+    const aRow = a as TimeseriesLikeRow;
+    const bRow = b as TimeseriesLikeRow;
+    const clusterDelta = normalizeClusterId(aRow.cluster_id).localeCompare(normalizeClusterId(bRow.cluster_id));
+    if (clusterDelta !== 0) return clusterDelta;
+    return normalizeSnapshotDate(aRow.snapshot_date).localeCompare(normalizeSnapshotDate(bRow.snapshot_date));
+  });
+}
+
 export function getDashboardR2BaseUrl(): string | null {
   const configured = import.meta.env.VITE_R2_DASHBOARD_EXPORT_BASE_URL;
   if (!configured || typeof configured !== "string") return null;
@@ -88,7 +157,7 @@ export async function fetchLatestDashboardExport(baseUrl = getDashboardR2BaseUrl
 
   return {
     dashboard,
-    timeseries,
+    timeseries: mergeDashboardTimeseriesRows(timeseries),
     microNiches,
     divergence,
     observability,
