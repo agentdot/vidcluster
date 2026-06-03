@@ -87,14 +87,6 @@ function buildLatestTimeseriesByClusterId(rows: ClusterTimeseriesRow[]) {
   );
 }
 
-type ObservabilityStatus = {
-  snapshot_date?: string;
-  validation_status?: string;
-  cluster_count?: number;
-  health_label_counts?: Record<string, number>;
-  drift_alert_counts?: Record<string, number>;
-};
-
 type UserPlan = "explorer" | "pro" | "advanced";
 type Tone = "neutral" | "positive" | "watch" | "risk";
 type PillFamily = "growth" | "format" | "risk" | "neutral";
@@ -252,7 +244,9 @@ const topicPresentationByRank: Record<
 function normalizeLeaderboardRow(topic: RawLeaderboardRow): LeaderboardRow {
   const presentation = topicPresentationByRank[topic.rank];
   const displayTitle = topic.display_topic_title || topic.cluster_label || topic.title || topic.cluster_id || `Cluster ${topic.rank}`;
-  const topicSubtitle = topic.topic_subtitle || presentation?.topic_subtitle || "Canonical v4.0 weekly signal.";
+  const topicSubtitle = getHumanTopicSubtitle(
+    topic.topic_subtitle || presentation?.topic_subtitle || "Latest weekly topic signal.",
+  );
   const growth = resolveGrowthFraction(topic);
   const decisionLabel = topic.decision_label || (growth !== null && growth < 0 ? "WEAK_OR_RISK" : "EMERGING");
 
@@ -283,6 +277,16 @@ function normalizeLeaderboardRow(topic: RawLeaderboardRow): LeaderboardRow {
     consecutive_up_weeks: topic.consecutive_up_weeks ?? null,
     score_anchor: topic.score_anchor ?? topic.score_method ?? "v4_0_dashboard_export",
   };
+}
+
+function getHumanTopicSubtitle(value: string) {
+  const canonicalMatch = value.trim().match(/^Derived from (\d+) canonical micro-niche labels$/i);
+  if (canonicalMatch) {
+    const count = canonicalMatch[1];
+    return `Seen across ${count} related topic example${count === "1" ? "" : "s"}.`;
+  }
+
+  return value;
 }
 
 const fallbackClusterTimeseries = fallbackClusterTimeseriesRows as ClusterTimeseriesRow[];
@@ -413,8 +417,8 @@ const signalBriefQaFixtures: LeaderboardRow[] = [
     topic_subtitle: "Mature search interest with stable demand but limited expansion pressure.",
     trend_strength_score: 0.39,
     decision_label: "EMERGING",
-    trend_summary: "Momentum stabilised with limited expansion beyond the existing template audience.",
-    opportunity_summary: "Momentum stabilised with limited expansion beyond the existing template audience.",
+    trend_summary: "Interest is steady, but growth is limited.",
+    opportunity_summary: "Interest is steady, but growth is limited.",
     risk_summary: "Flat participation suggests this is more maintenance topic than growth topic.",
     growth_since_freeze_pct: 2,
     latest_n_videos: 41,
@@ -477,11 +481,11 @@ const userPlan = getMockUserPlan();
 const hasPremiumAccess = userPlan === "pro" || userPlan === "advanced";
 const EXPLORER_WATCHLIST_LIMIT = 2;
 const STABLE_GROWTH_THRESHOLD = 0.0005;
-const ALL_SIGNALS_FILTER = "All Signals";
-const STRONGEST_SIGNALS_FILTER = "Strongest Signals";
-const EARLY_SIGNALS_FILTER = "Early Signals";
-const UNDER_OBSERVATION_FILTER = "Under Observation";
-const STABLE_PERSISTENT_FILTER = "Stable / Persistent";
+const ALL_SIGNALS_FILTER = "All Topics";
+const STRONGEST_SIGNALS_FILTER = "Top Opportunities";
+const EARLY_SIGNALS_FILTER = "New Interest";
+const UNDER_OBSERVATION_FILTER = "Worth Watching";
+const STABLE_PERSISTENT_FILTER = "Consistent Demand";
 const SIGNAL_FILTERS = [
   ALL_SIGNALS_FILTER,
   STRONGEST_SIGNALS_FILTER,
@@ -498,7 +502,7 @@ const DECISION_LABEL_MAP: Record<string, string> = {
 };
 
 function mapDecisionLabel(label?: string) {
-  if (!label) return "Signal Unknown";
+  if (!label) return "Not clear yet";
   return DECISION_LABEL_MAP[label] ?? formatSelectedLabel(label);
 }
 
@@ -510,6 +514,16 @@ function mapConfidence(topic: LeaderboardRow) {
   if (normalized >= 0.72) return "High Confidence";
   if (normalized >= 0.48) return "Moderate Confidence";
   return "Low Confidence";
+}
+
+function mapEvidenceLabel(topic: LeaderboardRow) {
+  const confidence = topic.trend_confidence ?? topic.trend_strength_score;
+  if (confidence === null || confidence === undefined) return "Unavailable";
+  const normalized = getConfidenceValue(topic);
+
+  if (normalized >= 0.72) return "Strong";
+  if (normalized >= 0.48) return "Moderate";
+  return "Limited";
 }
 
 function getConfidenceValue(topic: LeaderboardRow) {
@@ -551,7 +565,7 @@ function mapWillLast(topic: LeaderboardRow) {
   if (topic.decision_label === "EARLY_TREND") return "Promising, validate";
   if (topic.decision_label === "EMERGING") return "Too early to call";
   if (topic.t60_is_winner) return "Held up before";
-  return "Not stable yet";
+  return "Still developing";
 }
 
 function mapCompactWillLast(topic: LeaderboardRow) {
@@ -559,7 +573,7 @@ function mapCompactWillLast(topic: LeaderboardRow) {
   if (topic.decision_label === "EARLY_TREND") return "Validate";
   if (topic.decision_label === "EMERGING") return "Early";
   if (topic.t60_is_winner) return "Held";
-  return "Unstable";
+  return "Developing";
 }
 
 function normalizeSignalToken(value?: string | null) {
@@ -819,7 +833,7 @@ function getSignalBriefVisual(state: SignalBriefState) {
 
   if (state === "cold") {
     return {
-      label: "COLD",
+      label: "Low Movement",
       accent: "bg-violet-300",
       border: "border-violet-300/20",
       bg: "bg-violet-300/[0.028]",
@@ -853,7 +867,7 @@ function getSignalRead(topic: LeaderboardRow, state: SignalBriefState) {
   if (state === "breakout") return "Breakout acceleration detected in recent weeks.";
   if (state === "hot") return "Sustained momentum with strong persistence.";
   if (state === "warm") return "Early signal building with improving participation.";
-  if (state === "cold") return "Momentum stabilised with limited expansion.";
+  if (state === "cold") return "Interest is steady, but growth is limited.";
 
   return summarizeInsight(topic.opportunity_summary || topic.trend_summary || topic.topic_subtitle);
 }
@@ -936,14 +950,8 @@ function isStableGrowth(value?: number | null) {
 
 function formatGrowthPercent(value?: number | null) {
   if (value === null || value === undefined) return "—";
-  if (isStableGrowth(value)) return "STABLE";
+  if (isStableGrowth(value)) return "Steady";
   return formatPercent(value);
-}
-
-function formatDataQualityStatus(status?: string | null) {
-  if (status === "PASS") return "PASSED";
-  if (!status) return "UNKNOWN";
-  return "REVIEW";
 }
 
 function formatPP(value?: number | null) {
@@ -953,15 +961,15 @@ function formatPP(value?: number | null) {
 }
 
 const FORMAT_STRATEGY_LABELS: Record<string, string> = {
-  SHORT_HEAVY: "Shorts-heavy",
-  MIDFORM_HEAVY: "Mid-form heavy",
-  LONG_HEAVY: "Long-form heavy",
-  HYBRID_FORMAT: "Hybrid demand",
-  UNKNOWN_FORMAT: "Format unknown",
+  SHORT_HEAVY: "Mostly short videos",
+  MIDFORM_HEAVY: "Mostly mid-length videos",
+  LONG_HEAVY: "Mostly long videos",
+  HYBRID_FORMAT: "Mixed video lengths",
+  UNKNOWN_FORMAT: "Not clear yet",
 };
 
 function getFormatStrategyLabel(topic: LeaderboardRow) {
-  return FORMAT_STRATEGY_LABELS[topic.format_strategy_label ?? "UNKNOWN_FORMAT"] ?? "Format unknown";
+  return FORMAT_STRATEGY_LABELS[topic.format_strategy_label ?? "UNKNOWN_FORMAT"] ?? "Not clear yet";
 }
 
 function getFormatVisual(topic: LeaderboardRow) {
@@ -993,14 +1001,14 @@ function getFormatVisual(topic: LeaderboardRow) {
 
   if (label === "HYBRID_FORMAT") {
     return {
-      value: "Hybrid",
+      value: "Mixed",
       text: "text-cyan-100",
       dot: "bg-[linear-gradient(135deg,rgb(103,232,249),rgb(196,181,253))]",
     };
   }
 
   return {
-    value: "Unknown",
+    value: "Not clear yet",
     text: "text-slate-100/62",
     dot: "bg-slate-400/55",
   };
@@ -1079,7 +1087,7 @@ function formatOutcomeStatus(value: string) {
   if (value === "PENDING") return "Awaiting confirmation";
   if (value === "FAILED") return "Failed";
   if (value === "WEAKENING") return "Weakening";
-  return "Unknown";
+  return "Not clear yet";
 }
 
 function getDateTime(value?: string) {
@@ -1193,18 +1201,24 @@ function getFailureRiskTone(topic: LeaderboardRow): Tone {
 }
 
 function formatFailureRiskValue(value?: string | null) {
-  if (!value) return "Unavailable";
+  if (!value) return "Not assessed yet";
   return formatSelectedLabel(value.split("_").join(" "));
 }
 
 function formatCompactFailureRiskValue(value?: string | null) {
-  if (!value) return "Unknown";
+  if (!value) return "Not assessed yet";
   return formatFailureRiskValue(value);
 }
 
 function formatFailureRiskScore(score?: number | null) {
-  if (score === null || score === undefined) return "Unavailable";
+  if (score === null || score === undefined) return "Not assessed yet";
   return `${Math.round(score * 100)}%`;
+}
+
+function formatRiskAssessment(topic: LeaderboardRow) {
+  if (!topic.failure_risk_level && topic.failure_risk_score === null) return "Not assessed yet";
+  if (!topic.failure_risk_level && topic.failure_risk_score === undefined) return "Not assessed yet";
+  return `${formatFailureRiskValue(topic.failure_risk_level)} / ${formatFailureRiskScore(topic.failure_risk_score)}`;
 }
 
 function PillFrame({
@@ -1380,7 +1394,6 @@ export default function Dashboard() {
     activeFailureRiskByClusterId = buildFailureRiskByClusterId(normalized);
     return normalized;
   }, [dashboardData.data.dashboard, dashboardData.data.timeseries]);
-  const dashboardObservability = dashboardData.data.observability as ObservabilityStatus;
   const requestedClusterId = searchParams.get("cluster")?.trim() || null;
   const requestedSubclusterId = searchParams.get("subcluster")?.trim() || null;
   const openedFromDiscovery = searchParams.get("from") === "discovery";
@@ -1537,11 +1550,10 @@ export default function Dashboard() {
             hasPremiumAccess={hasPremiumAccess}
             clustersLoading={clustersLoading}
             clustersError={clustersError}
-            observability={dashboardObservability}
           />
           <p className="text-sm text-white/48">
-            Showing {highlightedSignalCount.toLocaleString()} highlighted signals from{" "}
-            {monitoredClusterCount.toLocaleString()} monitored clusters.
+            Showing {highlightedSignalCount.toLocaleString()} visible signals from{" "}
+            {monitoredClusterCount.toLocaleString()} tracked topics.
           </p>
           <DashboardDataStatus state={dashboardData} />
           <CategoryStrip
@@ -1625,17 +1637,13 @@ function DashboardHeader({
   hasPremiumAccess,
   clustersLoading,
   clustersError,
-  observability,
 }: {
   monitoredClusterCount: number;
   highlightedSignalCount: number;
   hasPremiumAccess: boolean;
   clustersLoading: boolean;
   clustersError?: string | null;
-  observability?: ObservabilityStatus;
 }) {
-  const observabilityPass = observability?.validation_status === "PASS";
-
   return (
     <header className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
       <div className="flex flex-wrap items-start justify-between gap-5">
@@ -1653,27 +1661,26 @@ function DashboardHeader({
           </p>
           {clustersLoading ? <p className="mt-2 text-xs text-white/40">Loading live insights...</p> : null}
           {clustersError ? (
-            <p className="mt-2 text-xs text-amber-100/62">Showing latest validated weekly snapshot intelligence.</p>
+            <p className="mt-2 text-xs text-amber-100/62">Showing the latest weekly topic view.</p>
           ) : null}
         </div>
-        <div className="grid w-full grid-cols-2 gap-3 sm:w-auto sm:min-w-[320px]">
-          <MetricCard label="Monitored clusters" value={monitoredClusterCount.toLocaleString()} />
+        <div className="grid w-full grid-cols-1 gap-3 sm:w-auto sm:min-w-[480px] sm:grid-cols-3">
           <MetricCard
-            label="Highlighted signals"
+            label="Topics tracked"
+            value={monitoredClusterCount.toLocaleString()}
+            helper="Current snapshot"
+          />
+          <MetricCard
+            label="Visible signals"
             value={highlightedSignalCount.toLocaleString()}
+            helper="Explorer preview"
             tone="positive"
           />
           <MetricCard
-            label="Data quality"
-            value={formatDataQualityStatus(observability?.validation_status)}
-            helper={observability?.snapshot_date ? `Snapshot ${formatSnapshotDate(observability.snapshot_date)}` : undefined}
-            tone={observabilityPass ? "positive" : "watch"}
-          />
-          <MetricCard
-            label="Cluster stability"
-            value="STABLE"
-            helper={observability?.cluster_count ? `${observability.cluster_count} clusters observed` : undefined}
-            tone={observabilityPass ? "neutral" : "watch"}
+            label="Data status"
+            value="Ready"
+            helper="Latest snapshot checked"
+            tone="positive"
           />
         </div>
       </div>
@@ -1739,7 +1746,7 @@ function DashboardControls({
           type="search"
           value={searchQuery}
           onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Search topics, clusters, or decisions"
+          placeholder="Search topics or opportunities"
           className="min-h-11 flex-1 rounded-full border border-white/10 bg-black/24 px-4 text-sm text-white outline-none transition placeholder:text-white/34 focus:border-emerald-300/35"
         />
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -1803,9 +1810,9 @@ function TopSignalStrip({ signals }: { signals: TopSignal[] }) {
     <div className="mb-4 rounded-2xl border border-white/8 bg-black/16 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.025)]">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/38">
-          3 Key Signals
+          3 Topics Worth Attention
         </div>
-        <div className="text-xs text-white/36">Fast scan summary</div>
+        <div className="text-xs text-white/36">Quick Overview</div>
       </div>
       <div className="grid gap-3 lg:grid-cols-3">
         {signals.map((signal) => {
@@ -1914,7 +1921,7 @@ function SignalSparkline({
         ) : null}
       </svg>
       <div className="absolute left-3 top-3 text-[10px] font-medium uppercase tracking-[0.18em] text-slate-200/34">
-        {hasRealSeries ? "Signal curve" : "Signal preview"}
+        {hasRealSeries ? "Interest Trend" : "Interest Preview"}
       </div>
     </div>
   );
@@ -1944,7 +1951,7 @@ function FormatCompactMetric({ topic }: { topic: LeaderboardRow }) {
 
   return (
     <div className="min-w-0">
-      <div className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-300/34">Format</div>
+      <div className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-300/34">Video Length</div>
       <div className={cn("mt-1 flex min-w-0 items-center gap-1.5 truncate text-[13px] font-semibold leading-4", visual.text)}>
         <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", visual.dot)} />
         <span className="truncate">{visual.value}</span>
@@ -2037,14 +2044,14 @@ function TopicCard({
       <SignalSparkline topic={topic} visual={signalVisual} />
 
       <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-200/8 pt-4 sm:grid-cols-4">
-        <CompactMetric label="Confidence" value={mapConfidence(topic).replace(" Confidence", "")} tone={confidenceTone} />
-        <CompactMetric label="Stability" value={mapCompactWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
+        <CompactMetric label="Evidence" value={mapEvidenceLabel(topic)} tone={confidenceTone} />
+        <CompactMetric label="Stage" value={mapCompactWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
         <CompactMetric label="Risk" value={formatCompactFailureRiskValue(topic.failure_risk_level)} tone={riskTone} />
         <FormatCompactMetric topic={topic} />
       </div>
 
       <div className={cn("mt-4 rounded-xl px-3 py-2.5 ring-1", signalVisual.read)}>
-        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/34">Signal Read</div>
+        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/34">Quick Read</div>
         <p className="mt-1.5 line-clamp-3 text-xs leading-5 text-white/64">{getSignalRead(topic, signalState)}</p>
       </div>
     </button>
@@ -2215,23 +2222,23 @@ function SystemAssessmentPanel({
     <section className="mt-3 rounded-2xl bg-black/14 p-4 ring-1 ring-white/[0.07]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">System Assessment</div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-white/34">Topic Check</div>
           <div className="mt-1 truncate text-sm font-medium text-white/78">{systemStatus.confidence}</div>
         </div>
         <PillFrame>Updated {systemStatus.lastUpdated}</PillFrame>
       </div>
       <ConfidenceMeter value={systemStatus.confidenceValue} tone={confidenceTone} />
       <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
-        <AssessmentRow label="Topic Growth" value={formatPercent(growth)} tone={(growth ?? 0) >= 0 ? "positive" : "risk"} />
-        <AssessmentRow label="Confidence" value={mapConfidence(topic)} tone={confidenceTone} />
-        <AssessmentRow label="Stability" value={mapWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
+        <AssessmentRow label="Interest Growth" value={formatPercent(growth)} tone={(growth ?? 0) >= 0 ? "positive" : "risk"} />
+        <AssessmentRow label="Evidence" value={mapEvidenceLabel(topic)} tone={confidenceTone} />
+        <AssessmentRow label="Stage" value={mapWillLast(topic)} tone={getDecisionTone(topic.decision_label)} />
         <AssessmentRow label="Opportunity" value={mapOpportunityState(topic)} tone={getOpportunityTone(topic)} />
         <AssessmentRow
-          label="Failure Risk"
-          value={`${formatFailureRiskValue(topic.failure_risk_level)} / ${formatFailureRiskScore(topic.failure_risk_score)}`}
+          label="Risk"
+          value={formatRiskAssessment(topic)}
           tone={tone}
         />
-        <AssessmentRow label="Risk Reason" value={formatFailureRiskValue(topic.failure_risk_reason_code)} tone={tone} />
+        <AssessmentRow label="Why It Matters" value={formatFailureRiskValue(topic.failure_risk_reason_code)} tone={tone} />
       </div>
     </section>
   );
@@ -2246,7 +2253,7 @@ function FormatFitPanel({ topic }: { topic: LeaderboardRow }) {
     <section className="mt-3 rounded-2xl bg-[linear-gradient(180deg,rgba(125,211,252,0.046),rgba(255,255,255,0.016))] p-4 ring-1 ring-cyan-300/12">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-100/50">Format fit</div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-100/50">Video Length</div>
           <div className="mt-1 text-lg font-semibold tracking-[-0.03em] text-white">{getFormatStrategyLabel(topic)}</div>
         </div>
         <FormatStrategyPill topic={topic} />
@@ -2264,7 +2271,7 @@ function FormatFitPanel({ topic }: { topic: LeaderboardRow }) {
         <DistributionStat label="Long" value={formatShare(topic.long_video_share)} className="text-emerald-100" />
       </div>
       <p className="mt-3 line-clamp-3 text-xs leading-5 text-white/58">
-        {topic.format_strategy_summary || "There is not enough reliable duration data to determine format fit."}
+        {topic.format_strategy_summary || "There is not enough reliable video length data to suggest a content type."}
       </p>
     </section>
   );
@@ -2368,12 +2375,12 @@ function DiscoveryFallbackPanel({
           Discovery signal selected
         </h1>
         <div className="mt-4 grid gap-2 text-sm text-white/70">
-          <div>Cluster: {clusterId}</div>
-          {subclusterId ? <div>Subcluster: {subclusterId}</div> : null}
+          <div>Topic: {clusterId}</div>
+          {subclusterId ? <div>Topic area: {subclusterId}</div> : null}
         </div>
         {subclusterLabel ? (
           <p className="mt-2 text-sm font-medium text-amber-100/76">
-            Selected subcluster: {formatSelectedLabel(subclusterLabel)}
+            Selected topic area: {formatSelectedLabel(subclusterLabel)}
           </p>
         ) : null}
         {outcomeStatus ? (
@@ -2586,21 +2593,21 @@ function getTopSignals(topics: LeaderboardRow[]): TopSignal[] {
 
   return [
     {
-      label: "Strongest highlight",
+      label: "Top Opportunity",
       topic: positive,
-      helper: "Highest ranked signal",
+      helper: "Leading topic this week",
       tone: "positive",
     },
     {
-      label: "Needs watching",
+      label: "Worth Watching",
       topic: watch,
-      helper: "Monitor for movement",
+      helper: "Showing signs of interest",
       tone: "watch",
     },
     {
-      label: "Lower priority signal",
+      label: "Emerging Topic",
       topic: decline,
-      helper: "Lower-ranked highlighted signal",
+      helper: "Worth tracking, but less active",
       tone: "risk",
     },
   ];
@@ -2635,8 +2642,8 @@ function getDiscoveryFallbackTopic(
     cluster_label: clusterId ?? "Discovery signal",
     display_topic_title: `Discovery signal selected: ${clusterId ?? "Unknown"}`,
     topic_subtitle: opportunity
-      ? `Selected subcluster: ${formatSelectedLabel(label)}.`
-      : "This cluster is not available in the current dashboard insight set.",
+      ? `Selected topic area: ${formatSelectedLabel(label)}.`
+      : "This topic is not available in the current dashboard view.",
     trend_strength_score: score,
     decision_label: opportunity?.discovery_label === "WATCHLIST_SIGNAL" ? "EARLY_TREND" : "EMERGING",
     trend_summary: "This discovery signal is not available in the dashboard insight set.",
@@ -2748,7 +2755,7 @@ function getSnapshotDelta(topic: LeaderboardRow): SnapshotDeltaVisual {
 
   if (state === "neutral") {
     return {
-      label: "→ Stable",
+      label: "Steady",
       state,
       badgeClassName: "border-slate-300/18 bg-slate-300/[0.06] text-slate-200/76",
     };
