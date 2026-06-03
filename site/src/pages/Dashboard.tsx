@@ -485,6 +485,7 @@ const userPlan = getMockUserPlan();
 const hasPremiumAccess = userPlan === "pro" || userPlan === "advanced";
 const EXPLORER_WATCHLIST_LIMIT = 2;
 const STABLE_GROWTH_THRESHOLD = 0.0005;
+const INTEREST_PREVIEW_DEBUG_CLUSTER_IDS = ["SC002", "SC161", "SC006"];
 const ALL_SIGNALS_FILTER = "All Topics";
 const STRONGEST_SIGNALS_FILTER = "Top Opportunities";
 const EARLY_SIGNALS_FILTER = "New Interest";
@@ -906,8 +907,19 @@ function formatScore(score: number) {
   return `${Math.round(score * 100)}`;
 }
 
-function finiteNumber(value?: number | null) {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
+function finiteNumber(value?: unknown) {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const parsed = Number(trimmed);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
 }
 
 function pctToFraction(value: number) {
@@ -1389,6 +1401,7 @@ export default function Dashboard() {
         : fallbackClusterTimeseries;
     activeClusterTimeseries = timeseriesSource;
     activeLatestTimeseriesByClusterId = buildLatestTimeseriesByClusterId(timeseriesSource);
+    logInterestPreviewDebugChecks(timeseriesSource);
 
     const leaderboardSource =
       (dashboardData.data.dashboard as RawLeaderboardRow[]).length > 0
@@ -2868,6 +2881,27 @@ function getInterestPreviewBadgeClass(status: InterestPreviewStatus) {
   if (tone === "risk") return "border-rose-300/30 bg-rose-300/[0.09] text-rose-100";
   if (tone === "watch") return "border-amber-300/28 bg-amber-300/[0.08] text-amber-100";
   return "border-slate-300/18 bg-slate-300/[0.06] text-slate-200/76";
+}
+
+function logInterestPreviewDebugChecks(rows: ClusterTimeseriesRow[]) {
+  if (!import.meta.env.DEV) return;
+
+  const summaries = INTEREST_PREVIEW_DEBUG_CLUSTER_IDS.map((clusterId) => {
+    const clusterRows = rows
+      .filter((row) => normalizeClusterId(row.cluster_id) === clusterId)
+      .sort((a, b) => String(a.snapshot_date ?? "").localeCompare(String(b.snapshot_date ?? "")));
+    const metric = getInterestPreviewMetric(clusterRows);
+    const status = getInterestPreviewStatus(metric.values);
+    return {
+      clusterId,
+      snapshots: metric.values.length,
+      metric: metric.kind,
+      values: metric.values,
+      label: getInterestPreviewLabel(status),
+    };
+  });
+
+  console.debug("Interest preview validation", summaries);
 }
 
 function getInterestPreview(topic: LeaderboardRow) {
