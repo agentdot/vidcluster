@@ -762,21 +762,7 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
               axisLine={false}
               width={58}
             />
-            <Tooltip
-              contentStyle={{
-                background: "rgba(3,6,10,0.94)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                borderRadius: 12,
-                color: "white",
-              }}
-              formatter={(value, name, item) => [
-                item.payload.growth_available
-                  ? `${Number(value).toFixed(1)}% growth · ${item.payload.chart_video_count?.toLocaleString() ?? "Video count unavailable"} videos`
-                  : `Baseline · ${item.payload.chart_video_count?.toLocaleString() ?? "Video count unavailable"} videos`,
-                name,
-              ]}
-              labelFormatter={(label) => formatSnapshotDate(String(label))}
-            />
+            <Tooltip content={<DetailTrendTooltip />} />
             <Area
               type={lineType}
               dataKey="chart_growth_pct"
@@ -839,6 +825,35 @@ function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
             />
           </ComposedChart>
         </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+function DetailTrendTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ payload?: ClusterTimeseriesRow & { chart_growth_pct?: number; chart_video_count?: number | null } }>;
+  label?: string | number;
+}) {
+  if (!active) return null;
+
+  const row = payload?.find((item) => item.payload)?.payload;
+  if (!row) return null;
+
+  const growth = finiteNumber(row.chart_growth_pct);
+  const videos = finiteNumber(row.chart_video_count);
+  const date = formatSnapshotDate(String(label ?? row.snapshot_date ?? ""));
+
+  return (
+    <div className="rounded-xl border border-white/12 bg-[#03060a]/95 px-3 py-2 text-xs text-white shadow-[0_16px_45px_rgba(0,0,0,0.35)]">
+      <div className="font-semibold text-white/86">{date}</div>
+      <div className="mt-2 space-y-1 text-white/66">
+        <div>Growth: {growth === null ? "Not available" : `${growth.toFixed(1)}%`}</div>
+        <div>Videos: {videos === null ? "Not available" : videos.toLocaleString()}</div>
       </div>
     </div>
   );
