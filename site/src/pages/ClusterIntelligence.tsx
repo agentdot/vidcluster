@@ -208,8 +208,8 @@ function ClusterReport({
 
   return (
     <>
-      <section className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.09),rgba(255,255,255,0.024)_58%,rgba(16,185,129,0.035))] p-6 shadow-[0_28px_110px_rgba(0,0,0,0.38)] md:p-8">
-        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_270px]">
+      <section className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.09),rgba(255,255,255,0.024)_58%,rgba(16,185,129,0.035))] p-5 shadow-[0_22px_80px_rgba(0,0,0,0.32)] md:p-6">
+        <div className="grid items-end gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
               <Badge>Rank #{cluster.rank}</Badge>
@@ -217,36 +217,27 @@ function ClusterReport({
               <Badge>Updated {formatSnapshotDate(cluster.latest_snapshot_date)}</Badge>
             </div>
             <h1
-              className="mt-7 max-w-5xl text-4xl font-semibold leading-[0.98] tracking-[-0.045em] text-white md:text-6xl"
+              className="mt-4 max-w-5xl text-3xl font-semibold leading-[1.02] tracking-[-0.04em] text-white md:text-5xl"
               title={getRawTopicTitle(cluster)}
             >
               {displayTitle}
             </h1>
             {displaySubtitle ? (
-              <p className="mt-5 max-w-3xl text-base leading-7 text-slate-200/64 md:text-lg">{displaySubtitle}</p>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-200/64 md:text-base">{displaySubtitle}</p>
             ) : null}
-            <div className="mt-7 max-w-4xl rounded-2xl border border-emerald-300/16 bg-emerald-300/[0.05] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-100/48">Quick read</p>
-              <p className="mt-2 text-sm leading-6 text-emerald-50/80 md:text-base">{getIntelligenceSummary(cluster)}</p>
-            </div>
           </div>
 
-          <div className="flex min-w-[230px] flex-col justify-between gap-4 rounded-2xl border border-white/10 bg-black/20 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_50%_35%,rgba(251,191,36,0.18),rgba(15,23,42,0.22)_42%,rgba(0,0,0,0.34))] p-4">
-              <div className="flex aspect-video items-center justify-center rounded-xl border border-white/10 bg-black/24">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-white/[0.055] text-amber-100/72">
-                  <span className="ml-0.5 text-sm">▶</span>
-                </div>
-              </div>
-              <p className="mt-3 text-xs font-semibold uppercase tracking-[0.13em] text-white/58">Representative video coming soon</p>
-            </div>
-            <div className="rounded-2xl border border-emerald-300/18 bg-emerald-300/[0.06] px-5 py-5 text-right shadow-[0_18px_60px_rgba(16,185,129,0.07)]">
+          <div className="grid gap-3 rounded-2xl border border-emerald-300/16 bg-black/18 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] sm:grid-cols-2 xl:grid-cols-1">
+            <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-100/56">Current growth</div>
-              <div className="mt-3 text-5xl font-semibold leading-none tracking-[-0.055em] text-emerald-100">
+              <div className="mt-1.5 text-3xl font-semibold leading-none tracking-[-0.045em] text-emerald-100">
                 {formatWholePercent(cluster.growth_since_freeze_pct)}
               </div>
-              <div className="mt-3 text-xs leading-5 text-emerald-50/46">
-                {cluster.latest_n_videos ? `${cluster.latest_n_videos.toLocaleString()} latest videos` : "Latest volume not available yet"}
+            </div>
+            <div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/38">Latest video count</div>
+              <div className="mt-1.5 text-2xl font-semibold leading-none tracking-[-0.035em] text-white/84">
+                {cluster.latest_n_videos ? cluster.latest_n_videos.toLocaleString() : "Not available yet"}
               </div>
             </div>
           </div>
@@ -306,7 +297,7 @@ function ClusterReport({
         <div className="grid gap-4">
           <NarrativeCard title="Why this trend?" body={getWhyTrendNarrative(cluster)} />
           <NarrativeCard title="Recommended action" body={cluster.opportunity_summary || getRecommendedAction(cluster)} />
-          <NarrativeCard title="Trend Risk explanation" body={cluster.risk_summary || cluster.failure_risk_reason_label || "Risk evaluation needs more history for this update."} />
+          <NarrativeCard title="Trend Risk explanation" body={cluster.risk_summary || cluster.failure_risk_reason_label || "Early observations only; additional updates will make the risk picture clearer."} />
         </div>
 
         <section className="rounded-2xl border border-white/10 bg-white/[0.032] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.18)]">
@@ -500,7 +491,7 @@ function TabContentPanel({
           </div>
           <NarrativeCard
             title="Risk note"
-            body={cluster.risk_summary || cluster.failure_risk_reason_label || "Risk evaluation is still pending while this topic builds more history."}
+            body={cluster.risk_summary || cluster.failure_risk_reason_label || "Early observations only; additional updates will make the risk picture clearer."}
           />
         </div>
       ) : null}
@@ -976,11 +967,11 @@ function mapConfidence(topic: LeaderboardRow) {
 }
 
 function mapWillLast(topic: LeaderboardRow) {
-  if (topic.decision_label === "STRONG_TREND") return "Likely to sustain";
-  if (topic.decision_label === "EARLY_TREND") return "Promising, validate";
-  if (topic.decision_label === "EMERGING") return "Too early to call";
-  if (Boolean(topic.t60_is_winner)) return "Held up before";
-  return "Still forming";
+  if (topic.decision_label === "STRONG_TREND") return "Established";
+  if (topic.decision_label === "EARLY_TREND") return "Developing Signal";
+  if (topic.decision_label === "EMERGING") return "Under Observation";
+  if (Boolean(topic.t60_is_winner)) return "Established";
+  return "Developing";
 }
 
 function mapOpportunityState(topic: LeaderboardRow) {
@@ -1040,7 +1031,7 @@ function getChipClass(tone: Tone) {
 function getIntelligenceSummary(topic: LeaderboardRow) {
   if (topic.trend_summary) return topic.trend_summary;
   if (topic.opportunity_summary) return topic.opportunity_summary;
-  return "VidCluster is preparing a dedicated readout for this topic.";
+  return "Use recent movement, evidence, and video count to decide whether this topic deserves attention.";
 }
 
 function getWhyTrendNarrative(topic: LeaderboardRow) {
@@ -1060,7 +1051,8 @@ function getRecommendedAction(topic: LeaderboardRow) {
   return "Run a small validation test and watch whether the topic strengthens in the next update.";
 }
 
-function getMovementInterpretation(direction: "growing" | "declining" | "flat", videoDeltaPct: number | null, rows: ClusterTimeseriesRow[]) {
+function getTopicMovementInterpretation(topic: LeaderboardRow, direction: "growing" | "declining" | "flat", videoDeltaPct: number | null, rows: ClusterTimeseriesRow[]) {
+  const topicName = getTopicTitle(topic) || "This topic";
   const priorGrowthValues = rows
     .slice(0, -1)
     .map(resolveTimeseriesGrowthPct)
@@ -1069,25 +1061,25 @@ function getMovementInterpretation(direction: "growing" | "declining" | "flat", 
   const absMove = Math.abs(videoDeltaPct ?? 0);
 
   if (direction === "flat") {
-    return "Activity has remained broadly stable across recent observations, with limited expansion detected so far.";
+    return `${topicName} has stayed broadly stable across recent updates, with limited expansion detected so far.`;
   }
 
   if (direction === "declining") {
     if (videoDeltaPct === null || absMove < 2.5) {
       return stableBeforeLatest
-        ? "Recent observations show mild contraction after a stable period."
-        : "Recent observations show mild contraction, but the move remains limited.";
+        ? `${topicName} remained stable through recent updates before showing a mild decline in the latest observation.`
+        : `${topicName} shows mild contraction in the latest observation, but the move remains limited.`;
     }
-    return "Recent observations show clearer contraction in activity, so this topic should be watched for further softening.";
+    return `${topicName} shows clearer contraction in the latest observation, so it is worth watching for further softening.`;
   }
 
   if (videoDeltaPct === null || absMove < 2.5) {
     return stableBeforeLatest
-      ? "Recent observations show mild expansion from a stable baseline."
-      : "Recent observations show mild expansion, but the move remains limited.";
+      ? `${topicName} moved up slightly from a stable baseline in the latest observation.`
+      : `${topicName} shows mild expansion in the latest observation, but the move remains limited.`;
   }
 
-  return "Recent observations show clearer expansion in activity, indicating the topic is strengthening.";
+  return `${topicName} shows clearer expansion in recent observations, indicating the topic is strengthening.`;
 }
 
 function getConfidenceSentenceLead(topic: LeaderboardRow) {
@@ -1109,7 +1101,7 @@ function getEvidenceInterpretation(topic: LeaderboardRow, rows: ClusterTimeserie
 
   if (decisionLabel.includes("EMERGING") || decisionLabel.includes("EARLY")) {
     return historyIsLimited
-      ? `${confidenceLead}, but the topic is still forming and needs more history before stronger conclusions can be drawn.`
+      ? `${confidenceLead}; this topic is still forming, so additional updates will make the read stronger.`
       : `${confidenceLead}, and the topic is still forming across the available history.`;
   }
 
@@ -1129,15 +1121,15 @@ function getTrendInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRo
 
   if (!current || !previous || currentVideos === null || previousVideos === null) {
     return {
-      body: "We need one more update before comparing this topic over time.",
-      chips: [{ label: "Needs history", tone: "neutral" as Tone }],
+      body: "This topic has limited update history, so the first read is directional rather than conclusive.",
+      chips: [{ label: "Limited History", tone: "neutral" as Tone }],
     };
   }
 
   const videoDelta = currentVideos - previousVideos;
   const videoDeltaPct = previousVideos === 0 ? null : (videoDelta / previousVideos) * 100;
   const direction = videoDelta > 0 ? "growing" : videoDelta < 0 ? "declining" : "flat";
-  const movement = getMovementInterpretation(direction, videoDeltaPct, rows);
+  const movement = getTopicMovementInterpretation(topic, direction, videoDeltaPct, rows);
   const evidence = getEvidenceInterpretation(topic, rows);
 
   return {
@@ -1191,7 +1183,7 @@ function logTemporalDebugChecks(
       matchedRows: clusterRows.length,
       metric: "topic_growth_pct",
       values,
-      label: values.length < 2 ? "Needs history" : "History available",
+      label: values.length < 2 ? "Limited History" : "History available",
     };
   });
 
@@ -1279,7 +1271,7 @@ function getSnapshotComparison(topic: LeaderboardRow, rows: ClusterTimeseriesRow
 }
 
 function formatFailureRiskValue(value?: string | null) {
-  if (!value) return "Coming soon";
+  if (!value) return "Limited History";
   return titleCase(value.split("_").join(" "));
 }
 
@@ -1288,17 +1280,17 @@ function formatFailureRiskLevel(value?: string | null) {
 }
 
 function formatFailureRiskReason(value?: string | null) {
-  if (!value) return "Needs more history";
+  if (!value) return "Early observations only";
   return formatFailureRiskValue(value);
 }
 
 function formatFailureRiskChip(value?: string | null) {
-  if (!value) return "Coming soon";
+  if (!value) return "Limited History";
   return `${formatFailureRiskLevel(value)} Risk`;
 }
 
 function formatObservedFailureRisk(value?: string | null) {
-  if (!value) return "risk evaluation is still pending";
+  if (!value) return "limited risk history";
   return `${formatFailureRiskLevel(value).toLowerCase()} observed failure risk`;
 }
 
@@ -1419,7 +1411,7 @@ function formatWholePercent(value?: number | null) {
 }
 
 function formatLatestSnapshotChange(value: number | null) {
-  if (value === null) return "Needs more history";
+  if (value === null) return "Limited History";
   if (Math.abs(value) <= STABLE_SNAPSHOT_CHANGE_THRESHOLD) return "Stable";
   return `${value > 0 ? "+" : "−"}${Math.abs(value).toFixed(1)}%`;
 }
