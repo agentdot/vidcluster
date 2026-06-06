@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Area,
@@ -19,9 +19,20 @@ import audienceIntentRows from "../data/cluster_audience_intent_v4_0.json";
 import fallbackClusterTimeseriesRows from "../data/cluster_timeseries_v3_3.json";
 import fallbackLeaderboardRows from "../data/leaderboard_v3_3.json";
 import { useDashboardExportData } from "../hooks/useDashboardExportData";
+import { getTaxonomyDisplayLanguage } from "../lib/dashboardLanguage";
+import { getClusterTaxonomy, type ClusterTaxonomy } from "../lib/clusterTaxonomy";
 
 type Tone = "positive" | "watch" | "risk" | "neutral";
-type IntelligenceTab = "Overview" | "Momentum" | "Micro-Niches" | "Divergence" | "Failure Risk" | "Audience Intent";
+type IntelligenceTab =
+  | "Overview"
+  | "Momentum"
+  | "Micro-Niches"
+  | "Divergence"
+  | "Failure Risk"
+  | "Audience Intent"
+  | "Content Opportunities"
+  | "Breaking Out"
+  | "Audience";
 
 type LeaderboardRow = {
   cluster_id?: string;
@@ -83,6 +94,23 @@ type MicroNicheRow = {
   stability_label?: string | null;
   stability_score?: number | null;
   snapshot_date?: string;
+  representative_titles?: string[] | string | null;
+  evidence_titles?: string[] | string | null;
+  top_titles?: string[] | string | null;
+  top_20_titles?: string[] | string | null;
+};
+
+type OpportunityRow = {
+  cluster_id?: string;
+  opportunity_id?: string;
+  opportunity_name?: string;
+  opportunity_status?: "READY" | "NEEDS_REVIEW" | "REJECTED" | string;
+  interest_level?: string;
+  videos_tracked?: number | null;
+  evidence_titles?: string[] | string | null;
+  evidence_status?: "AVAILABLE" | "LIMITED" | "MISSING" | string;
+  reason?: string;
+  rejection_reason?: string;
 };
 
 type DivergenceRow = {
@@ -121,7 +149,7 @@ const DECISION_LABEL_MAP: Record<string, string> = {
 const STABLE_SNAPSHOT_CHANGE_THRESHOLD = 0.05;
 const TEMPORAL_DEBUG_CLUSTER_IDS = ["SC002", "SC161", "SC006"];
 
-const tabs: IntelligenceTab[] = ["Overview", "Momentum", "Micro-Niches", "Divergence", "Failure Risk", "Audience Intent"];
+const tabs: IntelligenceTab[] = ["Overview", "Content Opportunities", "Breaking Out", "Audience"];
 
 export default function ClusterIntelligence() {
   const { clusterId } = useParams();
@@ -141,6 +169,7 @@ export default function ClusterIntelligence() {
     });
   }, [clusterTimeseries, dashboardData.source]);
   const microNiches = dashboardData.data.microNiches as MicroNicheRow[];
+  const opportunities = dashboardData.data.opportunities as OpportunityRow[];
   const divergences = dashboardData.data.divergence as DivergenceRow[];
   const normalizedRouteClusterId = normalizeClusterId(clusterId);
   const cluster = leaderboard.find((row) => normalizeClusterId(row.cluster_id) === normalizedRouteClusterId);
@@ -174,6 +203,7 @@ export default function ClusterIntelligence() {
               cluster={cluster}
               clusterTimeseries={clusterTimeseries}
               microNiches={microNiches}
+              opportunities={opportunities}
               divergences={divergences}
             />
           )}
@@ -187,17 +217,19 @@ function ClusterReport({
   cluster,
   clusterTimeseries,
   microNiches,
+  opportunities,
   divergences,
 }: {
   cluster: LeaderboardRow;
   clusterTimeseries: ClusterTimeseriesRow[];
   microNiches: MicroNicheRow[];
+  opportunities: OpportunityRow[];
   divergences: DivergenceRow[];
 }) {
-  const [activeTab, setActiveTab] = useState<IntelligenceTab>("Overview");
   const confidence = getConfidenceValue(cluster);
   const timeseries = getClusterTimeseries(clusterTimeseries, cluster.cluster_id);
   const clusterMicroNiches = getClusterMicroNiches(microNiches, cluster.cluster_id);
+  const clusterOpportunities = getClusterOpportunities(opportunities, cluster.cluster_id);
   const clusterDivergences = getClusterDivergences(divergences, cluster.cluster_id);
   const clusterAudienceIntents = getClusterAudienceIntents(cluster.cluster_id);
   const snapshotComparison = getSnapshotComparison(cluster, timeseries);
@@ -205,10 +237,11 @@ function ClusterReport({
   const latestSnapshotChange = getLatestSnapshotChange(timeseries);
   const displayTitle = getTopicTitle(cluster);
   const displaySubtitle = getTopicSubtitle(cluster, displayTitle);
+  const clusterTaxonomy = getClusterTaxonomy(cluster.cluster_id ?? "");
 
   return (
     <>
-      <section className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.09),rgba(255,255,255,0.024)_58%,rgba(16,185,129,0.035))] p-5 shadow-[0_22px_80px_rgba(0,0,0,0.32)] md:p-6">
+      <section id="overview" className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.09),rgba(255,255,255,0.024)_58%,rgba(16,185,129,0.035))] p-5 shadow-[0_22px_80px_rgba(0,0,0,0.32)] md:p-6">
         <div className="grid items-end gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
@@ -225,6 +258,7 @@ function ClusterReport({
             {displaySubtitle ? (
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-200/64 md:text-base">{displaySubtitle}</p>
             ) : null}
+            <p className="mt-4 max-w-4xl text-sm leading-6 text-white/70 md:text-base">{getIntelligenceSummary(cluster)}</p>
           </div>
 
           <div className="grid gap-3 rounded-2xl border border-emerald-300/16 bg-black/18 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] sm:grid-cols-2 xl:grid-cols-1">
@@ -244,16 +278,32 @@ function ClusterReport({
         </div>
       </section>
 
-      <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-        <MetricCard label="Latest change" value={latestSnapshotChange.value} helper="since last update" tone={latestSnapshotChange.tone} />
-        <MetricCard label="Evidence" value={mapConfidence(cluster)} helper={formatScore(confidence)} tone={getConfidenceTone(cluster)} />
-        <MetricCard label="Stage" value={mapWillLast(cluster)} tone="neutral" />
-        <MetricCard label="Opportunity" value={mapOpportunityState(cluster)} tone={getOpportunityTone(cluster)} />
-        <MetricCard label="Trend Risk" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
-        <MetricCard label="Risk note" value={formatFailureRiskReason(cluster.failure_risk_reason_code)} tone={getFailureRiskTone(cluster)} />
+      <SectionNav />
+
+      <section className="mt-4 rounded-2xl border border-white/10 bg-[#05090e] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-5">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard label="Evidence" value={mapConfidence(cluster)} helper={formatScore(confidence)} tone={getConfidenceTone(cluster)} />
+          <MetricCard label="Stage" value={mapWillLast(cluster)} tone="neutral" />
+          <MetricCard label="Latest change" value={latestSnapshotChange.value} helper="since last update" tone={latestSnapshotChange.tone} />
+          <MetricCard label="Trend Risk" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
+        </div>
       </section>
 
-      <section className="mt-4 rounded-2xl border border-white/10 bg-[#05090e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-6">
+      <ClusterInterpretationCard taxonomy={clusterTaxonomy} />
+
+      <CreatorSection id="content-opportunities" eyebrow="Content Opportunities" title="Content Opportunities">
+        <OpportunitiesPanel rows={clusterOpportunities} />
+      </CreatorSection>
+
+      <CreatorSection id="breaking-out" eyebrow="Breaking Out" title="Breaking Out">
+        <DivergencePanel rows={clusterDivergences} microNiches={clusterMicroNiches} />
+      </CreatorSection>
+
+      <CreatorSection id="audience" eyebrow="Audience" title="Audience">
+        <AudienceIntentPanel rows={clusterAudienceIntents} />
+      </CreatorSection>
+
+      <section id="history" className="mt-4 rounded-2xl border border-white/10 bg-[#05090e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Recent movement</p>
@@ -267,8 +317,15 @@ function ClusterReport({
 
         <TrendInterpretationPanel interpretation={trendInterpretation} />
 
-        <div className="mt-5 min-h-[330px] rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.012))] p-5">
-          <TrendCurveChart rows={timeseries} />
+        <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="min-h-[330px] rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.012))] p-5">
+            <TrendCurveChart rows={timeseries} />
+          </div>
+          <AtAGlancePanel
+            cluster={cluster}
+            timeseries={timeseries}
+            latestSnapshotChange={latestSnapshotChange}
+          />
         </div>
       </section>
 
@@ -293,9 +350,9 @@ function ClusterReport({
         )}
       </section>
 
-      <section className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">
+      <section id="watchouts" className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">
         <div className="grid gap-4">
-          <NarrativeCard title="Why this trend?" body={getWhyTrendNarrative(cluster)} />
+          <NarrativeCard title="Watchouts" body={getWhyTrendNarrative(cluster)} />
           <NarrativeCard title="Recommended action" body={cluster.opportunity_summary || getRecommendedAction(cluster)} />
           <NarrativeCard title="Trend Risk explanation" body={cluster.risk_summary || cluster.failure_risk_reason_label || "Early observations only; additional updates will make the risk picture clearer."} />
         </div>
@@ -315,35 +372,6 @@ function ClusterReport({
             <FormatShare label="Long" value={cluster.long_video_share} />
           </div>
         </section>
-      </section>
-
-      <section className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-        <div className="flex flex-wrap gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={
-                "rounded-full border px-3 py-1.5 text-xs font-semibold transition hover:border-white/18 hover:text-white/78 " +
-                (activeTab === tab
-                  ? "border-emerald-300/28 bg-emerald-300/[0.095] text-emerald-100 shadow-[0_0_24px_rgba(16,185,129,0.08)]"
-                  : "border-white/10 bg-white/[0.035] text-white/58")
-              }
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-        <TabContentPanel
-          activeTab={activeTab}
-          cluster={cluster}
-          timeseries={timeseries}
-          microNiches={clusterMicroNiches}
-          divergences={clusterDivergences}
-          audienceIntents={clusterAudienceIntents}
-          snapshotComparison={snapshotComparison}
-        />
       </section>
     </>
   );
@@ -419,6 +447,120 @@ function TrendInterpretationPanel({
         </div>
       </div>
     </section>
+  );
+}
+
+function SectionNav() {
+  const links = [
+    { label: "Overview", href: "#overview" },
+    { label: "Cluster Interpretation", href: "#cluster-interpretation" },
+    { label: "Content Opportunities", href: "#content-opportunities" },
+    { label: "Audience", href: "#audience" },
+    { label: "Breaking Out", href: "#breaking-out" },
+    { label: "Risks & Watchouts", href: "#watchouts" },
+    { label: "History", href: "#history" },
+  ];
+
+  return (
+    <nav className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-1.5">
+      <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-7">
+        {links.map((link) => (
+          <a
+            key={link.href}
+            href={link.href}
+            className="rounded-xl px-3 py-2 text-center text-xs font-semibold text-white/58 transition hover:bg-white/[0.055] hover:text-white"
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+function ClusterInterpretationCard({ taxonomy }: { taxonomy: ClusterTaxonomy | null }) {
+  const displayLanguage = taxonomy ? getTaxonomyDisplayLanguage(taxonomy.cluster_type) : null;
+
+  return (
+    <section
+      id="cluster-interpretation"
+      className="mt-4 scroll-mt-24 rounded-2xl border border-white/10 bg-[#05090e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-6"
+    >
+      <div className="mb-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">Human Read</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">How To Read This Cluster</h2>
+      </div>
+
+      {taxonomy && displayLanguage ? (
+        <>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <InterpretationField label="Verdict" value={displayLanguage.verdict} />
+            <InterpretationField label="Why This Matters" value={displayLanguage.why} />
+            <InterpretationField label="What You Should Do Next" value={displayLanguage.suggestion} />
+            <InterpretationField label="How Sure We Are" value={taxonomy.confidence} />
+          </div>
+        </>
+      ) : (
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <InterpretationField label="Verdict" value="Needs More Review" />
+          <InterpretationField
+            label="Why This Matters"
+            value="VidCluster has found movement here, but this cluster has not been manually reviewed yet."
+          />
+          <InterpretationField
+            label="What You Should Do Next"
+            value="Use the evidence, audience, and risk sections before making a content decision."
+          />
+          <InterpretationField label="How Sure We Are" value="Not reviewed yet" />
+        </div>
+      )}
+    </section>
+  );
+}
+
+function InterpretationField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/34">{label}</p>
+      <p className="mt-2 text-lg font-semibold leading-6 text-white/86">{value}</p>
+    </div>
+  );
+}
+
+function CreatorSection({ id, eyebrow, title, children }: { id: string; eyebrow: string; title: string; children: ReactNode }) {
+  return (
+    <section id={id} className="mt-4 scroll-mt-24 rounded-2xl border border-white/10 bg-[#05090e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-6">
+      <div className="mb-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">{eyebrow}</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">{title}</h2>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function AtAGlancePanel({
+  cluster,
+  timeseries,
+  latestSnapshotChange,
+}: {
+  cluster: LeaderboardRow;
+  timeseries: ClusterTimeseriesRow[];
+  latestSnapshotChange: { value: string; tone: Tone };
+}) {
+  const latest = timeseries[timeseries.length - 1];
+  const latestVideos = finiteNumber(latest?.n_videos) ?? finiteNumber(cluster.latest_n_videos);
+
+  return (
+    <aside className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/34">At a glance</p>
+      <div className="mt-4 grid gap-3">
+        <MetricCard label="Videos tracked" value={latestVideos === null ? "Not available yet" : latestVideos.toLocaleString()} tone="neutral" />
+        <MetricCard label="Latest change" value={latestSnapshotChange.value} helper="since last update" tone={latestSnapshotChange.tone} />
+        <MetricCard label="Evidence" value={mapConfidence(cluster)} tone={getConfidenceTone(cluster)} />
+        <MetricCard label="Stage" value={mapWillLast(cluster)} tone="neutral" />
+      </div>
+    </aside>
   );
 }
 
@@ -513,47 +655,54 @@ function TabStat({ label, value, helper, tone }: { label: string; value: string;
   );
 }
 
-function MicroNichesPanel({ rows }: { rows: MicroNicheRow[] }) {
+function OpportunitiesPanel({ rows }: { rows: OpportunityRow[] }) {
   if (rows.length === 0) {
-    return <EmptyTabPanel title="No micro-niche rows are available for this topic yet." />;
-  }
-
-  const [leader, ...supportingRows] = rows;
-  const leaderLabel = getVisibleMicroNicheLabel(leader) || leader.subcluster_id || "Unnamed sub-niche";
-
-  return (
-    <div className="space-y-5">
-      <p className="text-base leading-7 text-white/68">These are the sub-niches currently driving or forming inside this topic.</p>
-      <div className="rounded-2xl border border-emerald-300/18 bg-emerald-300/[0.045] p-5 shadow-[0_18px_60px_rgba(16,185,129,0.06)]">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/52">Leading emerging micro-niche</p>
-        <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h3 className="text-2xl font-semibold tracking-[-0.04em] text-white">{leaderLabel}</h3>
-            <p className="mt-2 text-sm text-white/44">{leader.subcluster_id}</p>
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            <MiniStat label="Emergence" value={formatDecimal(leader.micro_emergence_score)} strong />
-            <MiniStat label="Videos" value={formatNumber(leader.assigned_video_count)} strong />
-            <MiniStat label="Stage" value={formatSelectedValue(leader.stability_label)} strong />
-          </div>
-        </div>
-        <p className="mt-5 rounded-xl border border-white/10 bg-black/18 px-4 py-3 text-sm leading-6 text-white/62">
-          Why this matters: {leaderLabel} has {formatNumber(leader.assigned_video_count)} assigned videos,
-          an emergence score of {formatDecimal(leader.micro_emergence_score)}, and a {formatSelectedValue(leader.stability_label).toLowerCase()} stage.
+    return (
+      <div className="rounded-2xl border border-dashed border-white/12 bg-white/[0.025] p-5">
+        <p className="text-lg font-semibold text-white/82">No approved opportunities yet.</p>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/52">
+          We found possible areas, but they need clearer labels before showing them here.
         </p>
       </div>
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {supportingRows.slice(0, 8).map((row) => {
-          const rowLabel = getVisibleMicroNicheLabel(row) || row.subcluster_id || "Unnamed sub-niche";
+    );
+  }
+
+  const opportunityRows = rows.slice(0, 8);
+
+  return (
+    <div className="space-y-4">
+      <p className="text-base leading-7 text-white/68">High-potential angles creators can explore inside this topic.</p>
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {opportunityRows.map((row, index) => {
+          const evidence = getLayerOpportunityEvidence(row);
+          const interest = formatSelectedValue(row.interest_level);
 
           return (
-            <div key={row.subcluster_id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-              <p className="text-lg font-semibold text-white/84">{rowLabel}</p>
-              <p className="mt-1 text-xs text-white/34">{row.subcluster_id}</p>
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                <MiniStat label="Emergence" value={formatDecimal(row.micro_emergence_score)} />
-                <MiniStat label="Videos" value={formatNumber(row.assigned_video_count)} />
-                <MiniStat label="Stage" value={formatSelectedValue(row.stability_label)} />
+            <div
+              key={row.opportunity_id}
+              className={
+                "rounded-2xl border p-5 shadow-[0_18px_60px_rgba(0,0,0,0.16)] " +
+                (index === 0
+                  ? "border-emerald-300/28 bg-[linear-gradient(180deg,rgba(16,185,129,0.095),rgba(255,255,255,0.035))]"
+                  : "border-white/10 bg-white/[0.035]")
+              }
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-100/46">
+                  {index === 0 ? "Top opportunity" : "Opportunity"}
+                </p>
+                <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${getChipClass(getInterestTone(interest))}`}>
+                  {interest}
+                </span>
+              </div>
+              <p className="mt-3 min-h-[52px] text-lg font-semibold leading-6 text-white/90">{row.opportunity_name}</p>
+              <div className="mt-5 space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <OpportunityField label="Interest Level" value={interest} />
+                  <OpportunityField label="Videos Tracked" value={formatNumber(row.videos_tracked)} />
+                </div>
+                <OpportunityEvidenceList evidence={evidence} />
+                {row.reason ? <p className="text-xs leading-5 text-white/42">{row.reason}</p> : null}
               </div>
             </div>
           );
@@ -563,94 +712,161 @@ function MicroNichesPanel({ rows }: { rows: MicroNicheRow[] }) {
   );
 }
 
+function OpportunityField({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/34">{label}</p>
+      <p className="mt-1.5 text-sm leading-6 text-white/66">{value}</p>
+    </div>
+  );
+}
+
+function OpportunityEvidenceList({
+  evidence,
+}: {
+  evidence: { titles: string[]; label: string; tone: Tone; note?: string; emptyMessage?: string };
+}) {
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/34">Recent examples</p>
+        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${getChipClass(evidence.tone)}`}>
+          {evidence.label}
+        </span>
+      </div>
+      {evidence.titles.length > 0 ? (
+        <ul className="mt-2 space-y-2">
+          {evidence.titles.map((title) => (
+            <li key={title} className="flex gap-2 text-sm leading-6 text-white/68">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300/80" />
+              <span>{title}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-sm leading-6 text-white/52">{evidence.emptyMessage ?? "No example titles available yet."}</p>
+      )}
+      {evidence.note ? <p className="mt-2 text-xs leading-5 text-white/42">{evidence.note}</p> : null}
+    </div>
+  );
+}
+
 function DivergencePanel({ rows, microNiches }: { rows: DivergenceRow[]; microNiches: MicroNicheRow[] }) {
   if (rows.length === 0) {
-    return <EmptyTabPanel title="No divergence rows are available for this topic yet." />;
+    return <BreakoutEmptyState />;
   }
 
   const labelsBySubclusterId = new Map(microNiches.map((row) => [row.subcluster_id, row.subcluster_label]));
   const enrichedRows = rows.map((row) => ({ ...row, subcluster_label: row.subcluster_label || labelsBySubclusterId.get(row.subcluster_id) }));
-  const usefulRows = enrichedRows.filter((row) => (row.divergence_score ?? 0) !== 0 || (row.share_delta ?? 0) !== 0 || (row.relative_growth_spread ?? 0) !== 0);
-  const stableRows = enrichedRows.filter((row) => !usefulRows.includes(row));
-  const outperformingRows = usefulRows.filter((row) => (row.relative_growth_spread ?? 0) > 0 || (row.share_delta ?? 0) > 0);
-  const weakeningRows = usefulRows.filter((row) => (row.relative_growth_spread ?? 0) < 0 || (row.share_delta ?? 0) < 0);
-  const neutralUsefulRows = usefulRows.filter((row) => !outperformingRows.includes(row) && !weakeningRows.includes(row));
+  const usefulRows = enrichedRows
+    .filter((row) => (row.divergence_score ?? 0) !== 0 || (row.share_delta ?? 0) !== 0 || (row.relative_growth_spread ?? 0) !== 0)
+    .sort((a, b) => {
+      const divergenceDelta = Math.abs(b.divergence_score ?? 0) - Math.abs(a.divergence_score ?? 0);
+      if (divergenceDelta !== 0) return divergenceDelta;
+      const shareDelta = Math.abs(b.share_delta ?? 0) - Math.abs(a.share_delta ?? 0);
+      if (shareDelta !== 0) return shareDelta;
+      return String(a.subcluster_label ?? "").localeCompare(String(b.subcluster_label ?? ""));
+    });
+
+  if (usefulRows.length === 0) {
+    return <BreakoutEmptyState />;
+  }
 
   return (
     <div className="space-y-5">
-      <p className="text-base leading-7 text-white/68">
-        Divergence shows which internal segments are outperforming or weakening versus the parent topic.
+      <p className="text-base leading-7 text-white/68">Topics growing faster than the rest of this category.</p>
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {usefulRows.slice(0, 9).map((row, index) => (
+          <BreakoutCard key={`${row.subcluster_id}-${row.snapshot_date}-${index}`} row={row} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BreakoutEmptyState() {
+  return (
+    <div className="rounded-2xl border border-dashed border-white/12 bg-white/[0.025] p-5">
+      <p className="text-lg font-semibold text-white/82">No clear breakout yet</p>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-white/52">
+        We'll highlight areas that begin growing faster than the rest of the topic.
       </p>
-      <DivergenceGroup title="Outperforming" rows={outperformingRows} tone="positive" />
-      <DivergenceGroup title="Weakening" rows={weakeningRows} tone="risk" />
-      <DivergenceGroup title="Little change" rows={[...neutralUsefulRows, ...stableRows].slice(0, 6)} tone="neutral" compact />
     </div>
   );
 }
 
 function AudienceIntentPanel({ rows }: { rows: AudienceIntentRow[] }) {
   if (rows.length === 0) {
-    return <EmptyTabPanel title="No audience intent rows are available for this topic yet." />;
+    return <EmptyTabPanel title="Audience details are not available for this topic yet." />;
   }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {rows.slice(0, 9).map((row, index) => {
-        const exampleQueries = row.example_queries ?? [];
+        const audience = getAudienceUnderstanding(row);
         return (
-        <div key={`${row.intent_label}-${index}`} className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
-          <div className="flex items-start justify-between gap-3">
-            <p className="text-lg font-semibold text-white/86">{row.intent_label || "Unlabeled intent"}</p>
-            <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.075] px-2.5 py-1 text-xs font-semibold text-emerald-100/78">
-              {formatDecimal(row.intent_score)}
-            </span>
+          <div key={`${row.intent_label}-${index}`} className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
+            <p className="text-lg font-semibold text-white/88">{audience.name}</p>
+            <div className="mt-5 space-y-4">
+              <AudienceField label="Audience" value={audience.who} />
+              <AudienceField label="Why they watch" value={audience.whyTheyWatch} />
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/34">What they care about</p>
+                <ul className="mt-2 space-y-2">
+                  {audience.caresAbout.map((item) => (
+                    <li key={item} className="flex gap-2 text-sm leading-6 text-white/68">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300/80" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <AudienceField label="Creator opportunity" value={audience.creatorOpportunity} />
+            </div>
           </div>
-          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.13em] text-white/38">{formatSelectedValue(row.source_type)}</p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {exampleQueries.slice(0, 6).map((query) => (
-              <span key={query} className="rounded-full border border-white/10 bg-white/[0.052] px-2.5 py-1 text-sm text-white/64">
-                {query}
-              </span>
-            ))}
-          </div>
-          <p className="mt-5 rounded-xl border border-white/10 bg-black/18 px-3 py-2 text-sm leading-6 text-white/58">
-            {formatContentAngles(row.recommended_content_angles, row.intent_label, exampleQueries)}
-          </p>
-        </div>
-      )})}
+        );
+      })}
     </div>
   );
 }
 
-function DivergenceGroup({ title, rows, tone, compact = false }: { title: string; rows: DivergenceRow[]; tone: Tone; compact?: boolean }) {
-  if (rows.length === 0) return null;
+function AudienceField({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/34">{label}</p>
+      <p className="mt-1.5 text-sm leading-6 text-white/66">{value}</p>
+    </div>
+  );
+}
+
+function BreakoutCard({ row }: { row: DivergenceRow }) {
+  const name = getVisibleMicroNicheLabel(row) || "Needs clearer label";
+  const tone = getBreakoutTone(row);
 
   return (
-    <section>
-      <div className="mb-3 flex items-center gap-2">
-        <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${getChipClass(tone)}`}>{title}</span>
-        <span className="text-xs text-white/36">{rows.length} segment{rows.length === 1 ? "" : "s"}</span>
+    <article className="flex min-h-[270px] flex-col rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.16)]">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-100/46">Opportunity</p>
+        <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${getChipClass(tone)}`}>
+          {getBreakoutConfidence(row)}
+        </span>
       </div>
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {rows.slice(0, compact ? 6 : 9).map((row, index) => (
-          <div key={`${row.subcluster_id}-${row.snapshot_date}-${index}`} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-            <p className="text-lg font-semibold text-white/84">{row.subcluster_label || "Unnamed segment"}</p>
-            <p className="mt-1 text-xs text-white/34">{row.subcluster_id}</p>
-            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.13em] text-white/40">{formatSelectedValue(row.divergence_label)}</p>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <MiniStat label="Score" value={formatDecimal(row.divergence_score)} />
-              <MiniStat label="Share delta" value={formatPP(row.share_delta)} />
-              <MiniStat label="Spread" value={formatPercentRatio(row.relative_growth_spread)} />
-              <MiniStat label="Update" value={formatShortDate(row.snapshot_date)} />
-            </div>
-            <p className="mt-4 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm leading-6 text-white/54">
-              Micro {formatPercentRatio(row.micro_wow_pct)} vs parent {formatPercentRatio(row.parent_wow_pct)}
-            </p>
-            <p className="mt-2 text-xs leading-5 text-white/38">{getDivergenceMeaning(row)}</p>
-          </div>
-        ))}
+      <p className="mt-3 text-lg font-semibold leading-6 text-white/88">{name}</p>
+      <div className="mt-5 space-y-4">
+        <BreakoutField label="Relative Growth" value={getRelativeGrowthCopy(row)} />
+        <BreakoutField label="Why it matters" value={getBreakoutWhyItMatters(row)} />
+        <BreakoutField label="Creator Opportunity" value="Consider testing a focused video around this subject before it becomes crowded." />
       </div>
-    </section>
+    </article>
+  );
+}
+
+function BreakoutField({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/34">{label}</p>
+      <p className="mt-1.5 text-sm leading-6 text-white/66">{value}</p>
+    </div>
   );
 }
 
@@ -919,11 +1135,142 @@ function isUsableSemanticLabel(value?: string | null) {
 
 function getVisibleMicroNicheLabel(row?: MicroNicheRow | DivergenceRow) {
   if (!row) return undefined;
-  if ("display_label" in row && isUsableSemanticLabel(row.display_label)) return row.display_label?.trim();
-  if ("canonical_subcluster_label" in row && isUsableSemanticLabel(row.canonical_subcluster_label)) {
-    return row.canonical_subcluster_label?.trim();
+  const candidates = [
+    "canonical_subcluster_label" in row ? row.canonical_subcluster_label : undefined,
+    "clean_micro_niche_label" in row ? row.clean_micro_niche_label : undefined,
+    "display_label" in row ? row.display_label : undefined,
+    row.subcluster_label,
+  ].filter(isUsableSemanticLabel) as string[];
+  const stronger = candidates.find((candidate) => !isWeakOpportunityLabel(candidate));
+  if (stronger) return stronger.trim();
+  return candidates.length > 0 ? "Needs clearer label" : undefined;
+}
+
+function isWeakOpportunityLabel(value?: string | null) {
+  const text = value?.trim().toLowerCase() ?? "";
+  return !text || /\bsegment\s+\d+\b/.test(text) || text.endsWith(" segment");
+}
+
+function getCreatorOpportunityCopy(row: MicroNicheRow, label: string) {
+  const videos = finiteNumber(row.assigned_video_count);
+  const stage = formatSelectedValue(row.stability_label).toLowerCase();
+  const strength = finiteNumber(row.micro_emergence_score);
+  const attention = getOpportunityAttention(strength, videos, stage);
+
+  return {
+    interestLevel: attention.label,
+    videosTracked: videos === null ? "Not available yet" : videos.toLocaleString(),
+    evidence: getOpportunityEvidence(row),
+    attention: attention.label,
+    attentionTone: attention.tone,
+  };
+}
+
+function getOpportunityAttention(strength: number | null, videos: number | null, stage: string) {
+  if ((strength !== null && strength >= 0.7) || (videos !== null && videos >= 100)) {
+    return { label: "High", tone: "positive" as Tone };
   }
-  return row.subcluster_label?.trim() || undefined;
+
+  if ((strength !== null && strength >= 0.4) || (videos !== null && videos >= 40) || stage.includes("stable")) {
+    return { label: "Medium", tone: "watch" as Tone };
+  }
+
+  return { label: "Watch", tone: "neutral" as Tone };
+}
+
+function getOpportunityEvidence(row: MicroNicheRow) {
+  const status = String(row.evidence_status ?? "").toUpperCase();
+  const allCleanTitles = getEvidenceTitles(row).map(cleanRepresentativeTitle).filter(Boolean);
+  const englishReadableTitles = allCleanTitles.filter(isEnglishReadableTitle);
+  const hiddenNonEnglishCount = Math.max(0, allCleanTitles.length - englishReadableTitles.length);
+  const titles = englishReadableTitles.slice(0, 3);
+  const note = hiddenNonEnglishCount > 0 && titles.length < 2
+    ? titles.length > 0
+      ? "More examples available, but not all are English."
+      : "Limited English examples available."
+    : undefined;
+  const emptyMessage = hiddenNonEnglishCount > 0 && titles.length === 0
+    ? "Limited English examples available."
+    : undefined;
+  if (status === "AVAILABLE") {
+    return { titles, label: "Evidence available", tone: "positive" as Tone, note, emptyMessage };
+  }
+  if (status === "LIMITED") {
+    return { titles, label: "Limited evidence", tone: "watch" as Tone, note, emptyMessage };
+  }
+  return { titles: [], label: "No title evidence yet", tone: "neutral" as Tone };
+}
+
+function getLayerOpportunityEvidence(row: OpportunityRow) {
+  const status = String(row.evidence_status ?? "").toUpperCase();
+  const titles = parseEvidenceTitleList(row.evidence_titles).map(cleanRepresentativeTitle).filter(Boolean).slice(0, 3);
+
+  if (status === "AVAILABLE") {
+    return { titles, label: "Evidence available", tone: "positive" as Tone };
+  }
+  if (status === "LIMITED") {
+    return { titles, label: "Limited evidence", tone: "watch" as Tone };
+  }
+  return {
+    titles: [],
+    label: "No title evidence yet",
+    tone: "neutral" as Tone,
+    emptyMessage: "No example titles available yet.",
+  };
+}
+
+function getInterestTone(value?: string | null): Tone {
+  const normalized = value?.trim().toLowerCase() ?? "";
+  if (normalized === "high") return "positive";
+  if (normalized === "moderate") return "watch";
+  return "neutral";
+}
+
+function getEvidenceTitles(row: MicroNicheRow) {
+  return [
+    ...parseEvidenceTitleList(row.representative_titles),
+    ...parseEvidenceTitleList(row.evidence_titles),
+    ...parseEvidenceTitleList(row.top_titles),
+    ...parseEvidenceTitleList(row.top_20_titles),
+  ].slice(0, 20);
+}
+
+function parseEvidenceTitleList(value?: string[] | string | null) {
+  if (Array.isArray(value)) return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+  if (typeof value !== "string" || !value.trim()) return [];
+
+  try {
+    const parsed = JSON.parse(value.replace(/'/g, '"'));
+    if (Array.isArray(parsed)) return parsed.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+  } catch {
+    // Fall through to conservative splitting for CSV-style stringified arrays.
+  }
+
+  return value
+    .replace(/^\[/, "")
+    .replace(/\]$/, "")
+    .split(/,\s*/)
+    .map((item) => item.replace(/^["']|["']$/g, "").trim())
+    .filter(Boolean);
+}
+
+function cleanRepresentativeTitle(title: string) {
+  const withoutHashtags = title.replace(/#[\p{L}\p{N}_-]+/gu, " ");
+  const withoutEmojiNoise = withoutHashtags.replace(/[\p{Extended_Pictographic}\uFE0F]/gu, " ");
+  const cleaned = withoutEmojiNoise
+    .replace(/\uFFFC/g, " ")
+    .replace(/[|—-]\s*$/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!cleaned) return "";
+  return cleaned.length > 80 ? `${cleaned.slice(0, 77).trim()}...` : cleaned;
+}
+
+function isEnglishReadableTitle(title: string) {
+  const lettersOnly = title.replace(/[^\p{L}]/gu, "");
+  if (!lettersOnly) return true;
+  const latinLetters = lettersOnly.match(/\p{Script=Latin}/gu)?.length ?? 0;
+  return latinLetters / lettersOnly.length >= 0.6;
 }
 
 function getTopicTitle(topic: LeaderboardRow) {
@@ -1218,6 +1565,28 @@ function getClusterMicroNiches(rows: MicroNicheRow[], clusterId?: string) {
     .sort((a, b) => (b.micro_emergence_score ?? -1) - (a.micro_emergence_score ?? -1));
 }
 
+function getClusterOpportunities(rows: OpportunityRow[], clusterId?: string) {
+  const normalizedClusterId = normalizeClusterId(clusterId);
+  if (!normalizedClusterId) return [];
+
+  return rows
+    .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
+    .filter((row) => String(row.opportunity_status ?? "").toUpperCase() === "READY")
+    .sort((a, b) => {
+      const interestDelta = getInterestRank(b.interest_level) - getInterestRank(a.interest_level);
+      if (interestDelta !== 0) return interestDelta;
+      return (b.videos_tracked ?? -1) - (a.videos_tracked ?? -1);
+    });
+}
+
+function getInterestRank(value?: string | null) {
+  const normalized = value?.trim().toLowerCase() ?? "";
+  if (normalized === "high") return 3;
+  if (normalized === "moderate") return 2;
+  if (normalized === "early") return 1;
+  return 0;
+}
+
 function getClusterDivergences(rows: DivergenceRow[], clusterId?: string) {
   const normalizedClusterId = normalizeClusterId(clusterId);
   if (!normalizedClusterId) return [];
@@ -1336,13 +1705,108 @@ function formatPercentRatio(value?: number | null) {
   return `${percent >= 0 ? "+" : ""}${percent.toFixed(1)}%`;
 }
 
-function formatContentAngles(value?: string[] | string | null, intentLabel?: string, exampleQueries: string[] = []) {
-  if (Array.isArray(value) && value.length > 0) return value.join(", ");
-  if (typeof value === "string" && value.trim()) return value;
+function getAudienceUnderstanding(row: AudienceIntentRow) {
+  const signals = getAudienceSignals(row);
+  const name = formatAudienceName(row.intent_label, signals);
+  const caresAbout = getAudienceCareItems(signals, name);
 
-  const terms = [intentLabel, ...exampleQueries].filter((term): term is string => Boolean(term?.trim())).slice(0, 4);
-  if (terms.length > 0) return `Create content around: ${terms.join(", ")}.`;
-  return "Recommended content angles not exported yet.";
+  return {
+    name,
+    who: inferAudienceWho(name, signals),
+    whyTheyWatch: inferAudienceWhy(name, signals),
+    caresAbout,
+    creatorOpportunity: inferAudienceCreatorOpportunity(name, caresAbout),
+  };
+}
+
+function getAudienceSignals(row: AudienceIntentRow) {
+  return dedupeTextItems([
+    row.intent_label,
+    ...arrayTextItems(row.example_queries),
+    ...arrayTextItems(row.recommended_content_angles),
+  ]).slice(0, 12);
+}
+
+function arrayTextItems(value?: string[] | string | null) {
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string") return value.split(/[,;|]/);
+  return [];
+}
+
+function dedupeTextItems(values: Array<string | null | undefined>) {
+  const seen = new Set<string>();
+  return values
+    .map((value) => value?.trim() ?? "")
+    .filter(Boolean)
+    .map(cleanAudiencePhrase)
+    .filter(Boolean)
+    .filter((value) => {
+      const key = value.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+function cleanAudiencePhrase(value: string) {
+  return value
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/^create content around:\s*/i, "")
+    .replace(/^content angle:\s*/i, "")
+    .trim();
+}
+
+function formatAudienceName(intentLabel?: string, signals: string[] = []) {
+  const label = cleanAudiencePhrase(intentLabel ?? "");
+  if (label) return titleCase(label);
+  return signals[0] ? titleCase(signals[0]) : "Audience group";
+}
+
+function inferAudienceWho(name: string, signals: string[]) {
+  const text = `${name} ${signals.join(" ")}`.toLowerCase();
+  if (text.includes("islamic") || text.includes("muslim") || text.includes("faith")) return "Muslim parents looking for values-aligned guidance.";
+  if (text.includes("baby") || text.includes("infant") || text.includes("toddler") || text.includes("newborn")) return "New parents navigating the first years of parenting.";
+  if (text.includes("parent")) return "Parents looking for practical guidance they can use at home.";
+  if (text.includes("budget") || text.includes("deal") || text.includes("save money") || text.includes("cheap")) return "Cost-conscious viewers comparing practical options.";
+  if (text.includes("career") || text.includes("job") || text.includes("interview")) return "People trying to make a better career decision.";
+  if (text.includes("travel") || text.includes("trip")) return "Travel planners looking for useful, low-friction advice.";
+  return "Viewers looking for clear help with this topic.";
+}
+
+function inferAudienceWhy(name: string, signals: string[]) {
+  const text = `${name} ${signals.join(" ")}`.toLowerCase();
+  if (text.includes("islamic") || text.includes("muslim") || text.includes("faith")) return "They want advice that fits their values and family life.";
+  if (text.includes("baby") || text.includes("infant") || text.includes("toddler") || text.includes("newborn")) return "They are looking for practical help during the early years.";
+  if (text.includes("deal") || text.includes("save") || text.includes("budget") || text.includes("cheap")) return "They want to avoid wasting money and make smarter choices.";
+  if (text.includes("career") || text.includes("job") || text.includes("interview")) return "They want confidence before making a work or career move.";
+  if (text.includes("travel") || text.includes("trip")) return "They want realistic plans, costs, and tradeoffs before they go.";
+  return "They want examples, clear tradeoffs, and next steps.";
+}
+
+function getAudienceCareItems(signals: string[], name: string) {
+  const fromSignals = signals
+    .map((signal) => titleCase(signal))
+    .filter((signal) => signal.length <= 46)
+    .slice(0, 4);
+  if (fromSignals.length >= 3) return fromSignals;
+
+  const text = `${name} ${signals.join(" ")}`.toLowerCase();
+  if (text.includes("islamic") || text.includes("muslim") || text.includes("faith")) {
+    return ["Family values", "Character development", "Early childhood teaching", "Faith-based parenting"];
+  }
+  if (text.includes("baby") || text.includes("infant") || text.includes("toddler") || text.includes("newborn")) {
+    return ["Sleep", "Feeding", "Development milestones", "Infant behaviour"];
+  }
+  if (text.includes("budget") || text.includes("deal") || text.includes("save")) {
+    return ["Saving money", "Best options", "Avoiding mistakes", "Step-by-step plans"];
+  }
+  return [...fromSignals, "Practical examples", "Common mistakes", "Clear next steps"].slice(0, 4);
+}
+
+function inferAudienceCreatorOpportunity(name: string, caresAbout: string[]) {
+  const primaryCare = caresAbout[0]?.toLowerCase() ?? "their main question";
+  return `Create practical content for ${name.toLowerCase()} around ${primaryCare}.`;
 }
 
 function formatRiskScore(value?: number | null) {
@@ -1368,13 +1832,36 @@ function getFormatImplication(topic: LeaderboardRow) {
   return `Creator implication: prioritize ${leader.label} packaging first, then use the other formats as supporting tests if production capacity allows.`;
 }
 
-function getDivergenceMeaning(row: DivergenceRow) {
+function getBreakoutTone(row: DivergenceRow): Tone {
   const spread = row.relative_growth_spread ?? 0;
   const shareDelta = row.share_delta ?? 0;
+  if (spread > 0 || shareDelta > 0) return "positive";
+  if (spread < 0 || shareDelta < 0) return "watch";
+  return "neutral";
+}
 
-  if (spread > 0 || shareDelta > 0) return "What this means: this segment is gaining ground inside the parent topic.";
-  if (spread < 0 || shareDelta < 0) return "What this means: this segment is weakening relative to the parent topic.";
-  return "What this means: no meaningful internal divergence is visible in this update.";
+function getBreakoutConfidence(row: DivergenceRow) {
+  const score = Math.abs(row.divergence_score ?? 0);
+  const shareDelta = Math.abs(row.share_delta ?? 0);
+  if (score >= 0.35 || shareDelta >= 0.08) return "Strong";
+  if (score >= 0.15 || shareDelta >= 0.03) return "Moderate";
+  return "Limited";
+}
+
+function getRelativeGrowthCopy(row: DivergenceRow) {
+  const spread = row.relative_growth_spread ?? 0;
+  const shareDelta = row.share_delta ?? 0;
+  if (spread > 0 || shareDelta > 0) return "Growing faster than the overall topic.";
+  if (spread < 0 || shareDelta < 0) return "Changing faster than the overall topic, but momentum is cooling.";
+  return "Growing in line with the overall topic.";
+}
+
+function getBreakoutWhyItMatters(row: DivergenceRow) {
+  const spread = row.relative_growth_spread ?? 0;
+  const shareDelta = row.share_delta ?? 0;
+  if (spread > 0 || shareDelta > 0) return "Interest in this area is increasing faster than the rest of the topic.";
+  if (spread < 0 || shareDelta < 0) return "This area is changing quickly, but current movement suggests softer interest.";
+  return "Interest is moving close to the rest of the topic right now.";
 }
 
 function finiteNumber(value?: unknown) {

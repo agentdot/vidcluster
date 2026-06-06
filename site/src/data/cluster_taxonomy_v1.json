@@ -1,0 +1,52 @@
+[
+  {
+    "cluster_id": "SC006",
+    "taxonomy_version": "v1",
+    "cluster_type": "Clean Opportunity",
+    "organizing_force": "Audience Need",
+    "confidence": "High",
+    "explanation": "Multiple creators serve a coherent parenting audience with consistent audience intent.",
+    "review_status": "Reviewed",
+    "source": "Audit V2"
+  },
+  {
+    "cluster_id": "SC161",
+    "taxonomy_version": "v1",
+    "cluster_type": "Creator Territory",
+    "organizing_force": "Creator Identity",
+    "confidence": "High",
+    "explanation": "Cluster coherence is primarily driven by one creator-style territory rather than a broad reusable market opportunity.",
+    "review_status": "Reviewed",
+    "source": "Audit V2"
+  },
+  {
+    "cluster_id": "SC191",
+    "taxonomy_version": "v1",
+    "cluster_type": "Brand Territory",
+    "organizing_force": "Churchill Mortgage",
+    "confidence": "High",
+    "explanation": "Growth is concentrated around a single institutional brand rather than a broad creator ecosystem.",
+    "review_status": "Reviewed",
+    "source": "Audit V2"
+  },
+  {
+    "cluster_id": "SC044",
+    "taxonomy_version": "v1",
+    "cluster_type": "Audience Environment",
+    "organizing_force": "Work / Focus Context",
+    "confidence": "Medium",
+    "explanation": "Cluster coherence appears to come from a shared audience usage context around work, focus, and ambient productivity rather than a simple topic category.",
+    "review_status": "Reviewed",
+    "source": "Audit V2"
+  },
+  {
+    "cluster_id": "SC182",
+    "taxonomy_version": "v1",
+    "cluster_type": "Coherence Trap",
+    "organizing_force": "Mixed Surface Similarity",
+    "confidence": "Medium",
+    "explanation": "The cluster appears coherent at the surface level but may combine different audience intents that should not be treated as one clean opportunity.",
+    "review_status": "Reviewed",
+    "source": "Audit V2"
+  }
+]
