@@ -1,7 +1,7 @@
 {
   "snapshot_date": "2026-05-11",
   "experiment_id": "v4_0",
-  "generated_at_utc": "2026-05-29T23:08:53+00:00",
+  "generated_at_utc": "2026-06-06T17:44:35+00:00",
   "source": "canonical_local_weekly_artifacts",
   "inputs": {
     "cluster_refresh": "D:\\Projects\\vidcluster\\vidcluster_engine\\automation-data\\experiments\\v4_0\\snapshots\\cluster_refresh\\2026-05-11\\cluster_refresh_snapshot.csv",
@@ -24,6 +24,84 @@
     "tracking": "PASS",
     "divergence": "PASS",
     "observability": "PASS"
+  },
+  "timeseries_history_validation": {
+    "cluster_id": "SC002",
+    "allow_single_snapshot_export": false,
+    "history_total_snapshot_count": 4,
+    "history_snapshot_dates": [
+      "2026-05-05",
+      "2026-05-07",
+      "2026-05-11",
+      "2026-05-18"
+    ],
+    "exported_row_count": 1036,
+    "exported_unique_cluster_count": 259,
+    "exported_unique_snapshot_count": 4,
+    "exported_snapshot_dates_all": [
+      "2026-05-05",
+      "2026-05-07",
+      "2026-05-11",
+      "2026-05-18"
+    ],
+    "history_snapshot_count": 4,
+    "exported_snapshot_count": 4,
+    "cluster_history_snapshot_dates": [
+      "2026-05-05",
+      "2026-05-07",
+      "2026-05-11",
+      "2026-05-18"
+    ],
+    "exported_snapshot_dates": [
+      "2026-05-05",
+      "2026-05-07",
+      "2026-05-11",
+      "2026-05-18"
+    ],
+    "sample_clusters": {
+      "SC002": {
+        "snapshot_dates": [
+          "2026-05-05",
+          "2026-05-07",
+          "2026-05-11",
+          "2026-05-18"
+        ],
+        "topic_growth_pct": [
+          null,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "SC161": {
+        "snapshot_dates": [
+          "2026-05-05",
+          "2026-05-07",
+          "2026-05-11",
+          "2026-05-18"
+        ],
+        "topic_growth_pct": [
+          null,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "SC006": {
+        "snapshot_dates": [
+          "2026-05-05",
+          "2026-05-07",
+          "2026-05-11",
+          "2026-05-18"
+        ],
+        "topic_growth_pct": [
+          null,
+          0.0,
+          0.0,
+          -1.7391304348
+        ]
+      }
+    }
   },
   "outputs": {
     "dashboard": "D:\\Projects\\vidcluster\\vidcluster_public\\site\\src\\data\\dashboard_latest_v4_0.json",
