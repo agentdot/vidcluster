@@ -1,5 +1,6 @@
 import bundledDivergenceRows from "../data/cluster_divergence_latest_v4_0.json";
 import bundledMicroNicheRows from "../data/cluster_micro_niches_latest_v4_0.json";
+import bundledOpportunityRows from "../data/cluster_opportunities_v1.json";
 import bundledTimeseriesRows from "../data/cluster_timeseries_v4_0.json";
 import bundledLeaderboardRows from "../data/dashboard_latest_v4_0.json";
 import bundledManifest from "../data/dashboard_manifest_v4_0.json";
@@ -9,6 +10,7 @@ const DASHBOARD_FILES = {
   dashboard: "dashboard_latest_v4_0.json",
   timeseries: "cluster_timeseries_v4_0.json",
   microNiches: "cluster_micro_niches_latest_v4_0.json",
+  opportunities: "cluster_opportunities_v1.json",
   divergence: "cluster_divergence_latest_v4_0.json",
   observability: "observability_status_v4_0.json",
   manifest: "dashboard_manifest_v4_0.json",
@@ -18,6 +20,7 @@ export type DashboardExportBundle = {
   dashboard: unknown[];
   timeseries: unknown[];
   microNiches: unknown[];
+  opportunities: unknown[];
   divergence: unknown[];
   observability: unknown;
   manifest: DashboardManifest;
@@ -39,13 +42,23 @@ export type DashboardDataState = {
   r2BaseUrl: string | null;
 };
 
+function safeArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function safeManifest(value: unknown): DashboardManifest {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return value as DashboardManifest;
+}
+
 export const bundledDashboardData: DashboardExportBundle = {
-  dashboard: bundledLeaderboardRows as unknown[],
-  timeseries: bundledTimeseriesRows as unknown[],
-  microNiches: bundledMicroNicheRows as unknown[],
-  divergence: bundledDivergenceRows as unknown[],
+  dashboard: safeArray(bundledLeaderboardRows),
+  timeseries: safeArray(bundledTimeseriesRows),
+  microNiches: safeArray(bundledMicroNicheRows),
+  opportunities: safeArray(bundledOpportunityRows),
+  divergence: safeArray(bundledDivergenceRows),
   observability: bundledObservabilityStatus as unknown,
-  manifest: bundledManifest as DashboardManifest,
+  manifest: safeManifest(bundledManifest),
 };
 
 type TimeseriesLikeRow = {
@@ -90,20 +103,22 @@ function hasAnyMultiSnapshotCluster(rows: unknown[]) {
 }
 
 export function mergeDashboardTimeseriesRows(remoteRows: unknown[], fallbackRows = bundledDashboardData.timeseries) {
-  if (remoteRows.length === 0) return fallbackRows;
+  const safeRemoteRows = safeArray(remoteRows);
+  const safeFallbackRows = safeArray(fallbackRows);
+  if (safeRemoteRows.length === 0) return safeFallbackRows;
 
-  const fallbackHasHistory = hasAnyMultiSnapshotCluster(fallbackRows);
-  const remoteHasHistory = hasAnyMultiSnapshotCluster(remoteRows);
+  const fallbackHasHistory = hasAnyMultiSnapshotCluster(safeFallbackRows);
+  const remoteHasHistory = hasAnyMultiSnapshotCluster(safeRemoteRows);
   if (fallbackHasHistory && !remoteHasHistory) {
-    return fallbackRows;
+    return safeFallbackRows;
   }
 
   const merged = new Map<string, unknown>();
-  for (const row of fallbackRows) {
+  for (const row of safeFallbackRows) {
     const key = getTimeseriesKey(row);
     if (key) merged.set(key, row);
   }
-  for (const row of remoteRows) {
+  for (const row of safeRemoteRows) {
     const key = getTimeseriesKey(row);
     if (key) merged.set(key, row);
   }
@@ -146,21 +161,23 @@ export async function fetchLatestDashboardExport(baseUrl = getDashboardR2BaseUrl
     throw new Error("R2 dashboard manifest URL could not be resolved");
   }
 
-  const manifest = await fetchJson<DashboardManifest>(manifestUrl);
-  const [dashboard, timeseries, microNiches, divergence, observability] = await Promise.all([
-    fetchJson<unknown[]>(`${baseUrl}/latest/${DASHBOARD_FILES.dashboard}`),
-    fetchJson<unknown[]>(`${baseUrl}/latest/${DASHBOARD_FILES.timeseries}`),
-    fetchJson<unknown[]>(`${baseUrl}/latest/${DASHBOARD_FILES.microNiches}`),
-    fetchJson<unknown[]>(`${baseUrl}/latest/${DASHBOARD_FILES.divergence}`),
+  const manifest = await fetchJson<unknown>(manifestUrl);
+  const [dashboard, timeseries, microNiches, opportunities, divergence, observability] = await Promise.all([
+    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.dashboard}`),
+    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.timeseries}`),
+    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.microNiches}`),
+    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.opportunities}`).catch(() => bundledDashboardData.opportunities),
+    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.divergence}`),
     fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.observability}`),
   ]);
 
   return {
-    dashboard,
-    timeseries: mergeDashboardTimeseriesRows(timeseries),
-    microNiches,
-    divergence,
+    dashboard: safeArray(dashboard),
+    timeseries: mergeDashboardTimeseriesRows(safeArray(timeseries)),
+    microNiches: safeArray(microNiches),
+    opportunities: safeArray(opportunities),
+    divergence: safeArray(divergence),
     observability,
-    manifest,
+    manifest: safeManifest(manifest),
   } satisfies DashboardExportBundle;
 }

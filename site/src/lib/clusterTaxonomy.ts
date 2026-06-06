@@ -11,9 +11,9 @@ export type ClusterTaxonomy = {
   source: string;
 };
 
-const taxonomyByClusterId = new Map(
-  (clusterTaxonomyRows as ClusterTaxonomy[]).map((row) => [row.cluster_id, row]),
-);
+const taxonomyRows = Array.isArray(clusterTaxonomyRows) ? (clusterTaxonomyRows as ClusterTaxonomy[]) : [];
+
+const taxonomyByClusterId = new Map(taxonomyRows.map((row) => [row.cluster_id, row]));
 
 export function getClusterTaxonomy(clusterId: string): ClusterTaxonomy | null {
   return taxonomyByClusterId.get(clusterId) ?? null;
