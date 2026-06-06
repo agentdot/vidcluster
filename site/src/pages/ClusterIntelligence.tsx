@@ -137,7 +137,7 @@ type AudienceIntentRow = {
 
 const fallbackLeaderboard = fallbackLeaderboardRows as LeaderboardRow[];
 const fallbackClusterTimeseries = fallbackClusterTimeseriesRows as ClusterTimeseriesRow[];
-const audienceIntents = audienceIntentRows as AudienceIntentRow[];
+const audienceIntents = asArray<AudienceIntentRow>(audienceIntentRows);
 
 const DECISION_LABEL_MAP: Record<string, string> = {
   STRONG_TREND: "Sustained Growth",
@@ -151,15 +151,19 @@ const TEMPORAL_DEBUG_CLUSTER_IDS = ["SC002", "SC161", "SC006"];
 
 const tabs: IntelligenceTab[] = ["Overview", "Content Opportunities", "Breaking Out", "Audience"];
 
+function asArray<T>(value: unknown): T[] {
+  return Array.isArray(value) ? (value as T[]) : [];
+}
+
 export default function ClusterIntelligence() {
   const { clusterId } = useParams();
   const dashboardData = useDashboardExportData();
   const leaderboard = useMemo(() => {
-    const rows = dashboardData.data.dashboard as LeaderboardRow[];
+    const rows = asArray<LeaderboardRow>(dashboardData.data.dashboard);
     return rows.length > 0 ? rows : fallbackLeaderboard;
   }, [dashboardData.data.dashboard]);
   const clusterTimeseries = useMemo(() => {
-    const rows = dashboardData.data.timeseries as ClusterTimeseriesRow[];
+    const rows = asArray<ClusterTimeseriesRow>(dashboardData.data.timeseries);
     return rows.length > 0 ? rows : fallbackClusterTimeseries;
   }, [dashboardData.data.timeseries]);
   useEffect(() => {
@@ -168,9 +172,9 @@ export default function ClusterIntelligence() {
       source: dashboardData.source,
     });
   }, [clusterTimeseries, dashboardData.source]);
-  const microNiches = dashboardData.data.microNiches as MicroNicheRow[];
-  const opportunities = dashboardData.data.opportunities as OpportunityRow[];
-  const divergences = dashboardData.data.divergence as DivergenceRow[];
+  const microNiches = asArray<MicroNicheRow>(dashboardData.data.microNiches);
+  const opportunities = asArray<OpportunityRow>(dashboardData.data.opportunities);
+  const divergences = asArray<DivergenceRow>(dashboardData.data.divergence);
   const normalizedRouteClusterId = normalizeClusterId(clusterId);
   const cluster = leaderboard.find((row) => normalizeClusterId(row.cluster_id) === normalizedRouteClusterId);
 
@@ -478,7 +482,7 @@ function SectionNav() {
   );
 }
 
-function ClusterInterpretationCard({ taxonomy }: { taxonomy: ClusterTaxonomy | null }) {
+function ClusterInterpretationCard({ taxonomy }: { taxonomy?: ClusterTaxonomy | null }) {
   const displayLanguage = taxonomy ? getTaxonomyDisplayLanguage(taxonomy.cluster_type) : null;
 
   return (
@@ -497,7 +501,7 @@ function ClusterInterpretationCard({ taxonomy }: { taxonomy: ClusterTaxonomy | n
             <InterpretationField label="Verdict" value={displayLanguage.verdict} />
             <InterpretationField label="Why This Matters" value={displayLanguage.why} />
             <InterpretationField label="What You Should Do Next" value={displayLanguage.suggestion} />
-            <InterpretationField label="How Sure We Are" value={taxonomy.confidence} />
+            <InterpretationField label="How Sure We Are" value={taxonomy.confidence || "Needs more review"} />
           </div>
         </>
       ) : (
@@ -518,11 +522,11 @@ function ClusterInterpretationCard({ taxonomy }: { taxonomy: ClusterTaxonomy | n
   );
 }
 
-function InterpretationField({ label, value }: { label: string; value: string }) {
+function InterpretationField({ label, value }: { label: string; value?: string | null }) {
   return (
     <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.035] p-4">
       <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/34">{label}</p>
-      <p className="mt-2 text-lg font-semibold leading-6 text-white/86">{value}</p>
+      <p className="mt-2 text-lg font-semibold leading-6 text-white/86">{value || "Not available yet"}</p>
     </div>
   );
 }
@@ -655,8 +659,10 @@ function TabStat({ label, value, helper, tone }: { label: string; value: string;
   );
 }
 
-function OpportunitiesPanel({ rows }: { rows: OpportunityRow[] }) {
-  if (rows.length === 0) {
+function OpportunitiesPanel({ rows }: { rows?: OpportunityRow[] | null }) {
+  const safeRows = asArray<OpportunityRow>(rows);
+
+  if (safeRows.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-white/12 bg-white/[0.025] p-5">
         <p className="text-lg font-semibold text-white/82">No approved opportunities yet.</p>
@@ -667,7 +673,7 @@ function OpportunitiesPanel({ rows }: { rows: OpportunityRow[] }) {
     );
   }
 
-  const opportunityRows = rows.slice(0, 8);
+  const opportunityRows = safeRows.slice(0, 8);
 
   return (
     <div className="space-y-4">
@@ -679,7 +685,7 @@ function OpportunitiesPanel({ rows }: { rows: OpportunityRow[] }) {
 
           return (
             <div
-              key={row.opportunity_id}
+              key={row.opportunity_id || `${row.cluster_id ?? "opportunity"}-${index}`}
               className={
                 "rounded-2xl border p-5 shadow-[0_18px_60px_rgba(0,0,0,0.16)] " +
                 (index === 0
@@ -695,7 +701,9 @@ function OpportunitiesPanel({ rows }: { rows: OpportunityRow[] }) {
                   {interest}
                 </span>
               </div>
-              <p className="mt-3 min-h-[52px] text-lg font-semibold leading-6 text-white/90">{row.opportunity_name}</p>
+              <p className="mt-3 min-h-[52px] text-lg font-semibold leading-6 text-white/90">
+                {row.opportunity_name || "Untitled opportunity"}
+              </p>
               <div className="mt-5 space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <OpportunityField label="Interest Level" value={interest} />
@@ -724,19 +732,23 @@ function OpportunityField({ label, value }: { label: string; value: string }) {
 function OpportunityEvidenceList({
   evidence,
 }: {
-  evidence: { titles: string[]; label: string; tone: Tone; note?: string; emptyMessage?: string };
+  evidence?: { titles?: string[]; label?: string; tone?: Tone; note?: string; emptyMessage?: string };
 }) {
+  const titles = asArray<string>(evidence?.titles);
+  const label = evidence?.label || "No title evidence yet";
+  const tone = evidence?.tone || "neutral";
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/34">Recent examples</p>
-        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${getChipClass(evidence.tone)}`}>
-          {evidence.label}
+        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${getChipClass(tone)}`}>
+          {label}
         </span>
       </div>
-      {evidence.titles.length > 0 ? (
+      {titles.length > 0 ? (
         <ul className="mt-2 space-y-2">
-          {evidence.titles.map((title) => (
+          {titles.map((title) => (
             <li key={title} className="flex gap-2 text-sm leading-6 text-white/68">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300/80" />
               <span>{title}</span>
@@ -744,20 +756,23 @@ function OpportunityEvidenceList({
           ))}
         </ul>
       ) : (
-        <p className="mt-2 text-sm leading-6 text-white/52">{evidence.emptyMessage ?? "No example titles available yet."}</p>
+        <p className="mt-2 text-sm leading-6 text-white/52">{evidence?.emptyMessage ?? "No example titles available yet."}</p>
       )}
-      {evidence.note ? <p className="mt-2 text-xs leading-5 text-white/42">{evidence.note}</p> : null}
+      {evidence?.note ? <p className="mt-2 text-xs leading-5 text-white/42">{evidence.note}</p> : null}
     </div>
   );
 }
 
 function DivergencePanel({ rows, microNiches }: { rows: DivergenceRow[]; microNiches: MicroNicheRow[] }) {
-  if (rows.length === 0) {
+  const safeRows = asArray<DivergenceRow>(rows);
+  const safeMicroNiches = asArray<MicroNicheRow>(microNiches);
+
+  if (safeRows.length === 0) {
     return <BreakoutEmptyState />;
   }
 
-  const labelsBySubclusterId = new Map(microNiches.map((row) => [row.subcluster_id, row.subcluster_label]));
-  const enrichedRows = rows.map((row) => ({ ...row, subcluster_label: row.subcluster_label || labelsBySubclusterId.get(row.subcluster_id) }));
+  const labelsBySubclusterId = new Map(safeMicroNiches.map((row) => [row.subcluster_id, row.subcluster_label]));
+  const enrichedRows = safeRows.map((row) => ({ ...row, subcluster_label: row.subcluster_label || labelsBySubclusterId.get(row.subcluster_id) }));
   const usefulRows = enrichedRows
     .filter((row) => (row.divergence_score ?? 0) !== 0 || (row.share_delta ?? 0) !== 0 || (row.relative_growth_spread ?? 0) !== 0)
     .sort((a, b) => {
@@ -796,13 +811,15 @@ function BreakoutEmptyState() {
 }
 
 function AudienceIntentPanel({ rows }: { rows: AudienceIntentRow[] }) {
-  if (rows.length === 0) {
+  const safeRows = asArray<AudienceIntentRow>(rows);
+
+  if (safeRows.length === 0) {
     return <EmptyTabPanel title="Audience details are not available for this topic yet." />;
   }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {rows.slice(0, 9).map((row, index) => {
+      {safeRows.slice(0, 9).map((row, index) => {
         const audience = getAudienceUnderstanding(row);
         return (
           <div key={`${row.intent_label}-${index}`} className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
@@ -888,7 +905,7 @@ function EmptyTabPanel({ title }: { title: string }) {
 }
 
 function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
-  const chartRows = rows
+  const chartRows = asArray<ClusterTimeseriesRow>(rows)
     .filter((row) => row.snapshot_date)
     .map((row) => {
       const growth = resolveTimeseriesGrowthPct(row);
@@ -1524,7 +1541,7 @@ function getClusterTimeseries(rows: ClusterTimeseriesRow[], clusterId?: string) 
   const normalizedClusterId = normalizeClusterId(clusterId);
   if (!normalizedClusterId) return [];
 
-  return rows
+  return asArray<ClusterTimeseriesRow>(rows)
     .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId && row.snapshot_date)
     .sort((a, b) => String(a.snapshot_date).localeCompare(String(b.snapshot_date)));
 }
@@ -1560,7 +1577,7 @@ function getClusterMicroNiches(rows: MicroNicheRow[], clusterId?: string) {
   const normalizedClusterId = normalizeClusterId(clusterId);
   if (!normalizedClusterId) return [];
 
-  return rows
+  return asArray<MicroNicheRow>(rows)
     .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
     .sort((a, b) => (b.micro_emergence_score ?? -1) - (a.micro_emergence_score ?? -1));
 }
@@ -1569,7 +1586,7 @@ function getClusterOpportunities(rows: OpportunityRow[], clusterId?: string) {
   const normalizedClusterId = normalizeClusterId(clusterId);
   if (!normalizedClusterId) return [];
 
-  return rows
+  return asArray<OpportunityRow>(rows)
     .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
     .filter((row) => String(row.opportunity_status ?? "").toUpperCase() === "READY")
     .sort((a, b) => {
@@ -1591,7 +1608,7 @@ function getClusterDivergences(rows: DivergenceRow[], clusterId?: string) {
   const normalizedClusterId = normalizeClusterId(clusterId);
   if (!normalizedClusterId) return [];
 
-  return rows
+  return asArray<DivergenceRow>(rows)
     .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
     .sort((a, b) => {
       const scoreDelta = (b.divergence_score ?? -1) - (a.divergence_score ?? -1);
@@ -1604,7 +1621,7 @@ function getClusterAudienceIntents(clusterId?: string) {
   const normalizedClusterId = normalizeClusterId(clusterId);
   if (!normalizedClusterId) return [];
 
-  return audienceIntents
+  return asArray<AudienceIntentRow>(audienceIntents)
     .filter((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId)
     .sort((a, b) => (b.intent_score ?? -1) - (a.intent_score ?? -1));
 }
