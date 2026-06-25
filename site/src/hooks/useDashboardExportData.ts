@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import {
   bundledDashboardData,
+  createDashboardSourceMetadata,
   emptyDashboardData,
   fetchCanonicalDashboardExport,
   getDashboardR2BaseUrl,
@@ -17,6 +18,9 @@ export function useDashboardExportData(): DashboardDataState {
   const [state, setState] = useState<DashboardDataState>(() => ({
     data: isFallbackAllowed ? bundledDashboardData : null,
     source: isFallbackAllowed ? "bundled_fallback" : "unavailable",
+    sourceMetadata: isFallbackAllowed
+      ? bundledDashboardData.sourceMetadata
+      : createDashboardSourceMetadata("unavailable"),
     runtimeMode,
     isFallbackAllowed,
     isLoading: Boolean(initialBaseUrl),
@@ -32,6 +36,9 @@ export function useDashboardExportData(): DashboardDataState {
       setState({
         data: isFallbackAllowed ? bundledDashboardData : emptyDashboardData,
         source: isFallbackAllowed ? "bundled_fallback" : "unavailable",
+        sourceMetadata: isFallbackAllowed
+          ? bundledDashboardData.sourceMetadata
+          : emptyDashboardData.sourceMetadata,
         runtimeMode,
         isFallbackAllowed,
         isLoading: false,
@@ -59,6 +66,7 @@ export function useDashboardExportData(): DashboardDataState {
         setState({
           data,
           source: "canonical_remote",
+          sourceMetadata: data.sourceMetadata,
           runtimeMode,
           isFallbackAllowed,
           isLoading: false,
@@ -72,6 +80,9 @@ export function useDashboardExportData(): DashboardDataState {
         setState({
           data: isFallbackAllowed ? bundledDashboardData : emptyDashboardData,
           source: isFallbackAllowed ? "bundled_fallback" : "unavailable",
+          sourceMetadata: isFallbackAllowed
+            ? bundledDashboardData.sourceMetadata
+            : emptyDashboardData.sourceMetadata,
           runtimeMode,
           isFallbackAllowed,
           isLoading: false,

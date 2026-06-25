@@ -34,6 +34,7 @@ export type DashboardExportBundle = {
   divergence: unknown[];
   observability: unknown;
   manifest: DashboardManifest;
+  sourceMetadata: DashboardSourceMetadata;
 };
 
 export type DashboardManifest = {
@@ -46,10 +47,21 @@ export type DashboardManifest = {
 
 export type DashboardDataSource = "canonical_remote" | "bundled_fallback" | "unavailable";
 export type DashboardRuntimeMode = "production" | "local_dev";
+export type DashboardSourceMetadata = {
+  dashboardSource: DashboardDataSource;
+  timeseriesSource: DashboardDataSource;
+  timeseriesSourceMatchesDashboard: boolean;
+  bundleSnapshotDate?: string | null;
+  bundleRunId?: string | null;
+  bundlePath?: string | null;
+  bundleManifestPath?: string | null;
+  timeseriesFile?: string | null;
+};
 
 export type DashboardDataState = {
   data: DashboardExportBundle | null;
   source: DashboardDataSource;
+  sourceMetadata: DashboardSourceMetadata;
   runtimeMode: DashboardRuntimeMode;
   isFallbackAllowed: boolean;
   isLoading: boolean;
@@ -94,6 +106,7 @@ export const bundledDashboardData: DashboardExportBundle = {
   divergence: safeArray(bundledDivergenceRows),
   observability: bundledObservabilityStatus as unknown,
   manifest: safeManifest(bundledManifest),
+  sourceMetadata: createDashboardSourceMetadata("bundled_fallback"),
 };
 
 export const emptyDashboardData: DashboardExportBundle = {
@@ -104,77 +117,24 @@ export const emptyDashboardData: DashboardExportBundle = {
   divergence: [],
   observability: {},
   manifest: {},
+  sourceMetadata: createDashboardSourceMetadata("unavailable"),
 };
 
-type TimeseriesLikeRow = {
-  cluster_id?: unknown;
-  snapshot_date?: unknown;
-};
-
-function normalizeClusterId(value: unknown) {
-  return typeof value === "string" ? value.trim().toUpperCase() : "";
-}
-
-function normalizeSnapshotDate(value: unknown) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function getTimeseriesKey(row: unknown) {
-  if (!row || typeof row !== "object") return null;
-  const candidate = row as TimeseriesLikeRow;
-  const clusterId = normalizeClusterId(candidate.cluster_id);
-  const snapshotDate = normalizeSnapshotDate(candidate.snapshot_date);
-  if (!clusterId || !snapshotDate) return null;
-  return `${clusterId}::${snapshotDate}`;
-}
-
-function getSnapshotCountByCluster(rows: unknown[]) {
-  const counts = new Map<string, Set<string>>();
-  for (const row of rows) {
-    if (!row || typeof row !== "object") continue;
-    const candidate = row as TimeseriesLikeRow;
-    const clusterId = normalizeClusterId(candidate.cluster_id);
-    const snapshotDate = normalizeSnapshotDate(candidate.snapshot_date);
-    if (!clusterId || !snapshotDate) continue;
-    const dates = counts.get(clusterId) ?? new Set<string>();
-    dates.add(snapshotDate);
-    counts.set(clusterId, dates);
-  }
-  return counts;
-}
-
-function hasAnyMultiSnapshotCluster(rows: unknown[]) {
-  return Array.from(getSnapshotCountByCluster(rows).values()).some((dates) => dates.size >= 2);
-}
-
-export function mergeDashboardTimeseriesRows(remoteRows: unknown[], fallbackRows = bundledDashboardData.timeseries) {
-  const safeRemoteRows = safeArray(remoteRows);
-  const safeFallbackRows = safeArray(fallbackRows);
-  if (safeRemoteRows.length === 0) return safeFallbackRows;
-
-  const fallbackHasHistory = hasAnyMultiSnapshotCluster(safeFallbackRows);
-  const remoteHasHistory = hasAnyMultiSnapshotCluster(safeRemoteRows);
-  if (fallbackHasHistory && !remoteHasHistory) {
-    return safeFallbackRows;
-  }
-
-  const merged = new Map<string, unknown>();
-  for (const row of safeFallbackRows) {
-    const key = getTimeseriesKey(row);
-    if (key) merged.set(key, row);
-  }
-  for (const row of safeRemoteRows) {
-    const key = getTimeseriesKey(row);
-    if (key) merged.set(key, row);
-  }
-
-  return Array.from(merged.values()).sort((a, b) => {
-    const aRow = a as TimeseriesLikeRow;
-    const bRow = b as TimeseriesLikeRow;
-    const clusterDelta = normalizeClusterId(aRow.cluster_id).localeCompare(normalizeClusterId(bRow.cluster_id));
-    if (clusterDelta !== 0) return clusterDelta;
-    return normalizeSnapshotDate(aRow.snapshot_date).localeCompare(normalizeSnapshotDate(bRow.snapshot_date));
-  });
+export function createDashboardSourceMetadata(
+  source: DashboardDataSource,
+  overrides: Partial<DashboardSourceMetadata> = {},
+): DashboardSourceMetadata {
+  return {
+    dashboardSource: source,
+    timeseriesSource: source,
+    timeseriesSourceMatchesDashboard: source !== "unavailable",
+    bundleSnapshotDate: null,
+    bundleRunId: null,
+    bundlePath: null,
+    bundleManifestPath: null,
+    timeseriesFile: source === "unavailable" ? null : DASHBOARD_FILES.timeseries,
+    ...overrides,
+  };
 }
 
 export function getDashboardR2BaseUrl(): string | null {
@@ -189,11 +149,6 @@ export function getDashboardRuntimeMode(): DashboardRuntimeMode {
 
 export function isBundledDashboardFallbackAllowed(runtimeMode = getDashboardRuntimeMode()) {
   return runtimeMode !== "production";
-}
-
-export function getDashboardR2LatestUrl(fileName: string, baseUrl = getDashboardR2BaseUrl()) {
-  if (!baseUrl) return null;
-  return `${baseUrl}/latest/${fileName}`;
 }
 
 function getDashboardLatestPointerUrl(baseUrl = getDashboardR2BaseUrl()) {
@@ -223,14 +178,6 @@ function resolveDashboardExportUrl(baseUrl: string, remotePath: string) {
   }
 
   return `${cleanBase}/${cleanPath}`;
-}
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`.trim());
-  }
-  return (await response.json()) as T;
 }
 
 async function fetchText(url: string): Promise<string> {
@@ -371,38 +318,21 @@ export async function fetchCanonicalDashboardExport(baseUrl = getDashboardR2Base
     divergence: safeArray(divergence),
     observability,
     manifest: safeManifest(manifest),
+    sourceMetadata: getCanonicalDashboardSourceMetadata(pointer),
   } satisfies DashboardExportBundle;
 }
 
-export async function fetchLegacyDashboardExport(baseUrl = getDashboardR2BaseUrl()) {
-  if (!baseUrl) {
-    throw new Error("VITE_R2_DASHBOARD_EXPORT_BASE_URL is not configured");
-  }
-
-  const manifestUrl = getDashboardR2LatestUrl(DASHBOARD_FILES.manifest, baseUrl);
-  if (!manifestUrl) {
-    throw new Error("R2 dashboard manifest URL could not be resolved");
-  }
-
-  const manifest = await fetchJson<unknown>(manifestUrl);
-  const [dashboard, timeseries, microNiches, opportunities, divergence, observability] = await Promise.all([
-    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.dashboard}`),
-    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.timeseries}`),
-    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.microNiches}`),
-    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.opportunities}`).catch(() => bundledDashboardData.opportunities),
-    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.divergence}`),
-    fetchJson<unknown>(`${baseUrl}/latest/${DASHBOARD_FILES.observability}`),
-  ]);
-
-  return {
-    dashboard: safeArray(dashboard),
-    timeseries: mergeDashboardTimeseriesRows(safeArray(timeseries)),
-    microNiches: safeArray(microNiches),
-    opportunities: safeArray(opportunities),
-    divergence: safeArray(divergence),
-    observability,
-    manifest: safeManifest(manifest),
-  } satisfies DashboardExportBundle;
+export function getCanonicalDashboardSourceMetadata(
+  pointer: DashboardLatestPointer,
+): DashboardSourceMetadata {
+  return createDashboardSourceMetadata("canonical_remote", {
+    bundleSnapshotDate: pointer.snapshot_date ?? null,
+    bundleRunId: pointer.run_id ?? null,
+    bundlePath: pointer.bundle_path ?? null,
+    bundleManifestPath: pointer.bundle_manifest_path ?? null,
+    timeseriesFile: DASHBOARD_FILES.timeseries,
+    timeseriesSourceMatchesDashboard: true,
+  });
 }
 
 export const fetchLatestDashboardExport = fetchCanonicalDashboardExport;

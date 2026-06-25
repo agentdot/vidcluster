@@ -5,6 +5,7 @@ export default function DashboardDataStatus({ state }: { state: DashboardDataSta
   const generatedAt = state.data?.manifest?.generated_at_utc;
   const sourceLabel = getSourceLabel(state);
   const className = getSourceClassName(state);
+  const metadata = state.sourceMetadata;
 
   return (
     <div className={`rounded-2xl border px-4 py-3 text-xs leading-5 ${className}`}>
@@ -17,6 +18,11 @@ export default function DashboardDataStatus({ state }: { state: DashboardDataSta
           {generatedAt ? ` - generated ${formatSnapshotDate(generatedAt.slice(0, 10))}` : ""}
         </span>
       </div>
+      <p className="mt-1 text-white/50">
+        Chart history: {getSourceLabelForValue(metadata.timeseriesSource)}
+        {metadata.timeseriesSourceMatchesDashboard ? " - same source as dashboard rows" : " - source mismatch"}
+        {metadata.bundleRunId ? ` - run ${metadata.bundleRunId}` : ""}
+      </p>
       {state.error ? <p className="mt-1 text-white/56">{state.error}</p> : null}
       {state.source === "unavailable" ? (
         <p className="mt-1 text-white/56">Production fallback is disabled, so bundled dashboard data is not being used.</p>
@@ -26,8 +32,12 @@ export default function DashboardDataStatus({ state }: { state: DashboardDataSta
 }
 
 function getSourceLabel(state: DashboardDataState) {
-  if (state.source === "canonical_remote") return "Canonical dashboard bundle";
-  if (state.source === "bundled_fallback") return "Local bundled fallback";
+  return getSourceLabelForValue(state.source);
+}
+
+function getSourceLabelForValue(source: DashboardDataState["source"]) {
+  if (source === "canonical_remote") return "Canonical dashboard bundle";
+  if (source === "bundled_fallback") return "Local bundled fallback";
   return "Dashboard data unavailable";
 }
 
