@@ -174,23 +174,24 @@ function asArray<T>(value: unknown): T[] {
 export default function ClusterIntelligence() {
   const { clusterId } = useParams();
   const dashboardData = useDashboardExportData();
+  const activeDashboardData = dashboardData.data;
   const leaderboard = useMemo(() => {
-    const rows = asArray<LeaderboardRow>(dashboardData.data.dashboard);
-    return rows.length > 0 ? rows : fallbackLeaderboard;
-  }, [dashboardData.data.dashboard]);
+    const rows = asArray<LeaderboardRow>(activeDashboardData?.dashboard);
+    return rows.length > 0 ? rows : dashboardData.isFallbackAllowed ? fallbackLeaderboard : [];
+  }, [activeDashboardData?.dashboard, dashboardData.isFallbackAllowed]);
   const clusterTimeseries = useMemo(() => {
-    const rows = asArray<ClusterTimeseriesRow>(dashboardData.data.timeseries);
-    return rows.length > 0 ? rows : fallbackClusterTimeseries;
-  }, [dashboardData.data.timeseries]);
+    const rows = asArray<ClusterTimeseriesRow>(activeDashboardData?.timeseries);
+    return rows.length > 0 ? rows : dashboardData.isFallbackAllowed ? fallbackClusterTimeseries : [];
+  }, [activeDashboardData?.timeseries, dashboardData.isFallbackAllowed]);
   useEffect(() => {
     logTemporalDebugChecks(clusterTimeseries, {
       phase: "detail-data-resolved",
       source: dashboardData.source,
     });
   }, [clusterTimeseries, dashboardData.source]);
-  const microNiches = asArray<MicroNicheRow>(dashboardData.data.microNiches);
-  const opportunities = asArray<OpportunityRow>(dashboardData.data.opportunities);
-  const divergences = asArray<DivergenceRow>(dashboardData.data.divergence);
+  const microNiches = asArray<MicroNicheRow>(activeDashboardData?.microNiches);
+  const opportunities = asArray<OpportunityRow>(activeDashboardData?.opportunities);
+  const divergences = asArray<DivergenceRow>(activeDashboardData?.divergence);
   const normalizedRouteClusterId = normalizeClusterId(clusterId);
   const cluster = leaderboard.find((row) => normalizeClusterId(row.cluster_id) === normalizedRouteClusterId);
 

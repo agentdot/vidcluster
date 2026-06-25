@@ -324,8 +324,8 @@ function getHumanTopicSubtitle(value: string) {
 }
 
 const fallbackClusterTimeseries = fallbackClusterTimeseriesRows as ClusterTimeseriesRow[];
-let activeClusterTimeseries = fallbackClusterTimeseries;
-let activeLatestTimeseriesByClusterId = buildLatestTimeseriesByClusterId(fallbackClusterTimeseries);
+let activeClusterTimeseries: ClusterTimeseriesRow[] = [];
+let activeLatestTimeseriesByClusterId = buildLatestTimeseriesByClusterId(activeClusterTimeseries);
 let activeFailureRiskByClusterId = new Map<
   string | undefined,
   Pick<LeaderboardRow, "failure_risk_level" | "failure_risk_reason_code" | "failure_risk_score">
@@ -1446,10 +1446,14 @@ export default function Dashboard() {
   const [searchParams] = useSearchParams();
   const dashboardData = useDashboardExportData();
   const dashboardLeaderboardStatic = useMemo(() => {
+    const data = dashboardData.data;
+    const canUseLocalFallback = dashboardData.isFallbackAllowed;
     const timeseriesSource =
-      (dashboardData.data.timeseries as ClusterTimeseriesRow[]).length > 0
-        ? (dashboardData.data.timeseries as ClusterTimeseriesRow[])
-        : fallbackClusterTimeseries;
+      ((data?.timeseries ?? []) as ClusterTimeseriesRow[]).length > 0
+        ? ((data?.timeseries ?? []) as ClusterTimeseriesRow[])
+        : canUseLocalFallback
+          ? fallbackClusterTimeseries
+          : [];
     activeClusterTimeseries = timeseriesSource;
     activeLatestTimeseriesByClusterId = buildLatestTimeseriesByClusterId(timeseriesSource);
     logInterestPreviewDebugChecks(timeseriesSource, {
@@ -1458,13 +1462,15 @@ export default function Dashboard() {
     });
 
     const leaderboardSource =
-      (dashboardData.data.dashboard as RawLeaderboardRow[]).length > 0
-        ? (dashboardData.data.dashboard as RawLeaderboardRow[])
-        : (fallbackLeaderboardRows as unknown as RawLeaderboardRow[]);
+      ((data?.dashboard ?? []) as RawLeaderboardRow[]).length > 0
+        ? ((data?.dashboard ?? []) as RawLeaderboardRow[])
+        : canUseLocalFallback
+          ? (fallbackLeaderboardRows as unknown as RawLeaderboardRow[])
+          : [];
     const normalized = leaderboardSource.map(normalizeLeaderboardRow);
     activeFailureRiskByClusterId = buildFailureRiskByClusterId(normalized);
     return normalized;
-  }, [dashboardData.data.dashboard, dashboardData.data.timeseries, dashboardData.source]);
+  }, [dashboardData.data, dashboardData.isFallbackAllowed, dashboardData.source]);
   const requestedClusterId = searchParams.get("cluster")?.trim() || null;
   const requestedSubclusterId = searchParams.get("subcluster")?.trim() || null;
   const openedFromDiscovery = searchParams.get("from") === "discovery";

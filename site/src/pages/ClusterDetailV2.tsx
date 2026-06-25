@@ -107,11 +107,12 @@ export default function ClusterDetailV2() {
   const { clusterId } = useParams();
   const dashboardData = useDashboardExportData();
   const normalizedClusterId = normalizeClusterId(clusterId);
+  const activeDashboardData = dashboardData.data;
 
-  const leaderboard = asArray<LeaderboardRow>(dashboardData.data.dashboard);
-  const timeseriesRows = asArray<ClusterTimeseriesRow>(dashboardData.data.timeseries);
-  const opportunityRows = asArray<OpportunityRow>(dashboardData.data.opportunities);
-  const divergenceRows = asArray<DivergenceRow>(dashboardData.data.divergence);
+  const leaderboard = asArray<LeaderboardRow>(activeDashboardData?.dashboard);
+  const timeseriesRows = asArray<ClusterTimeseriesRow>(activeDashboardData?.timeseries);
+  const opportunityRows = asArray<OpportunityRow>(activeDashboardData?.opportunities);
+  const divergenceRows = asArray<DivergenceRow>(activeDashboardData?.divergence);
 
   const cluster = leaderboard.find((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId);
   const timeseries = getClusterTimeseries(timeseriesRows, normalizedClusterId);

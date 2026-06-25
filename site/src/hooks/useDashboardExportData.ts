@@ -2,41 +2,65 @@ import { useEffect, useState } from "react";
 
 import {
   bundledDashboardData,
-  fetchLatestDashboardExport,
+  emptyDashboardData,
+  fetchCanonicalDashboardExport,
   getDashboardR2BaseUrl,
+  getDashboardRuntimeMode,
+  isBundledDashboardFallbackAllowed,
   type DashboardDataState,
 } from "../lib/dashboardData";
 
 export function useDashboardExportData(): DashboardDataState {
+  const runtimeMode = getDashboardRuntimeMode();
+  const isFallbackAllowed = isBundledDashboardFallbackAllowed(runtimeMode);
+  const initialBaseUrl = getDashboardR2BaseUrl();
   const [state, setState] = useState<DashboardDataState>(() => ({
-    data: bundledDashboardData,
-    source: "bundled",
-    isLoading: Boolean(getDashboardR2BaseUrl()),
+    data: isFallbackAllowed ? bundledDashboardData : null,
+    source: isFallbackAllowed ? "bundled_fallback" : "unavailable",
+    runtimeMode,
+    isFallbackAllowed,
+    isLoading: Boolean(initialBaseUrl),
     error: null,
-    r2BaseUrl: getDashboardR2BaseUrl(),
+    r2BaseUrl: initialBaseUrl,
   }));
 
   useEffect(() => {
     const baseUrl = getDashboardR2BaseUrl();
+    const runtimeMode = getDashboardRuntimeMode();
+    const isFallbackAllowed = isBundledDashboardFallbackAllowed(runtimeMode);
     if (!baseUrl) {
-      setState((current) => ({
-        ...current,
+      setState({
+        data: isFallbackAllowed ? bundledDashboardData : emptyDashboardData,
+        source: isFallbackAllowed ? "bundled_fallback" : "unavailable",
+        runtimeMode,
+        isFallbackAllowed,
         isLoading: false,
-        error: "R2 dashboard export URL is not configured; using bundled JSON.",
+        error: isFallbackAllowed
+          ? "Canonical dashboard export URL is not configured; using explicit local bundled fallback."
+          : "Canonical dashboard export URL is not configured. Production dashboard data is unavailable.",
         r2BaseUrl: null,
-      }));
+      });
       return;
     }
 
     let cancelled = false;
-    setState((current) => ({ ...current, isLoading: true, error: null, r2BaseUrl: baseUrl }));
+    setState((current) => ({
+      ...current,
+      runtimeMode,
+      isFallbackAllowed,
+      isLoading: true,
+      error: null,
+      r2BaseUrl: baseUrl,
+    }));
 
-    fetchLatestDashboardExport(baseUrl)
+    fetchCanonicalDashboardExport(baseUrl)
       .then((data) => {
         if (cancelled) return;
         setState({
           data,
-          source: "r2",
+          source: "canonical_remote",
+          runtimeMode,
+          isFallbackAllowed,
           isLoading: false,
           error: null,
           r2BaseUrl: baseUrl,
@@ -46,10 +70,14 @@ export function useDashboardExportData(): DashboardDataState {
         if (cancelled) return;
         const message = error instanceof Error ? error.message : String(error);
         setState({
-          data: bundledDashboardData,
-          source: "bundled",
+          data: isFallbackAllowed ? bundledDashboardData : emptyDashboardData,
+          source: isFallbackAllowed ? "bundled_fallback" : "unavailable",
+          runtimeMode,
+          isFallbackAllowed,
           isLoading: false,
-          error: `R2 dashboard export unavailable; using bundled JSON. ${message}`,
+          error: isFallbackAllowed
+            ? `Canonical dashboard export unavailable; using explicit local bundled fallback. ${message}`
+            : `Canonical dashboard export unavailable. Production dashboard data is unavailable. ${message}`,
           r2BaseUrl: baseUrl,
         });
       });
