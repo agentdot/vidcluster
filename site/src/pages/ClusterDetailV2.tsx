@@ -672,17 +672,19 @@ function getConfidence(topic: LeaderboardRow) {
 
 function getStage(topic: LeaderboardRow) {
   const label = String(topic.decision_label ?? "").toUpperCase();
-  if (label === "STRONG_TREND") return "Established";
-  if (label === "EARLY_TREND") return "Developing";
+  if (label === "ESTABLISHED") return "Established";
+  if (label === "WATCHLIST") return "Developing";
   if (label === "EMERGING") return "Watch closely";
   if (label === "WEAK_OR_RISK") return "High risk";
+  if (label === "INSUFFICIENT_DATA") return "Not enough data";
   return "Developing";
 }
 
 function getSuggestedNextStep(topic: LeaderboardRow) {
   const label = String(topic.decision_label ?? "").toUpperCase();
-  if (label === "STRONG_TREND") return "Turn the strongest opportunity into a repeatable video series.";
+  if (label === "ESTABLISHED") return "Turn the strongest opportunity into a repeatable video series.";
   if (label === "WEAK_OR_RISK") return "Wait for clearer movement before putting serious production time here.";
+  if (label === "INSUFFICIENT_DATA") return "Wait for more signal before treating this as a production opportunity.";
   return "Run a small test video and watch the next update.";
 }
 

@@ -27,7 +27,10 @@ type LeaderboardRow = {
   rank_basis?: string | null;
   rank_owner?: string | null;
   trend_strength_owner?: string | null;
-  decision_label: string;
+  decision_label: string | null;
+  decision_label_owner?: string | null;
+  decision_label_basis?: string | null;
+  decision_label_schema_version?: string | null;
   trend_summary: string;
   opportunity_summary: string;
   risk_summary: string;
@@ -278,7 +281,6 @@ function normalizeLeaderboardRow(topic: RawLeaderboardRow): LeaderboardRow {
     topic.topic_subtitle || presentation?.topic_subtitle || "Latest weekly topic signal.",
   );
   const growth = resolveGrowthFraction(topic);
-  const decisionLabel = topic.decision_label || (growth !== null && growth < 0 ? "WEAK_OR_RISK" : "EMERGING");
   const trendStrengthScore = finiteNumber(topic.trend_strength_score);
 
   return {
@@ -290,7 +292,7 @@ function normalizeLeaderboardRow(topic: RawLeaderboardRow): LeaderboardRow {
     display_title: topic.display_title ?? displayTitle,
     title: topic.title ?? displayTitle,
     trend_strength_score: trendStrengthScore,
-    decision_label: decisionLabel,
+    decision_label: topic.decision_label ?? null,
     trend_summary:
       topic.trend_summary ??
       `Canonical v4.0 ${topic.trend_direction?.toLowerCase() ?? "weekly"} signal for ${displayTitle}.`,
@@ -355,7 +357,7 @@ const signalBriefQaFixtures: LeaderboardRow[] = [
     display_topic_title: "Retirement Account Strategy Surge",
     topic_subtitle: "Evergreen finance demand compounding with strong week-to-week persistence.",
     trend_strength_score: 0.86,
-    decision_label: "STRONG_TREND",
+    decision_label: null,
     trend_summary: "Sustained momentum with broad participation across adjacent retirement planning angles.",
     opportunity_summary: "Sustained momentum with broad participation across adjacent retirement planning angles.",
     risk_summary: "Low decay risk while confidence and format fit remain strong.",
@@ -386,7 +388,7 @@ const signalBriefQaFixtures: LeaderboardRow[] = [
     display_topic_title: "AI Budget Planner App Breakout",
     topic_subtitle: "Flat baseline turning sharply upward as new tool comparisons catch discovery.",
     trend_strength_score: 0.91,
-    decision_label: "STRONG_TREND",
+    decision_label: null,
     trend_summary: "Breakout acceleration detected after several quiet weeks of baseline demand.",
     opportunity_summary: "Breakout acceleration detected after several quiet weeks of baseline demand.",
     risk_summary: "Execution window is active, but saturation has not arrived yet.",
@@ -417,7 +419,7 @@ const signalBriefQaFixtures: LeaderboardRow[] = [
     display_topic_title: "Beginner ETF Allocation Watchlist",
     topic_subtitle: "Early audience participation improving, but confidence still needs confirmation.",
     trend_strength_score: 0.61,
-    decision_label: "EARLY_TREND",
+    decision_label: null,
     trend_summary: "Early signal building as beginner ETF questions spread across adjacent creator lanes.",
     opportunity_summary: "Early signal building as beginner ETF questions spread across adjacent creator lanes.",
     risk_summary: "Medium confidence means the signal should be tested before scaling.",
@@ -448,7 +450,7 @@ const signalBriefQaFixtures: LeaderboardRow[] = [
     display_topic_title: "Budgeting Spreadsheet Template Plateau",
     topic_subtitle: "Mature search interest with stable demand but limited expansion pressure.",
     trend_strength_score: 0.39,
-    decision_label: "EMERGING",
+    decision_label: null,
     trend_summary: "Interest is steady, but growth is limited.",
     opportunity_summary: "Interest is steady, but growth is limited.",
     risk_summary: "Flat participation suggests this is more maintenance topic than growth topic.",
@@ -479,7 +481,7 @@ const signalBriefQaFixtures: LeaderboardRow[] = [
     display_topic_title: "Emergency Rate Cut Rumor Spike",
     topic_subtitle: "A sharp news-driven spike is rolling over as late-entry risk increases.",
     trend_strength_score: 0.48,
-    decision_label: "WEAK_OR_RISK",
+    decision_label: null,
     trend_summary: "Peak likely passed after a short-lived rumor cycle and shrinking follow-on demand.",
     opportunity_summary: "Peak likely passed after a short-lived rumor cycle and shrinking follow-on demand.",
     risk_summary: "Failed breakout pattern with decay risk and weakening participation.",
@@ -528,10 +530,11 @@ const SIGNAL_FILTERS = [
 ] as const;
 type SignalFilter = (typeof SIGNAL_FILTERS)[number];
 const DECISION_LABEL_MAP: Record<string, string> = {
-  STRONG_TREND: "Sustained Growth",
-  EARLY_TREND: "Early Opportunity",
+  ESTABLISHED: "Established",
+  WATCHLIST: "Watchlist",
   EMERGING: "Watch closely",
   WEAK_OR_RISK: "High Risk",
+  INSUFFICIENT_DATA: "Not enough data",
 };
 
 function mapDecisionLabel(label?: string) {
@@ -578,8 +581,8 @@ function mapOpportunityState(topic: LeaderboardRow) {
   const normalizedConfidence = confidence > 1 ? confidence / 100 : confidence;
 
   if (topic.decision_label === "WEAK_OR_RISK") return "Late / risky";
-  if (topic.decision_label === "STRONG_TREND" && normalizedConfidence >= 0.68) return "Scaling";
-  if (topic.decision_label === "EARLY_TREND" || topic.decision_label === "EMERGING" || growth < 0.18) {
+  if (topic.decision_label === "ESTABLISHED" && normalizedConfidence >= 0.68) return "Scaling";
+  if (topic.decision_label === "WATCHLIST" || topic.decision_label === "EMERGING" || growth < 0.18) {
     return "Early";
   }
 
@@ -594,17 +597,19 @@ function getOpportunityTone(topic: LeaderboardRow): Tone {
 }
 
 function mapWillLast(topic: LeaderboardRow) {
-  if (topic.decision_label === "STRONG_TREND") return "Likely to sustain";
-  if (topic.decision_label === "EARLY_TREND") return "Promising, validate";
+  if (topic.decision_label === "ESTABLISHED") return "Likely to sustain";
+  if (topic.decision_label === "WATCHLIST") return "Promising, validate";
   if (topic.decision_label === "EMERGING") return "Too early to call";
+  if (topic.decision_label === "INSUFFICIENT_DATA") return "Not enough data";
   if (topic.t60_is_winner) return "Held up before";
   return "Still developing";
 }
 
 function mapCompactWillLast(topic: LeaderboardRow) {
-  if (topic.decision_label === "STRONG_TREND") return "Sustain";
-  if (topic.decision_label === "EARLY_TREND") return "Validate";
+  if (topic.decision_label === "ESTABLISHED") return "Sustain";
+  if (topic.decision_label === "WATCHLIST") return "Validate";
   if (topic.decision_label === "EMERGING") return "Early";
+  if (topic.decision_label === "INSUFFICIENT_DATA") return "No data";
   if (topic.t60_is_winner) return "Held";
   return "Developing";
 }
@@ -668,7 +673,7 @@ function getSignalFilters(topic: LeaderboardRow, strongestSignalIds: Set<string>
       "ACCELERATING",
       "ACCELERATION",
       "BREAKOUT",
-      "STRONG_TREND",
+      "ESTABLISHED",
       "INTERNAL_OUTPERFORMER",
     ]);
   const isUnderObservation =
@@ -689,7 +694,7 @@ function getSignalFilters(topic: LeaderboardRow, strongestSignalIds: Set<string>
     (Boolean(drift) && drift !== "NORMAL") ||
     score === null ||
     score < 0.48;
-  const isEarly = hasSignalToken(fields, ["EMERGING", "EARLY_TREND", "EARLY_BREAKOUT", "EMERGING_SIGNAL"]);
+  const isEarly = hasSignalToken(fields, ["EMERGING", "WATCHLIST", "EARLY_BREAKOUT", "EMERGING_SIGNAL"]);
   const isStable =
     hasSignalToken(fields, ["STABLE", "PERSISTENT", "NORMAL", "HEALTHY"]) &&
     !isStrongest &&
@@ -715,11 +720,11 @@ function getSignalFilters(topic: LeaderboardRow, strongestSignalIds: Set<string>
 }
 
 function getRecommendedActionPlaceholder(topic: LeaderboardRow) {
-  if (topic.decision_label === "STRONG_TREND") {
+  if (topic.decision_label === "ESTABLISHED") {
     return "Scale this now: turn the topic into a repeatable series, refresh winning angles, and protect quality while demand is still active.";
   }
 
-  if (topic.decision_label === "EARLY_TREND" || topic.decision_label === "EMERGING") {
+  if (topic.decision_label === "WATCHLIST" || topic.decision_label === "EMERGING") {
     return "Run a focused test: publish one sharp angle, watch early response, then scale only if the signal keeps improving.";
   }
 
@@ -731,7 +736,7 @@ function getRecommendedActionPlaceholder(topic: LeaderboardRow) {
 }
 
 function getRecommendedActionBullets(topic: LeaderboardRow) {
-  if (topic.decision_label === "STRONG_TREND") {
+  if (topic.decision_label === "ESTABLISHED") {
     return [
       "Scale this topic into a short repeatable series.",
       "Refresh the strongest angle while topic growth is still active.",
@@ -739,7 +744,7 @@ function getRecommendedActionBullets(topic: LeaderboardRow) {
     ];
   }
 
-  if (topic.decision_label === "EARLY_TREND") {
+  if (topic.decision_label === "WATCHLIST") {
     return [
       "Run one focused test before committing a full series.",
       "Look for another positive week before scaling production.",
@@ -772,7 +777,7 @@ function getSignalBriefState(topic: LeaderboardRow): SignalBriefState {
     return topic.visual_state_override.toLowerCase() as SignalBriefState;
   }
 
-  const decision = topic.decision_label.toUpperCase();
+  const decision = topic.decision_label?.toUpperCase() ?? "";
   const riskLevel = topic.failure_risk_level?.toUpperCase() ?? "";
   const riskReason = `${topic.failure_risk_reason_code ?? ""} ${topic.risk_summary ?? ""}`.toUpperCase();
   const riskScore = topic.failure_risk_score ?? 0;
@@ -795,7 +800,7 @@ function getSignalBriefState(topic: LeaderboardRow): SignalBriefState {
   }
 
   if (
-    (decision.includes("STRONG") || decision.includes("SUSTAINED") || opportunityState === "Scaling") &&
+    (decision.includes("ESTABLISHED") || opportunityState === "Scaling") &&
     confidence >= 0.68 &&
     growth >= 0.12 &&
     riskLevel !== "MEDIUM" &&
@@ -808,7 +813,7 @@ function getSignalBriefState(topic: LeaderboardRow): SignalBriefState {
     return "cold";
   }
 
-  if (decision.includes("EARLY") || decision.includes("EMERGING") || confidence >= 0.48 || growth >= 0.08) {
+  if (decision.includes("WATCHLIST") || decision.includes("EMERGING") || confidence >= 0.48 || growth >= 0.08) {
     return "warm";
   }
 
@@ -1215,9 +1220,9 @@ function getTopicId(topic: LeaderboardRow) {
   return topic.cluster_id ?? topic.display_topic_title;
 }
 
-function getDecisionTone(label: string): Tone {
-  if (label === "STRONG_TREND" || label === "EMERGING") return "positive";
-  if (label === "EARLY_TREND") return "watch";
+function getDecisionTone(label?: string | null): Tone {
+  if (label === "ESTABLISHED" || label === "EMERGING") return "positive";
+  if (label === "WATCHLIST" || label === "INSUFFICIENT_DATA") return "watch";
   if (label === "WEAK_OR_RISK") return "risk";
   return "neutral";
 }
@@ -2791,7 +2796,7 @@ function getDiscoveryFallbackTopic(
       ? `Selected topic area: ${formatSelectedLabel(label)}.`
       : "This topic is not available in the current dashboard view.",
     trend_strength_score: null,
-    decision_label: opportunity?.discovery_label === "WATCHLIST_SIGNAL" ? "EARLY_TREND" : "EMERGING",
+    decision_label: null,
     trend_summary: "This discovery signal is not available in the dashboard insight set.",
     opportunity_summary: "Open Discovery to review the current opportunity.",
     risk_summary: "Dashboard insight context is unavailable for this cluster.",

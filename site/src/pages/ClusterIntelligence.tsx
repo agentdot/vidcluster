@@ -155,10 +155,11 @@ const fallbackClusterTimeseries = fallbackClusterTimeseriesRows as ClusterTimese
 const audienceIntents = asArray<AudienceIntentRow>(audienceIntentRows);
 
 const DECISION_LABEL_MAP: Record<string, string> = {
-  STRONG_TREND: "Sustained Growth",
-  EARLY_TREND: "Early Opportunity",
+  ESTABLISHED: "Established",
+  WATCHLIST: "Watchlist",
   EMERGING: "Watch closely",
   WEAK_OR_RISK: "High Risk",
+  INSUFFICIENT_DATA: "Not enough data",
 };
 
 const STABLE_SNAPSHOT_CHANGE_THRESHOLD = 0.05;
@@ -1361,9 +1362,10 @@ function mapConfidence(topic: LeaderboardRow) {
 }
 
 function mapWillLast(topic: LeaderboardRow) {
-  if (topic.decision_label === "STRONG_TREND") return "Established";
-  if (topic.decision_label === "EARLY_TREND") return "Developing Signal";
+  if (topic.decision_label === "ESTABLISHED") return "Established";
+  if (topic.decision_label === "WATCHLIST") return "Developing Signal";
   if (topic.decision_label === "EMERGING") return "Under Observation";
+  if (topic.decision_label === "INSUFFICIENT_DATA") return "Not Enough Data";
   if (Boolean(topic.t60_is_winner)) return "Established";
   return "Developing";
 }
@@ -1374,8 +1376,8 @@ function mapOpportunityState(topic: LeaderboardRow) {
   const normalizedConfidence = confidence > 1 ? confidence / 100 : confidence;
 
   if (topic.decision_label === "WEAK_OR_RISK") return "Late / risky";
-  if (topic.decision_label === "STRONG_TREND" && normalizedConfidence >= 0.68) return "Scaling";
-  if (topic.decision_label === "EARLY_TREND" || topic.decision_label === "EMERGING" || growth < 0.18) return "Early";
+  if (topic.decision_label === "ESTABLISHED" && normalizedConfidence >= 0.68) return "Scaling";
+  if (topic.decision_label === "WATCHLIST" || topic.decision_label === "EMERGING" || growth < 0.18) return "Early";
   return "Scaling";
 }
 
@@ -1440,7 +1442,7 @@ function getWhyTrendNarrative(topic: LeaderboardRow) {
 }
 
 function getRecommendedAction(topic: LeaderboardRow) {
-  if (topic.decision_label === "STRONG_TREND") return "Scale this topic into a repeatable series while the topic remains strong.";
+  if (topic.decision_label === "ESTABLISHED") return "Scale this topic into a repeatable series while the topic remains strong.";
   if (topic.decision_label === "WEAK_OR_RISK") return "Hold new production until a clearer opportunity appears.";
   return "Run a small validation test and watch whether the topic strengthens in the next update.";
 }
@@ -1497,7 +1499,7 @@ function getEvidenceInterpretation(topic: LeaderboardRow, rows: ClusterTimeserie
     return `${confidenceLead}, but risk indicators keep this under review.`;
   }
 
-  if (decisionLabel.includes("EMERGING") || decisionLabel.includes("EARLY")) {
+  if (decisionLabel.includes("EMERGING") || decisionLabel.includes("WATCHLIST")) {
     return historyIsLimited
       ? `${confidenceLead}; this topic is still forming, so additional updates will make the read stronger.`
       : `${confidenceLead}, and the topic is still forming across the available history.`;
