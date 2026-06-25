@@ -10,19 +10,23 @@ import fallbackLeaderboardRows from "../data/leaderboard_v3_3.json";
 import clusterInsightRows from "../data/v4_0_cluster_insights.json";
 import { useDashboardExportData } from "../hooks/useDashboardExportData";
 import { useDiscoveryOpportunities, type DiscoveryOpportunity } from "../hooks/useDiscoveryOpportunities";
-import { useInsightClusters, type Insight, type InsightCluster, type InsightType } from "../hooks/useInsightClusters";
+import { useInsightClusters, type Insight, type InsightType } from "../hooks/useInsightClusters";
 import { useWatchlist } from "../hooks/useWatchlist";
 import { cn } from "../lib/utils";
 
 type LeaderboardRow = {
   cluster_id?: string;
-  rank: number;
+  rank: number | null;
   display_topic_title: string;
   display_title?: string;
   title?: string;
   topic_subtitle: string;
   cluster_label?: string;
-  trend_strength_score: number;
+  trend_strength_score: number | null;
+  rank_scope?: string | null;
+  rank_basis?: string | null;
+  rank_owner?: string | null;
+  trend_strength_owner?: string | null;
   decision_label: string;
   trend_summary: string;
   opportunity_summary: string;
@@ -69,7 +73,6 @@ type LeaderboardRow = {
   drift_alert?: string;
   score_method?: string;
   visual_state_override?: "HOT" | "WARM" | "COLD" | "DECAY" | "BREAKOUT";
-  liveCluster?: InsightCluster;
 };
 
 type ClusterTimeseriesRow = {
@@ -114,12 +117,12 @@ type InterestPreviewMetricKind = "topic_growth_pct" | "wow_abs" | "video_count";
 type SparklinePoint = { x: number; y: number };
 type SnapshotDeltaVisual = { label: string; state: SnapshotDeltaState; badgeClassName: string };
 type RawLeaderboardRow = Partial<LeaderboardRow> & {
-  rank: number;
+  rank?: number | null;
 };
 type SignalState = "Emerging" | "Failed breakout" | "Weakening";
 type ClusterInsight = Partial<Insight> & {
   cluster_id?: string;
-  cluster_rank?: number;
+  cluster_rank?: number | null;
   cluster_label?: string;
   subcluster_label: string;
   canonical_subcluster_label?: string | null;
@@ -262,22 +265,31 @@ const topicPresentationByRank: Record<
 };
 
 function normalizeLeaderboardRow(topic: RawLeaderboardRow): LeaderboardRow {
-  const presentation = topicPresentationByRank[topic.rank];
-  const displayTitle = topic.display_topic_title || topic.cluster_label || topic.title || topic.cluster_id || `Cluster ${topic.rank}`;
+  const rank = finiteNumber(topic.rank);
+  const canonicalRank = rank === null ? null : Math.trunc(rank);
+  const presentation = canonicalRank === null ? undefined : topicPresentationByRank[canonicalRank];
+  const displayTitle =
+    topic.display_topic_title ||
+    topic.cluster_label ||
+    topic.title ||
+    topic.cluster_id ||
+    (canonicalRank === null ? "Cluster" : `Cluster ${canonicalRank}`);
   const topicSubtitle = getHumanTopicSubtitle(
     topic.topic_subtitle || presentation?.topic_subtitle || "Latest weekly topic signal.",
   );
   const growth = resolveGrowthFraction(topic);
   const decisionLabel = topic.decision_label || (growth !== null && growth < 0 ? "WEAK_OR_RISK" : "EMERGING");
+  const trendStrengthScore = finiteNumber(topic.trend_strength_score);
 
   return {
     ...topic,
+    rank: canonicalRank,
     cluster_label: topic.cluster_label ?? displayTitle,
     topic_subtitle: topicSubtitle,
     display_topic_title: displayTitle,
     display_title: topic.display_title ?? displayTitle,
     title: topic.title ?? displayTitle,
-    trend_strength_score: topic.trend_strength_score ?? topic.trend_confidence ?? 0,
+    trend_strength_score: trendStrengthScore,
     decision_label: decisionLabel,
     trend_summary:
       topic.trend_summary ??
@@ -919,8 +931,13 @@ function getTopicTitle(topic: LeaderboardRow) {
   return topic.display_topic_title || topic.cluster_label || topic.title || topic.cluster_id || "Untitled topic";
 }
 
-function formatScore(score: number) {
-  return `${Math.round(score * 100)}`;
+function formatScore(score?: number | null) {
+  const value = finiteNumber(score);
+  return value === null ? "Unavailable" : `${Math.round(value * 100)}`;
+}
+
+function formatRank(rank?: number | null) {
+  return rank === null || rank === undefined ? "Unranked" : `#${rank}`;
 }
 
 function finiteNumber(value?: unknown) {
@@ -1446,22 +1463,21 @@ export default function Dashboard() {
   const requestedClusterId = searchParams.get("cluster")?.trim() || null;
   const requestedSubclusterId = searchParams.get("subcluster")?.trim() || null;
   const openedFromDiscovery = searchParams.get("from") === "discovery";
-  const [selectedRank, setSelectedRank] = useState(dashboardLeaderboardStatic[0]?.rank ?? 1);
+  const [selectedRank, setSelectedRank] = useState<number | null>(dashboardLeaderboardStatic[0]?.rank ?? null);
   const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
   const [scanMode, setScanMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSignalFilter, setActiveSignalFilter] = useState<SignalFilter>(ALL_SIGNALS_FILTER);
   const [watchlistLimitMessage, setWatchlistLimitMessage] = useState("");
   const { watchedTopicIds, isWatched, addTopic, removeTopic } = useWatchlist();
-  const { clusters: insightClusters, loading: clustersLoading, error: clustersError } = useInsightClusters();
+  const { loading: clustersLoading, error: clustersError } = useInsightClusters();
   const { opportunities: discoveryOpportunities } = useDiscoveryOpportunities();
-  const hasLiveClusters = insightClusters.length > 0 && !clustersError;
   const dashboardLeaderboard = useMemo(
     () => {
       if (SHOW_STATE_QA_CARDS) return signalBriefQaFixtures;
-      return hasLiveClusters ? mapClustersToLeaderboard(insightClusters) : dashboardLeaderboardStatic;
+      return dashboardLeaderboardStatic;
     },
-    [dashboardLeaderboardStatic, hasLiveClusters, insightClusters],
+    [dashboardLeaderboardStatic],
   );
   const requestedDiscoveryOpportunity = useMemo(
     () => {
@@ -1500,10 +1516,10 @@ export default function Dashboard() {
       return;
     }
 
-    if (!requestedClusterId && hasLiveClusters) {
-      setSelectedRank(dashboardLeaderboard[0]?.rank ?? 1);
+    if (!requestedClusterId) {
+      setSelectedRank(dashboardLeaderboard[0]?.rank ?? null);
     }
-  }, [dashboardLeaderboard, hasLiveClusters, requestedClusterId, requestedClusterTopic]);
+  }, [dashboardLeaderboard, requestedClusterId, requestedClusterTopic]);
 
   const selectedTopic = requestedClusterMissing
     ? getDiscoveryFallbackTopic(requestedClusterId, requestedSubclusterId, requestedDiscoveryOpportunity)
@@ -1930,8 +1946,9 @@ function SignalSparkline({
   const path = buildSparklinePath(points);
   const areaPath = hasTrendLine ? buildSparklineAreaPath(points, path, 88) : "";
   const stroke = visual.stroke;
-  const gradientId = `sparkline-gradient-${topic.rank}`;
-  const glowId = `sparkline-glow-${topic.rank}`;
+  const sparklineId = getTopicId(topic).replace(/[^a-zA-Z0-9_-]/g, "-") || "unknown-topic";
+  const gradientId = `sparkline-gradient-${sparklineId}`;
+  const glowId = `sparkline-glow-${sparklineId}`;
   const startPoint = points[0];
   const currentPoint = points[points.length - 1];
   const hasHistory = preview.values.length > 0;
@@ -2155,7 +2172,7 @@ function TopicCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="shrink-0 text-xs font-semibold text-slate-200/42">#{topic.rank}</span>
+            <span className="shrink-0 text-xs font-semibold text-slate-200/42">{formatRank(topic.rank)}</span>
             <span className={cn("rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]", signalVisual.badge)}>
               {interestPreview.label}
             </span>
@@ -2317,7 +2334,7 @@ function SignalSummaryPanel({
           <div className="flex flex-wrap items-center gap-2">
             <PrimaryIntelligencePill topic={topic} />
             <PillFrame>{formatSnapshotDate(topic.latest_snapshot_date)}</PillFrame>
-            <span className="text-xs font-semibold text-white/38">Rank {topic.rank}</span>
+            <span className="text-xs font-semibold text-white/38">{topic.rank === null ? "Unranked" : `Rank ${topic.rank}`}</span>
           </div>
           <h2 className="mt-4 text-2xl font-semibold leading-tight tracking-[-0.035em] text-white">
             {getClusterDisplayTitle(topic, primaryInsight)}
@@ -2642,13 +2659,6 @@ function UpgradeMiniCard({ copy }: { copy: string }) {
 }
 
 function getClusterInsights(topic: LeaderboardRow): ClusterInsight[] {
-  if (topic.liveCluster) {
-    return topic.liveCluster.insights
-      .map((insight) => ({ ...insight }))
-      .sort((a, b) => b.insight_score - a.insight_score)
-      .slice(0, 3);
-  }
-
   const topicId = getTopicId(topic);
   const matchedInsights = clusterInsights
     .filter((insight) => {
@@ -2665,20 +2675,22 @@ function getClusterInsights(topic: LeaderboardRow): ClusterInsight[] {
     return ensureThreeInsights(matchedInsights, topic);
   }
 
+  const canonicalStrengthScore = topic.trend_strength_score ?? 0;
+
   return ensureThreeInsights(
     [
       {
         cluster_rank: topic.rank,
         subcluster_label: `${topic.display_topic_title} demand pocket`,
         insight_text: topic.opportunity_summary,
-        insight_score: topic.trend_strength_score,
+        insight_score: canonicalStrengthScore,
         signal_state: topic.decision_label === "WEAK_OR_RISK" ? "Weakening" : "Emerging",
       },
       {
         cluster_rank: topic.rank,
         subcluster_label: `${topic.display_topic_title} risk pattern`,
         insight_text: topic.risk_summary,
-        insight_score: Math.max(0.1, topic.trend_strength_score - 0.14),
+        insight_score: Math.max(0.1, canonicalStrengthScore - 0.14),
         signal_state: topic.decision_label === "WEAK_OR_RISK" ? "Failed breakout" : "Weakening",
       },
       {
@@ -2687,7 +2699,7 @@ function getClusterInsights(topic: LeaderboardRow): ClusterInsight[] {
         insight_text: topic.t60_is_winner
           ? `Validated as a T+60 winner${topic.t60_actual_rank ? ` at rank ${topic.t60_actual_rank}` : ""}.`
           : "T+60 validation is still mixed, so treat the read as conditional.",
-        insight_score: Math.max(0.1, topic.trend_strength_score - 0.22),
+        insight_score: Math.max(0.1, canonicalStrengthScore - 0.22),
         signal_state: topic.t60_is_winner ? "Emerging" : "Failed breakout",
       },
     ],
@@ -2769,17 +2781,16 @@ function getDiscoveryFallbackTopic(
     subclusterId ||
     clusterId ||
     "Discovery signal";
-  const score = opportunity?.discovery_score ?? 0;
 
   return {
-    rank: 0,
+    rank: null,
     cluster_id: clusterId ?? undefined,
     cluster_label: clusterId ?? "Discovery signal",
     display_topic_title: `Discovery signal selected: ${clusterId ?? "Unknown"}`,
     topic_subtitle: opportunity
       ? `Selected topic area: ${formatSelectedLabel(label)}.`
       : "This topic is not available in the current dashboard view.",
-    trend_strength_score: score,
+    trend_strength_score: null,
     decision_label: opportunity?.discovery_label === "WATCHLIST_SIGNAL" ? "EARLY_TREND" : "EMERGING",
     trend_summary: "This discovery signal is not available in the dashboard insight set.",
     opportunity_summary: "Open Discovery to review the current opportunity.",
@@ -2790,63 +2801,10 @@ function getDiscoveryFallbackTopic(
     weeks_observed: null,
     consecutive_up_weeks: null,
     score_anchor: "DISCOVERY_DEEP_LINK",
-    trend_confidence: score,
+    trend_confidence: undefined,
     trend_direction: "DISCOVERY",
     latest_snapshot_date: opportunity?.snapshot_date,
   };
-}
-
-function mapClustersToLeaderboard(clusters: InsightCluster[]): LeaderboardRow[] {
-  return clusters.map((cluster, index) => {
-    const primary = cluster.insights[0];
-    const metric =
-      primary?.insight_type === "WEAKENING_SEGMENT" || primary?.insight_type === "FAILED_BREAKOUT"
-        ? primary?.share_delta
-        : primary?.relative_growth_spread;
-    const staticFailureRisk = activeFailureRiskByClusterId.get(cluster.clusterId);
-
-    return {
-      rank: index + 1,
-      cluster_id: cluster.clusterId,
-      cluster_label: cluster.clusterName,
-      display_topic_title: getInsightTitle(getVisibleSubclusterLabel(primary) ?? cluster.clusterName),
-      topic_subtitle: cluster.topInsightLabel
-        ? `Latest ${getInsightVisual(cluster.topInsightType).label.toLowerCase()} signal: ${cluster.topInsightLabel}.`
-        : "Live v4.0 cluster insight.",
-      trend_strength_score: cluster.topInsightScore ?? primary?.insight_score ?? 0,
-      decision_label: getDecisionLabelFromInsightType(cluster.topInsightType ?? primary?.insight_type),
-      trend_summary: primary?.insight_text ?? "Live insight loaded from the local API.",
-      opportunity_summary: primary?.insight_text ?? "Live insight loaded from the local API.",
-      risk_summary: primary?.insight_text ?? "Live insight loaded from the local API.",
-      growth_since_freeze_pct: metric ?? 0,
-      latest_n_videos: cluster.insights.length,
-      t60_is_winner: true,
-      weeks_observed: null,
-      consecutive_up_weeks: null,
-      score_anchor: cluster.topInsightType ?? "LIVE_INSIGHT",
-      trend_confidence: cluster.topInsightScore ?? primary?.insight_score,
-      trend_direction: metric === undefined ? "LIVE" : metric >= 0 ? "UP" : "DOWN",
-      latest_snapshot_date: cluster.snapshotDate,
-      t60_actual_rank: null,
-      t60_growth_pct: null,
-      failure_risk_level: staticFailureRisk?.failure_risk_level,
-      failure_risk_reason_code: staticFailureRisk?.failure_risk_reason_code,
-      failure_risk_score: staticFailureRisk?.failure_risk_score,
-      liveCluster: cluster,
-    };
-  });
-}
-
-function getDecisionLabelFromInsightType(insightType?: InsightType) {
-  if (insightType === "WEAKENING_SEGMENT" || insightType === "FAILED_BREAKOUT") {
-    return "WEAK_OR_RISK";
-  }
-
-  if (insightType === "INTERNAL_OUTPERFORMER") {
-    return "STRONG_TREND";
-  }
-
-  return "EMERGING";
 }
 
 function getGrowthFraction(topic: LeaderboardRow) {
@@ -2861,8 +2819,7 @@ function getSnapshotDelta(topic: LeaderboardRow): SnapshotDeltaVisual {
   const direction = topic.trend_direction?.toUpperCase();
   let state: SnapshotDeltaState = "unknown";
 
-  // TODO: Replace derived/synthetic snapshot delta with backend-provided real previous snapshot metrics once exported.
-  if (topic.liveCluster || direction === "LIVE" || direction === "DISCOVERY") {
+  if (direction === "DISCOVERY") {
     state = "unknown";
   } else if (direction === "UP" || direction === "STRENGTHENING") {
     state = "positive";
@@ -3070,13 +3027,14 @@ function normalizeAnchor(anchor: string) {
 
 function ensureThreeInsights(insights: ClusterInsight[], topic: LeaderboardRow) {
   const padded = [...insights];
+  const canonicalStrengthScore = topic.trend_strength_score ?? 0;
 
   while (padded.length < 3) {
     padded.push({
       cluster_rank: topic.rank,
       subcluster_label: "additional model insight",
       insight_text: "Additional v4.0 insight is not present in the local data export yet.",
-      insight_score: Math.max(0.1, topic.trend_strength_score - padded.length * 0.1),
+      insight_score: Math.max(0.1, canonicalStrengthScore - padded.length * 0.1),
       signal_state: "Weakening",
     });
   }
