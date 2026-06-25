@@ -1535,7 +1535,7 @@ export default function Dashboard() {
   const selectedTopic = requestedClusterMissing
     ? getDiscoveryFallbackTopic(requestedClusterId, requestedSubclusterId, requestedDiscoveryOpportunity)
     : requestedClusterTopic ?? dashboardLeaderboard.find((topic) => topic.rank === selectedRank) ?? dashboardLeaderboard[0];
-  const selectedFromDeepLink = requestedClusterId === selectedTopic.cluster_id;
+  const selectedFromDeepLink = Boolean(selectedTopic && requestedClusterId === selectedTopic.cluster_id);
   const activeSubclusterLabel = selectedFromDeepLink ? selectedSubclusterLabel : null;
   const watchedTopics = dashboardLeaderboard.filter((topic) => isWatched(getTopicId(topic)));
   const planLimitedLeaderboard = hasPremiumAccess ? dashboardLeaderboard : dashboardLeaderboard.slice(0, 5);
@@ -1686,7 +1686,7 @@ export default function Dashboard() {
                       <TopicCard
                         key={`${topic.rank}-${getTopicId(topic)}`}
                         topic={topic}
-                        selected={selectedTopic.rank === topic.rank}
+                        selected={selectedTopic?.rank === topic.rank}
                         watched={isWatched(getTopicId(topic))}
                         scanMode={scanMode}
                         onSelect={() => handleOpenCluster(topic)}
@@ -2720,10 +2720,10 @@ function getClusterInsights(topic: LeaderboardRow): ClusterInsight[] {
 
 function getLeaderboardWithRequestedTopic(
   topics: LeaderboardRow[],
-  selectedTopic: LeaderboardRow,
+  selectedTopic: LeaderboardRow | undefined,
   requestedClusterId: string | null,
 ) {
-  if (!requestedClusterId || topics.some((topic) => topic.cluster_id === requestedClusterId)) {
+  if (!selectedTopic || !requestedClusterId || topics.some((topic) => topic.cluster_id === requestedClusterId)) {
     return topics;
   }
 
