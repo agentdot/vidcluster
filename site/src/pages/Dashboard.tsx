@@ -29,6 +29,13 @@ type LeaderboardRow = {
   risk_summary: string;
   growth_since_freeze_pct: number | null;
   topic_growth_pct?: number | null;
+  previous_n_videos?: number | null;
+  video_delta_abs?: number | null;
+  video_delta_pct?: number | null;
+  video_delta_direction?: "up" | "flat" | "down" | "unknown" | string | null;
+  comparison_window?: string | null;
+  comparison_previous_date?: string | null;
+  comparison_latest_date?: string | null;
   growth_pct?: number | null;
   since_first_pct?: number | null;
   latest_growth_pct?: number | null;
@@ -74,6 +81,14 @@ type ClusterTimeseriesRow = {
   n_videos_prev?: number | null;
   wow_abs?: number | null;
   topic_growth_pct?: number | null;
+  latest_n_videos?: number | null;
+  previous_n_videos?: number | null;
+  video_delta_abs?: number | null;
+  video_delta_pct?: number | null;
+  video_delta_direction?: "up" | "flat" | "down" | "unknown" | string | null;
+  comparison_window?: string | null;
+  comparison_previous_date?: string | null;
+  comparison_latest_date?: string | null;
   growth_pct?: number | null;
   since_first_pct?: number | null;
   latest_growth_pct?: number | null;
@@ -930,6 +945,12 @@ function pctToFraction(value: number) {
 function resolveGrowthFraction(topic: Partial<LeaderboardRow>) {
   const timeseries = topic.cluster_id ? activeLatestTimeseriesByClusterId.get(normalizeClusterId(topic.cluster_id)) : undefined;
   const canonicalGrowth =
+    finiteNumber(topic.video_delta_pct) ??
+    finiteNumber(timeseries?.video_delta_pct);
+
+  if (canonicalGrowth !== null) return canonicalGrowth;
+
+  const legacyGrowth =
     finiteNumber(topic.topic_growth_pct) ??
     finiteNumber(timeseries?.topic_growth_pct) ??
     finiteNumber(topic.growth_pct) ??
@@ -940,16 +961,7 @@ function resolveGrowthFraction(topic: Partial<LeaderboardRow>) {
     finiteNumber(timeseries?.latest_growth_pct) ??
     finiteNumber(topic.growth_since_freeze_pct);
 
-  if (canonicalGrowth !== null) return pctToFraction(canonicalGrowth);
-
-  const wowAbs = finiteNumber(topic.wow_abs) ?? finiteNumber(timeseries?.wow_abs);
-  if (wowAbs !== null) {
-    const previous = finiteNumber(topic.n_videos_prev) ?? finiteNumber(timeseries?.n_videos_prev);
-    if (previous !== null && previous !== 0) return wowAbs / previous;
-
-    const latest = finiteNumber(topic.latest_n_videos) ?? finiteNumber(timeseries?.n_videos);
-    if (latest !== null && latest !== 0) return wowAbs / latest;
-  }
+  if (legacyGrowth !== null) return pctToFraction(legacyGrowth);
 
   return null;
 }

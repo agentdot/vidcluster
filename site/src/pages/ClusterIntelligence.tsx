@@ -51,6 +51,13 @@ type LeaderboardRow = {
   growth_since_freeze_pct?: number | null;
   absolute_growth?: number | null;
   latest_n_videos?: number | null;
+  previous_n_videos?: number | null;
+  video_delta_abs?: number | null;
+  video_delta_pct?: number | null;
+  video_delta_direction?: "up" | "flat" | "down" | "unknown" | string | null;
+  comparison_window?: string | null;
+  comparison_previous_date?: string | null;
+  comparison_latest_date?: string | null;
   freeze_n_videos?: number | null;
   weeks_observed?: number | null;
   consecutive_up_weeks?: number | null;
@@ -78,6 +85,14 @@ type ClusterTimeseriesRow = {
   n_videos_prev?: number | null;
   wow_abs?: number | null;
   topic_growth_pct?: number | null;
+  latest_n_videos?: number | null;
+  previous_n_videos?: number | null;
+  video_delta_abs?: number | null;
+  video_delta_pct?: number | null;
+  video_delta_direction?: "up" | "flat" | "down" | "unknown" | string | null;
+  comparison_window?: string | null;
+  comparison_previous_date?: string | null;
+  comparison_latest_date?: string | null;
   trend_strength_score?: number | null;
   normalized_score?: number | null;
 };
@@ -269,7 +284,7 @@ function ClusterReport({
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-100/56">Current growth</div>
               <div className="mt-1.5 text-3xl font-semibold leading-none tracking-[-0.045em] text-emerald-100">
-                {formatWholePercent(cluster.growth_since_freeze_pct)}
+                {formatWholePercent(getCanonicalDeltaDisplayPct(cluster))}
               </div>
             </div>
             <div>
@@ -314,7 +329,7 @@ function ClusterReport({
             <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Recent Topic Movement</h2>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge>{formatWholePercent(cluster.growth_since_freeze_pct)}</Badge>
+            <Badge>{formatWholePercent(getCanonicalDeltaDisplayPct(cluster))}</Badge>
             <Badge>{mapConfidence(cluster)}</Badge>
           </div>
         </div>
@@ -597,7 +612,7 @@ function TabContentPanel({
             <p className="mt-3 text-sm leading-6 text-white/68">{getIntelligenceSummary(cluster)}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            <TabStat label="Growth" value={formatWholePercent(cluster.growth_since_freeze_pct)} tone={getGrowthTone(cluster)} />
+            <TabStat label="Growth" value={formatWholePercent(getCanonicalDeltaDisplayPct(cluster))} tone={getGrowthTone(cluster)} />
             <TabStat label="Evidence" value={mapConfidence(cluster)} tone={getConfidenceTone(cluster)} />
             <TabStat label="Latest videos" value={latest?.n_videos?.toLocaleString() ?? formatNumber(cluster.latest_n_videos)} tone="neutral" />
             <TabStat label="Trend Risk" value={formatFailureRiskLevel(cluster.failure_risk_level)} tone={getFailureRiskTone(cluster)} />
@@ -1372,7 +1387,7 @@ function getOpportunityTone(topic: LeaderboardRow): Tone {
 }
 
 function getGrowthTone(topic: LeaderboardRow): Tone {
-  const growth = topic.growth_since_freeze_pct ?? 0;
+  const growth = getCanonicalDeltaDisplayPct(topic) ?? 0;
   if (growth > 0) return "positive";
   if (growth < 0) return "risk";
   return "neutral";
@@ -1421,7 +1436,7 @@ function getWhyTrendNarrative(topic: LeaderboardRow) {
 
   if (scoreAnchor && scoreAnchor !== trendSummary) return scoreAnchor;
 
-  return `This topic is supported by ${confidence}, ${risk}, and ${formatWholePercent(topic.growth_since_freeze_pct)} topic growth in the current export.`;
+  return `This topic is supported by ${confidence}, ${risk}, and ${formatWholePercent(getCanonicalDeltaDisplayPct(topic))} topic growth in the current export.`;
 }
 
 function getRecommendedAction(topic: LeaderboardRow) {
@@ -1430,7 +1445,7 @@ function getRecommendedAction(topic: LeaderboardRow) {
   return "Run a small validation test and watch whether the topic strengthens in the next update.";
 }
 
-function getTopicMovementInterpretation(topic: LeaderboardRow, direction: "growing" | "declining" | "flat", videoDeltaPct: number | null, rows: ClusterTimeseriesRow[]) {
+function getTopicMovementInterpretation(topic: LeaderboardRow, direction: "growing" | "declining" | "flat" | "unknown", videoDeltaPct: number | null, rows: ClusterTimeseriesRow[]) {
   const topicName = getTopicTitle(topic) || "This topic";
   const priorGrowthValues = rows
     .slice(0, -1)
@@ -1438,6 +1453,10 @@ function getTopicMovementInterpretation(topic: LeaderboardRow, direction: "growi
     .filter((value): value is number => value !== null);
   const stableBeforeLatest = priorGrowthValues.length > 0 && priorGrowthValues.every((value) => Math.abs(value) <= 0.05);
   const absMove = Math.abs(videoDeltaPct ?? 0);
+
+  if (direction === "unknown") {
+    return `${topicName} has limited comparison history, so the latest movement read is not yet available.`;
+  }
 
   if (direction === "flat") {
     return `${topicName} has stayed broadly stable across recent updates, with limited expansion detected so far.`;
@@ -1493,31 +1512,29 @@ function getEvidenceInterpretation(topic: LeaderboardRow, rows: ClusterTimeserie
 
 function getTrendInterpretation(topic: LeaderboardRow, rows: ClusterTimeseriesRow[]) {
   const current = rows[rows.length - 1];
-  const previous = rows.length >= 2 ? rows[rows.length - 2] : undefined;
-  const currentVideos = current ? finiteNumber(current.n_videos) : null;
-  const previousVideos = previous ? finiteNumber(previous.n_videos) : null;
   const confidenceLabel = mapConfidence(topic);
 
-  if (!current || !previous || currentVideos === null || previousVideos === null) {
+  if (!current) {
     return {
       body: "This topic has limited update history, so the first read is directional rather than conclusive.",
       chips: [{ label: "Limited History", tone: "neutral" as Tone }],
     };
   }
 
-  const videoDelta = currentVideos - previousVideos;
-  const videoDeltaPct = previousVideos === 0 ? null : (videoDelta / previousVideos) * 100;
-  const direction = videoDelta > 0 ? "growing" : videoDelta < 0 ? "declining" : "flat";
+  const videoDelta = getCanonicalDeltaAbs(current);
+  const videoDeltaPct = resolveTimeseriesGrowthPct(current);
+  const direction = getCanonicalDeltaDirection(current);
   const movement = getTopicMovementInterpretation(topic, direction, videoDeltaPct, rows);
   const evidence = getEvidenceInterpretation(topic, rows);
+  const movementTone = direction === "growing" ? "positive" as Tone : direction === "declining" ? "risk" as Tone : "neutral" as Tone;
 
   return {
     body: `${movement} ${evidence}`,
     chips: [
-      { label: direction === "growing" ? "Growing" : direction === "declining" ? "Declining" : "Flat", tone: direction === "growing" ? "positive" as Tone : direction === "declining" ? "risk" as Tone : "neutral" as Tone },
+      { label: direction === "growing" ? "Growing" : direction === "declining" ? "Declining" : direction === "flat" ? "Flat" : "Limited History", tone: movementTone },
       { label: confidenceLabel, tone: getConfidenceTone(topic) },
       { label: formatFailureRiskChip(topic.failure_risk_level), tone: getFailureRiskTone(topic) },
-      { label: videoDeltaPct === null ? `Latest ${formatSignedInteger(videoDelta)}` : `Latest ${formatWholePercent(videoDeltaPct)}`, tone: videoDelta > 0 ? "positive" as Tone : videoDelta < 0 ? "risk" as Tone : "neutral" as Tone },
+      { label: videoDeltaPct === null ? `Latest ${videoDelta === null ? "Limited History" : formatSignedInteger(videoDelta)}` : `Latest ${formatWholePercent(videoDeltaPct)}`, tone: movementTone },
     ],
   };
 }
@@ -1535,6 +1552,33 @@ function getLatestSnapshotChange(rows: ClusterTimeseriesRow[]) {
 function getSnapshotChangeTone(value: number | null): Tone {
   if (value === null || Math.abs(value) <= STABLE_SNAPSHOT_CHANGE_THRESHOLD) return "neutral";
   return value > 0 ? "positive" : "risk";
+}
+
+function getCanonicalDeltaDisplayPct(row?: Pick<LeaderboardRow, "video_delta_pct" | "growth_since_freeze_pct"> | ClusterTimeseriesRow | null) {
+  if (!row) return null;
+  const canonical = finiteNumber(row.video_delta_pct);
+  if (canonical !== null) return canonical * 100;
+  const legacy = "growth_since_freeze_pct" in row ? finiteNumber(row.growth_since_freeze_pct) : finiteNumber(row.topic_growth_pct);
+  return legacy === null ? null : pctToDisplayPercent(legacy);
+}
+
+function getCanonicalDeltaAbs(row?: Pick<LeaderboardRow, "video_delta_abs"> | ClusterTimeseriesRow | null) {
+  if (!row) return null;
+  return finiteNumber(row.video_delta_abs);
+}
+
+function getCanonicalDeltaDirection(row?: Pick<LeaderboardRow, "video_delta_direction"> | ClusterTimeseriesRow | null): "growing" | "declining" | "flat" | "unknown" {
+  const direction = String(row?.video_delta_direction ?? "").toLowerCase();
+  if (direction === "up") return "growing";
+  if (direction === "down") return "declining";
+  if (direction === "flat") return "flat";
+  return "unknown";
+}
+
+function getCanonicalSnapshotDirection(row?: Pick<LeaderboardRow, "video_delta_direction"> | ClusterTimeseriesRow | null): "up" | "down" | "flat" | "unknown" {
+  const direction = String(row?.video_delta_direction ?? "").toLowerCase();
+  if (direction === "up" || direction === "down" || direction === "flat") return direction;
+  return "unknown";
 }
 
 function getClusterTimeseries(rows: ClusterTimeseriesRow[], clusterId?: string) {
@@ -1628,46 +1672,24 @@ function getClusterAudienceIntents(clusterId?: string) {
 
 function getSnapshotComparison(topic: LeaderboardRow, rows: ClusterTimeseriesRow[]) {
   const current = rows[rows.length - 1];
-  const previous = rows.length >= 2 ? rows[rows.length - 2] : undefined;
-
-  if (current && previous && typeof current.n_videos === "number" && typeof previous.n_videos === "number") {
-    const absoluteDelta = current.n_videos - previous.n_videos;
-    const percentDelta = previous.n_videos === 0 ? null : (absoluteDelta / previous.n_videos) * 100;
-    const direction = absoluteDelta > 0 ? "up" : absoluteDelta < 0 ? "down" : "flat";
-    const tone: Tone = absoluteDelta > 0 ? "positive" : absoluteDelta < 0 ? "risk" : "neutral";
-
-    return {
-      currentValue: current.n_videos.toLocaleString(),
-      currentLabel: formatSnapshotDate(current.snapshot_date),
-      previousValue: previous.n_videos.toLocaleString(),
-      previousLabel: formatSnapshotDate(previous.snapshot_date),
-      absoluteDelta: `${absoluteDelta >= 0 ? "+" : ""}${absoluteDelta.toLocaleString()}`,
-      percentDelta: percentDelta === null ? "Not enough data yet" : formatWholePercent(percentDelta),
-      deltaLabel: "since last update",
-      direction,
-      tone,
-      isReal: true,
-    };
-  }
-
-  const currentVideos = finiteNumber(current?.n_videos) ?? finiteNumber(topic.latest_n_videos);
-  const currentGrowth = typeof topic.growth_since_freeze_pct === "number" ? topic.growth_since_freeze_pct : null;
+  const currentVideos = finiteNumber(current?.latest_n_videos) ?? finiteNumber(current?.n_videos) ?? finiteNumber(topic.latest_n_videos);
+  const previousVideos = finiteNumber(current?.previous_n_videos) ?? finiteNumber(topic.previous_n_videos);
+  const absoluteDelta = getCanonicalDeltaAbs(current) ?? getCanonicalDeltaAbs(topic);
+  const percentDelta = resolveTimeseriesGrowthPct(current) ?? getCanonicalDeltaDisplayPct(topic);
+  const direction = getCanonicalSnapshotDirection(current ?? topic);
+  const tone: Tone = direction === "up" ? "positive" : direction === "down" ? "risk" : "neutral";
 
   return {
     currentValue: currentVideos === null ? "Not enough data yet" : currentVideos.toLocaleString(),
-    currentLabel: current?.snapshot_date
-      ? formatSnapshotDate(current.snapshot_date)
-      : currentGrowth === null
-        ? "Latest update videos"
-        : `${formatWholePercent(currentGrowth)} growth`,
-    previousValue: "Not enough data yet",
-    previousLabel: "Needs another update",
-    absoluteDelta: "Not enough data yet",
-    percentDelta: "Not enough data yet",
-    deltaLabel: "Previous update not available",
-    direction: "unknown" as const,
-    tone: "neutral" as Tone,
-    isReal: false,
+    currentLabel: formatSnapshotDate(current?.comparison_latest_date ?? current?.snapshot_date ?? topic.comparison_latest_date ?? topic.latest_snapshot_date),
+    previousValue: previousVideos === null ? "Not enough data yet" : previousVideos.toLocaleString(),
+    previousLabel: previousVideos === null ? "Needs another update" : formatSnapshotDate(current?.comparison_previous_date ?? topic.comparison_previous_date),
+    absoluteDelta: absoluteDelta === null ? "Not enough data yet" : `${absoluteDelta >= 0 ? "+" : ""}${absoluteDelta.toLocaleString()}`,
+    percentDelta: percentDelta === null ? "Not enough data yet" : formatWholePercent(percentDelta),
+    deltaLabel: "since last update",
+    direction,
+    tone,
+    isReal: absoluteDelta !== null || percentDelta !== null,
   };
 }
 
@@ -1905,19 +1927,7 @@ function normalizeClusterId(value?: string | null) {
 }
 
 function resolveTimeseriesGrowthPct(row: ClusterTimeseriesRow) {
-  const topicGrowth = finiteNumber(row.topic_growth_pct);
-  if (topicGrowth !== null) return pctToDisplayPercent(topicGrowth);
-
-  const wowAbs = finiteNumber(row.wow_abs);
-  if (wowAbs !== null) {
-    const previous = finiteNumber(row.n_videos_prev);
-    if (previous !== null && previous !== 0) return (wowAbs / previous) * 100;
-
-    const current = finiteNumber(row.n_videos);
-    if (current !== null && current !== 0) return (wowAbs / current) * 100;
-  }
-
-  return null;
+  return getCanonicalDeltaDisplayPct(row);
 }
 
 function resolveTimeseriesVideoCount(row: ClusterTimeseriesRow) {
