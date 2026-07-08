@@ -14,6 +14,11 @@ import SiteHeader from "../components/SiteHeader";
 import PageSeo from "../components/seo/PageSeo";
 import audienceIntentRows from "../data/cluster_audience_intent_v4_0.json";
 import { useDashboardExportData } from "../hooks/useDashboardExportData";
+import {
+  getValidatedSubtopicLabel,
+  isBreakingOutDivergence,
+  type CleanedSubtopicLabelRow,
+} from "../lib/subtopicLabels";
 
 type Tone = "good" | "watch" | "risk" | "quiet";
 
@@ -89,6 +94,11 @@ type DivergenceRow = {
   snapshot_date?: string | null;
 };
 
+type MicroNicheRow = CleanedSubtopicLabelRow & {
+  cluster_id?: string;
+  subcluster_id?: string;
+};
+
 type AudienceIntentRow = {
   cluster_id?: string;
   intent_label?: string | null;
@@ -113,11 +123,12 @@ export default function ClusterDetailV2() {
   const timeseriesRows = asArray<ClusterTimeseriesRow>(activeDashboardData?.timeseries);
   const opportunityRows = asArray<OpportunityRow>(activeDashboardData?.opportunities);
   const divergenceRows = asArray<DivergenceRow>(activeDashboardData?.divergence);
+  const microNicheRows = asArray<MicroNicheRow>(activeDashboardData?.microNiches);
 
   const cluster = leaderboard.find((row) => normalizeClusterId(row.cluster_id) === normalizedClusterId);
   const timeseries = getClusterTimeseries(timeseriesRows, normalizedClusterId);
   const opportunities = getReadyOpportunities(opportunityRows, normalizedClusterId);
-  const divergences = getClusterDivergences(divergenceRows, normalizedClusterId);
+  const divergences = getClusterDivergences(divergenceRows, microNicheRows, normalizedClusterId);
   const audience = getClusterAudienceIntents(normalizedClusterId);
   const contentIdeas = getContentIdeas(opportunities);
   const movement = getMovementSummary(cluster, timeseries);
@@ -312,6 +323,7 @@ function OpportunitiesPanel({ rows }: { rows?: OpportunityRow[] | null }) {
 
 function BreakingOutPanel({ rows }: { rows?: DivergenceRow[] | null }) {
   const usefulRows = asArray<DivergenceRow>(rows)
+    .filter((row) => isBreakingOutDivergence(row.divergence_label))
     .filter((row) => hasMovement(row))
     .slice(0, 6);
 
@@ -579,10 +591,17 @@ function getReadyOpportunities(rows: OpportunityRow[], clusterId: string) {
     });
 }
 
-function getClusterDivergences(rows: DivergenceRow[], clusterId: string) {
+function getClusterDivergences(rows: DivergenceRow[], microNiches: MicroNicheRow[], clusterId: string) {
   if (!clusterId) return [];
+  const microNichesBySubclusterId = new Map(
+    asArray<MicroNicheRow>(microNiches).map((row) => [row.subcluster_id, row]),
+  );
   return asArray<DivergenceRow>(rows)
     .filter((row) => normalizeClusterId(row.cluster_id) === clusterId)
+    .map((row) => ({
+      ...row,
+      subcluster_label: getValidatedSubtopicLabel(microNichesBySubclusterId.get(row.subcluster_id)),
+    }))
     .sort((a, b) => Math.abs(finiteNumber(b.divergence_score) ?? 0) - Math.abs(finiteNumber(a.divergence_score) ?? 0));
 }
 
@@ -705,7 +724,7 @@ function getInterestTone(value?: string | null): Tone {
 }
 
 function getBreakoutName(row: DivergenceRow) {
-  return cleanTitle(row.divergence_label || row.subcluster_label || row.subcluster_id || "Area needs clearer label");
+  return row.subcluster_label || "Subtopic not yet validated";
 }
 
 function getBreakoutCopy(row: DivergenceRow) {

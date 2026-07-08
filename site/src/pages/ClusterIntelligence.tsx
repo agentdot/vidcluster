@@ -21,6 +21,7 @@ import fallbackLeaderboardRows from "../data/leaderboard_v3_3.json";
 import { useDashboardExportData } from "../hooks/useDashboardExportData";
 import { getTaxonomyDisplayLanguage } from "../lib/dashboardLanguage";
 import { getClusterTaxonomy, type ClusterTaxonomy } from "../lib/clusterTaxonomy";
+import { getValidatedSubtopicLabel, isBreakingOutDivergence } from "../lib/subtopicLabels";
 
 type Tone = "positive" | "watch" | "risk" | "neutral";
 type IntelligenceTab =
@@ -788,9 +789,13 @@ function DivergencePanel({ rows, microNiches }: { rows: DivergenceRow[]; microNi
     return <BreakoutEmptyState />;
   }
 
-  const labelsBySubclusterId = new Map(safeMicroNiches.map((row) => [row.subcluster_id, row.subcluster_label]));
-  const enrichedRows = safeRows.map((row) => ({ ...row, subcluster_label: row.subcluster_label || labelsBySubclusterId.get(row.subcluster_id) }));
+  const microNichesBySubclusterId = new Map(safeMicroNiches.map((row) => [row.subcluster_id, row]));
+  const enrichedRows = safeRows.map((row) => ({
+    ...row,
+    subcluster_label: getValidatedSubtopicLabel(microNichesBySubclusterId.get(row.subcluster_id)),
+  }));
   const usefulRows = enrichedRows
+    .filter((row) => isBreakingOutDivergence(row.divergence_label))
     .filter((row) => (row.divergence_score ?? 0) !== 0 || (row.share_delta ?? 0) !== 0 || (row.relative_growth_spread ?? 0) !== 0)
     .sort((a, b) => {
       const divergenceDelta = Math.abs(b.divergence_score ?? 0) - Math.abs(a.divergence_score ?? 0);
@@ -874,7 +879,7 @@ function AudienceField({ label, value }: { label: string; value: string }) {
 }
 
 function BreakoutCard({ row }: { row: DivergenceRow }) {
-  const name = getVisibleMicroNicheLabel(row) || "Needs clearer label";
+  const name = row.subcluster_label || "Subtopic not yet validated";
   const tone = getBreakoutTone(row);
 
   return (

@@ -8,6 +8,7 @@
     "build": "npm run generate:sitemap && vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
+    "test:subtopic-labels": "node --test tests/subtopicLabels.test.mjs",
     "preview": "vite preview",
     "generate:sitemap": "node scripts/generate-sitemap.js"
   },
