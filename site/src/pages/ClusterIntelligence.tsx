@@ -22,6 +22,7 @@ import { useDashboardExportData } from "../hooks/useDashboardExportData";
 import { getTaxonomyDisplayLanguage } from "../lib/dashboardLanguage";
 import { getClusterTaxonomy, type ClusterTaxonomy } from "../lib/clusterTaxonomy";
 import { getValidatedSubtopicLabel, isBreakingOutDivergence } from "../lib/subtopicLabels";
+import { buildTrendChartRows, resolveTrendChartGrowthPct, resolveTrendChartVideoCount } from "../lib/trendChartRows";
 
 type Tone = "positive" | "watch" | "risk" | "neutral";
 type IntelligenceTab =
@@ -927,18 +928,7 @@ function EmptyTabPanel({ title }: { title: string }) {
 }
 
 function TrendCurveChart({ rows }: { rows: ClusterTimeseriesRow[] }) {
-  const chartRows = asArray<ClusterTimeseriesRow>(rows)
-    .filter((row) => row.snapshot_date)
-    .map((row) => {
-      const growth = resolveTimeseriesGrowthPct(row);
-      const videoCount = resolveTimeseriesVideoCount(row);
-      return {
-        ...row,
-        chart_growth_pct: growth ?? 0,
-        growth_available: growth !== null,
-        chart_video_count: videoCount,
-      };
-    });
+  const chartRows = buildTrendChartRows(asArray<ClusterTimeseriesRow>(rows));
   const current = chartRows[chartRows.length - 1];
   const yDomain = getTrendChartDomain(chartRows.map((row) => row.chart_growth_pct));
   const lineType = chartRows.length >= 5 ? "monotone" : "linear";
@@ -1101,7 +1091,7 @@ function DetailTrendTooltip({
 
   const growth = finiteNumber(row.chart_growth_pct);
   const videos = finiteNumber(row.chart_video_count);
-  const date = formatSnapshotDate(String(label ?? row.snapshot_date ?? ""));
+  const date = formatSnapshotDate(String(row.snapshot_date ?? label ?? ""));
 
   return (
     <div className="rounded-xl border border-white/12 bg-[#03060a]/95 px-3 py-2 text-xs text-white shadow-[0_16px_45px_rgba(0,0,0,0.35)]">
@@ -1935,11 +1925,11 @@ function normalizeClusterId(value?: string | null) {
 }
 
 function resolveTimeseriesGrowthPct(row: ClusterTimeseriesRow) {
-  return getCanonicalDeltaDisplayPct(row);
+  return resolveTrendChartGrowthPct(row);
 }
 
 function resolveTimeseriesVideoCount(row: ClusterTimeseriesRow) {
-  return finiteNumber(row.n_videos) ?? finiteNumber(row.n_videos_current) ?? finiteNumber(row.tracked_video_count);
+  return resolveTrendChartVideoCount(row);
 }
 
 function formatWholePercent(value?: number | null) {

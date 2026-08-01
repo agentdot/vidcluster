@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "test:subtopic-labels": "node --test tests/subtopicLabels.test.mjs",
+    "test:trend-chart-rows": "node --test tests/trendChartRows.test.mjs",
     "preview": "vite preview",
     "generate:sitemap": "node scripts/generate-sitemap.js"
   },
